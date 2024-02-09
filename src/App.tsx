@@ -26,7 +26,8 @@ declare global {
     repository: {
       createFolder: () => Promise<Folder | null>;
       findRepository: () => Promise<Folder[] | null>;
-      createFile : (folderId: string) => Promise<File | null>
+      createFile : (folderId: string) => Promise<File | null>;
+      removeFolder: (folderId: string) => Promise<string>
     };
   }
 }

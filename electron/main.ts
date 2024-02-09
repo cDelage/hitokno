@@ -4,6 +4,7 @@ import {
   createFile,
   createFolder,
   findRepository,
+  removeFolder,
 } from "./services/apiRepository";
 import { File, Folder } from "../src/types/Repository.types";
 
@@ -81,6 +82,13 @@ function createWindow() {
     "create-file",
     async (event: IpcMainInvokeEvent, folderId: string): Promise<File | null> =>
       await createFile(folderId)
+  );
+
+  ipcMain.handle(
+    "remove-folder",
+    async (event: IpcMainInvokeEvent, folderId: string) => {
+      await removeFolder(folderId);
+    }
   );
 }
 

@@ -16,6 +16,7 @@ const repository = {
     await ipcRenderer.invoke("find-repository"),
   createFile: async (folderId : string): Promise<File | null> =>
     await ipcRenderer.invoke("create-file", folderId),
+  removeFolder: async (folderId: string) => ipcRenderer.invoke("remove-folder", folderId) 
 };
 
 // --------- Expose some API to the Renderer process ---------

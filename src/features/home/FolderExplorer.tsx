@@ -8,7 +8,9 @@ import NewFileButton from "./NewFileButton";
 import { useCreateFile } from "./useCreateFile";
 import FileExplorer from "./FileExplorer";
 import { device } from "../../Medias";
-import IconButton from "../../ui/IconButton";
+import Menu from "../../ui/Menu";
+import { IoPlay, IoPencil, IoCodeDownload, IoTrash   } from "react-icons/io5";
+import { useRemoveFolder } from "./useRemoveFolder";
 
 type FolderProps = {
   folder: Folder;
@@ -38,7 +40,6 @@ const FolderLeftContainer = styled.div`
   align-items: center;
   user-select: none;
   cursor: auto;
-
 `;
 
 const FolderOpenIcon = styled(IoFolderOpen)`
@@ -62,7 +63,8 @@ const FolderOpenMain = styled.div`
 function FolderExplorer({ folder }: FolderProps): JSX.Element {
   const { folderName, _id, files } = folder;
   const [isFolderOpen, setIsFolderOpen] = useState(false);
-  const { isPending, createFile } = useCreateFile();
+  const { isPendingCreateFile, createFile } = useCreateFile();
+  const { removeFolder, isPendingRemoveFolder} = useRemoveFolder();
 
   const chevronStyle = {
     transform: isFolderOpen ? "rotate(90deg)" : "rotate(0deg)",
@@ -95,16 +97,24 @@ function FolderExplorer({ folder }: FolderProps): JSX.Element {
           </FolderIconsContainer>
           <div onClick={handleNameClick}>{folderName}</div>
         </FolderLeftContainer>
-        <IconButton>
-          <IoEllipsisHorizontal size={20} />
-        </IconButton>
+        <Menu>
+          <Menu.Toggle id={_id}>
+            <IoEllipsisHorizontal size={20} />
+          </Menu.Toggle>
+          <Menu.ListTabs>
+            <Menu.Tab> <IoPlay/> Execute a test</Menu.Tab>
+            <Menu.Tab> <IoPencil/> Rename</Menu.Tab>
+            <Menu.Tab> <IoCodeDownload/> Import a file</Menu.Tab>
+            <Menu.Tab onClick={() => removeFolder(_id)} disabled={isPendingRemoveFolder}> <IoTrash/> Delete</Menu.Tab>
+          </Menu.ListTabs>
+        </Menu>
       </FolderStyled>
       {isFolderOpen && (
         <FolderOpenMain>
           {files.map((file) => (
             <FileExplorer key={file._id} file={file} />
           ))}
-          <NewFileButton onClick={handleCreateNewFile} disabled={isPending} />
+          <NewFileButton onClick={handleCreateNewFile} disabled={isPendingCreateFile} />
         </FolderOpenMain>
       )}
     </>

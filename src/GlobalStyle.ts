@@ -1,7 +1,7 @@
 import { createGlobalStyle } from "styled-components";
 
 const GlobalStyle = createGlobalStyle`
-:root{
+:root, body{
 
   //Color palette
 
@@ -84,6 +84,7 @@ const GlobalStyle = createGlobalStyle`
   --bg-white: var(--color-white);
   --bg-element: var(--color-white);
   --bg-element-hover: var(--color-gray-100);
+  --bg-menu-tab-hover: var(--color-primary-600);
   --bg-button-secondary-hover: var(--color-white);
 
   --text-layout : var(--color-primary-600);
@@ -91,6 +92,7 @@ const GlobalStyle = createGlobalStyle`
   --text-main-blue: var(--color-primary-600);
   --text-main-medium: var(--color-gray-600);
   --text-main-dark: var(--color-gray-800);
+  --text-menu-tab-hover: var(--color-white);
 
   --shadow-md : 0 1px 1px 0 rgba(0, 0, 0, 0.25);
 
@@ -124,6 +126,23 @@ h1 {
   font-weight: 500;
   margin: 0px;
 }
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul {
+  list-style: none;
+  list-style-type: none;
+}
+
+ul ,li{
+  padding: 0;
+  margin: 0;
+}
+
+
 `;
 
 export default GlobalStyle;

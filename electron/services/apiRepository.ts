@@ -40,6 +40,14 @@ export async function createFile(folderId: string): Promise<File | null> {
   if (!result) {
     throw new Error("fail to create new file");
   }
-
   return null;
+}
+
+export async function removeFolder(folderId: string): Promise<string> {
+  try{
+    db.repository.remove({ _id: folderId }, { multi: false });
+    return "success";
+  }catch(e){
+    throw new Error("Fail to remove document")
+  }
 }
