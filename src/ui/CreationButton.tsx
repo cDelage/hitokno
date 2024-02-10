@@ -14,6 +14,7 @@ const CreationButton = styled.button<CreationButtonProps>`
   align-items: center;
   gap: 4px;
   cursor: pointer;
+  user-select: none;
   ${(props) =>
     props.$isContainIcon
       ? css`

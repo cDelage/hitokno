@@ -86,8 +86,33 @@ const GlobalStyle = createGlobalStyle`
   --bg-element-hover: var(--color-gray-100);
   --bg-menu-tab-hover: var(--color-primary-600);
   --bg-button-secondary-hover: var(--color-white);
-  --backdrop-color: rgba(0, 0, 0, 0.3);
 
+  /**
+    Buttons
+  */
+  --bg-button-primary: var(--color-primary-600);
+  --bg-button-primary-hover: var(--color-primary-700);
+  --bg-button-primary-active: var(--color-primary-500);
+  --text-button-primary: var(--color-white);
+  
+  
+  --bg-button-secondary: var(--color-gray-50);
+  --bg-button-secondary-hover: var(--color-gray-200);
+  --bg-button-secondary-active: var(--color-gray-100);
+  --text-button-secondary: var(--color-gray-800);
+  
+  --bg-button-danger: var(--color-negative-600);
+  --bg-button-danger-hover: var(--color-negative-700);
+  --bg-button-danger-active: var(--color-negative-500);
+  --text-button-danger: var(--color-white);
+  
+  
+  --bg-button-disabled: var(--color-gray-100);
+  --text-button-disabled: var(--color-gray-400);
+  
+  
+  --backdrop-color: rgba(0, 0, 0, 0.1);
+  
   --text-layout : var(--color-primary-600);
   --text-close: var(--color-white);
   --text-main-blue: var(--color-primary-600);
@@ -95,11 +120,11 @@ const GlobalStyle = createGlobalStyle`
   --text-main-medium: var(--color-gray-600);
   --text-main-dark: var(--color-gray-800);
   --text-menu-tab-hover: var(--color-white);
-
+  
   --shadow-md : 0 1px 1px 0 rgba(0, 0, 0, 0.25);
-
+  
   --font-weight-bold: 600;
-
+  
   
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 20px;

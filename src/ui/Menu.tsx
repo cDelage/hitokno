@@ -113,10 +113,19 @@ function ListTabs({ children }: ListTabsProps): JSX.Element | null {
 /**
  * List item of action in the menu ul.
  */
-function Tab({ children, onClick , disabled}: TabMenuProps): JSX.Element {
+function Tab({ children, onClick, disabled }: TabMenuProps): JSX.Element {
+  const { close } = useContext(MenuContext) as MenuContextProps;
+  function handleClick(e: MouseEvent) {
+    e.stopPropagation();
+    onClick?.();
+    close();
+  }
+
   return (
     <li>
-      <TabStyled onClick={onClick} disabled={disabled}>{children}</TabStyled>
+      <TabStyled onClick={handleClick} disabled={disabled}>
+        {children}
+      </TabStyled>
     </li>
   );
 }

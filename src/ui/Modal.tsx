@@ -38,7 +38,7 @@ const Overlay = styled.div`
   width: 100%;
   height: 100vh;
   background-color: var(--backdrop-color);
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(6px);
   z-index: 1000;
   transition: all 0.5s;
 `;
@@ -49,9 +49,9 @@ const StyledModal = styled.div`
   left: 50%;
   transform: translate(-50%, -50%);
   background-color: var(--color-gray-50);
-  border-radius: 4px;
+  border-radius: 8px;
   box-shadow: var(--shadow-md);
-  padding: 3.2rem 4rem;
+  padding: 16px;
   transition: all 0.5s;
   max-height: 100%;
 `;
@@ -62,8 +62,8 @@ const ModalBody = styled.div`
 
 const CloseButton = styled.div`
   position: absolute;
-  top: 4px;
-  right: 4px;
+  top: 8px;
+  right: 8px;
   background-color: transparent;
 `;
 

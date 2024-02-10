@@ -8,14 +8,24 @@ import {
 import Menu from "../../ui/Menu";
 import Modal from "../../ui/Modal";
 import ConfirmDelete from "../../ui/ConfirmDelete";
+import { useRemoveFolder } from "./useRemoveFolder";
 
 type FolderMenuActionsProps = {
   _id: string;
+  folderName: string;
 };
 
 function FolderMenuActions({
   _id,
+  folderName
 }: FolderMenuActionsProps): JSX.Element {
+
+  const {removeFolder} = useRemoveFolder();
+
+  function deleteFolder(){
+    removeFolder(_id)
+  }
+
   return (
     <Modal>
       <Menu>
@@ -40,7 +50,7 @@ function FolderMenuActions({
         </Menu.ListTabs>
       </Menu>
       <Modal.Body>
-          <ConfirmDelete/>
+          <ConfirmDelete deleteItem={folderName} onConfirm={deleteFolder}/>
       </Modal.Body>
     </Modal>
   );

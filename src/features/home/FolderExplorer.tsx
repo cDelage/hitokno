@@ -25,7 +25,6 @@ const FolderStyled = styled.div`
   cursor: pointer;
 `;
 
-
 const FolderLeftContainer = styled.div`
   display: flex;
   gap: 8px;
@@ -33,8 +32,6 @@ const FolderLeftContainer = styled.div`
   user-select: none;
   cursor: auto;
 `;
-
-
 
 const FolderOpenMain = styled.div`
   display: grid;
@@ -54,7 +51,7 @@ const FolderRightContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 8px;
-`
+`;
 
 const FolderName = styled.div`
   color: var(--text-main-dark);
@@ -88,14 +85,16 @@ function FolderExplorer({ folder }: FolderProps): JSX.Element {
     <>
       <FolderStyled onClick={handleClickTab}>
         <FolderLeftContainer>
-          <FolderStateIcon isFolderOpen={isFolderOpen}/>
+          <FolderStateIcon isFolderOpen={isFolderOpen} />
           <FolderName onClick={handleNameClick}>{folderName}</FolderName>
         </FolderLeftContainer>
         <FolderRightContainer>
           <DateUpdate>
-            {`Last update : ${updatedAt.toLocaleDateString()} ${updatedAt.getHours()}:${updatedAt.getMinutes()}`}
+            {`Last update : ${updatedAt.toLocaleDateString()}  ${updatedAt.getHours()}:${
+              updatedAt.getMinutes() < 10 ? "0" : ""
+            }${updatedAt.getMinutes()}`}
           </DateUpdate>
-          <FolderMenuActions _id={_id}/>
+          <FolderMenuActions _id={_id} folderName={folderName} />
         </FolderRightContainer>
       </FolderStyled>
       {isFolderOpen && (

@@ -23,7 +23,7 @@ function Header() {
     <HeaderStyled>
       <HeaderTabs />
       <FakeStyled>
-        <button onClick={() => navigate("/fake")}>FAKE</button>
+        <button style={{height:"100%"}}onClick={() => navigate("/fake")}>DUMMY</button>
       </FakeStyled>
       <WindowHeaderManagement />
     </HeaderStyled>
