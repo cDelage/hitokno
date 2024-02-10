@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import { File } from "../../types/Repository.types";
 import HitoknoFile from "../../ui/icons/HitoknoFile";
-import { IoEllipsisVertical } from "react-icons/io5";
 
 type FileExplorerType = {
   file: File;
@@ -34,7 +33,6 @@ const IconContainer = styled.div`
 
 const BottomContainer = styled.div`
   display: flex;
-  justify-content: space-between;
   align-items: center;
 `;
 
@@ -44,7 +42,7 @@ function FileExplorer({ file: { fileName } }: FileExplorerType): JSX.Element {
       <IconContainer>
         <HitoknoFile />
       </IconContainer>
-      <BottomContainer><div>{fileName}</div> <IoEllipsisVertical size={20}/></BottomContainer>
+      <BottomContainer><div>{fileName}</div></BottomContainer>
     </FileExplorerStyled>
   );
 }

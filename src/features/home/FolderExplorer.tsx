@@ -1,16 +1,13 @@
 import styled from "styled-components";
 import { Folder } from "../../types/Repository.types";
-import { IoChevronForwardOutline, IoFolderOutline } from "react-icons/io5";
-import { IoFolderOpen } from "react-icons/io5";
-import { IoEllipsisHorizontal } from "react-icons/io5";
+
 import { MouseEvent, useState } from "react";
 import NewFileButton from "./NewFileButton";
 import { useCreateFile } from "./useCreateFile";
 import FileExplorer from "./FileExplorer";
 import { device } from "../../Medias";
-import Menu from "../../ui/Menu";
-import { IoPlay, IoPencil, IoCodeDownload, IoTrash   } from "react-icons/io5";
-import { useRemoveFolder } from "./useRemoveFolder";
+import { FolderStateIcon } from "./FolderStateIcon";
+import FolderMenuActions from "./FolderMenuActions";
 
 type FolderProps = {
   folder: Folder;
@@ -28,11 +25,6 @@ const FolderStyled = styled.div`
   cursor: pointer;
 `;
 
-const FolderIconsContainer = styled.div`
-  display: flex;
-  gap: 2px;
-  align-items: center;
-`;
 
 const FolderLeftContainer = styled.div`
   display: flex;
@@ -42,9 +34,7 @@ const FolderLeftContainer = styled.div`
   cursor: auto;
 `;
 
-const FolderOpenIcon = styled(IoFolderOpen)`
-  color: var(--text-main-blue);
-`;
+
 
 const FolderOpenMain = styled.div`
   display: grid;
@@ -60,16 +50,27 @@ const FolderOpenMain = styled.div`
   }
 `;
 
+const FolderRightContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`
+
+const FolderName = styled.div`
+  color: var(--text-main-dark);
+  font-weight: var(--font-weight-bold);
+`;
+
+const DateUpdate = styled.div`
+  color: var(--text-main-light);
+  font-style: italic;
+  user-select: none;
+`;
+
 function FolderExplorer({ folder }: FolderProps): JSX.Element {
-  const { folderName, _id, files } = folder;
+  const { folderName, _id, files, updatedAt } = folder;
   const [isFolderOpen, setIsFolderOpen] = useState(false);
   const { isPendingCreateFile, createFile } = useCreateFile();
-  const { removeFolder, isPendingRemoveFolder} = useRemoveFolder();
-
-  const chevronStyle = {
-    transform: isFolderOpen ? "rotate(90deg)" : "rotate(0deg)",
-    transition: "transform .2s ease-out",
-  };
 
   function handleClickTab() {
     setIsFolderOpen((isOpen) => !isOpen);
@@ -87,34 +88,25 @@ function FolderExplorer({ folder }: FolderProps): JSX.Element {
     <>
       <FolderStyled onClick={handleClickTab}>
         <FolderLeftContainer>
-          <FolderIconsContainer>
-            <IoChevronForwardOutline style={chevronStyle} />
-            {isFolderOpen ? (
-              <FolderOpenIcon size={20} />
-            ) : (
-              <IoFolderOutline size={20} />
-            )}
-          </FolderIconsContainer>
-          <div onClick={handleNameClick}>{folderName}</div>
+          <FolderStateIcon isFolderOpen={isFolderOpen}/>
+          <FolderName onClick={handleNameClick}>{folderName}</FolderName>
         </FolderLeftContainer>
-        <Menu>
-          <Menu.Toggle id={_id}>
-            <IoEllipsisHorizontal size={20} />
-          </Menu.Toggle>
-          <Menu.ListTabs>
-            <Menu.Tab> <IoPlay/> Execute a test</Menu.Tab>
-            <Menu.Tab> <IoPencil/> Rename</Menu.Tab>
-            <Menu.Tab> <IoCodeDownload/> Import a file</Menu.Tab>
-            <Menu.Tab onClick={() => removeFolder(_id)} disabled={isPendingRemoveFolder}> <IoTrash/> Delete</Menu.Tab>
-          </Menu.ListTabs>
-        </Menu>
+        <FolderRightContainer>
+          <DateUpdate>
+            {`Last update : ${updatedAt.toLocaleDateString()} ${updatedAt.getHours()}:${updatedAt.getMinutes()}`}
+          </DateUpdate>
+          <FolderMenuActions _id={_id}/>
+        </FolderRightContainer>
       </FolderStyled>
       {isFolderOpen && (
         <FolderOpenMain>
           {files.map((file) => (
             <FileExplorer key={file._id} file={file} />
           ))}
-          <NewFileButton onClick={handleCreateNewFile} disabled={isPendingCreateFile} />
+          <NewFileButton
+            onClick={handleCreateNewFile}
+            disabled={isPendingCreateFile}
+          />
         </FolderOpenMain>
       )}
     </>

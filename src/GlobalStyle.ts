@@ -86,15 +86,19 @@ const GlobalStyle = createGlobalStyle`
   --bg-element-hover: var(--color-gray-100);
   --bg-menu-tab-hover: var(--color-primary-600);
   --bg-button-secondary-hover: var(--color-white);
+  --backdrop-color: rgba(0, 0, 0, 0.3);
 
   --text-layout : var(--color-primary-600);
   --text-close: var(--color-white);
   --text-main-blue: var(--color-primary-600);
+  --text-main-light: var(--color-gray-500);
   --text-main-medium: var(--color-gray-600);
   --text-main-dark: var(--color-gray-800);
   --text-menu-tab-hover: var(--color-white);
 
   --shadow-md : 0 1px 1px 0 rgba(0, 0, 0, 0.25);
+
+  --font-weight-bold: 600;
 
   
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
