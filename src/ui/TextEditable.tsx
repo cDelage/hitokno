@@ -1,8 +1,9 @@
 import { ChangeEvent, useEffect, useRef } from "react";
 import styled from "styled-components";
+import { TextEditMode } from "../types/TextEditMode.type";
 
 type TextEditableProps = {
-  mode: "DEFAULT" | "EDIT";
+  mode: TextEditMode;
   children: string;
   onEdit: (e: ChangeEvent<HTMLInputElement>) => void;
 };

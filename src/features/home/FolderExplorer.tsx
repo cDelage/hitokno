@@ -8,6 +8,8 @@ import FileExplorer from "./FileExplorer";
 import { device } from "../../Medias";
 import { FolderStateIcon } from "./FolderStateIcon";
 import FolderMenuActions from "./FolderMenuActions";
+import { TextEditMode } from "../../types/TextEditMode.type";
+import TextEditable from "../../ui/TextEditable";
 
 type FolderProps = {
   folder: Folder;
@@ -69,6 +71,8 @@ function FolderExplorer({ folder }: FolderProps): JSX.Element {
   const [isFolderOpen, setIsFolderOpen] = useState(false);
   const { isPendingCreateFile, createFile } = useCreateFile();
 
+  const [folderNameMode, setFolderNameMode] = useState<TextEditMode>("DEFAULT")
+
   function handleClickTab() {
     setIsFolderOpen((isOpen) => !isOpen);
   }
@@ -77,7 +81,14 @@ function FolderExplorer({ folder }: FolderProps): JSX.Element {
     createFile(_id);
   }
 
-  function handleNameClick(e: MouseEvent<HTMLDivElement>) {
+  function handleNameDoubleClick(e: MouseEvent<HTMLDivElement>) {
+    e.stopPropagation();
+    if(folderNameMode === "DEFAULT"){
+      setFolderNameMode("EDIT")
+    }
+  }
+
+  function handleNameClick(e:  MouseEvent<HTMLDivElement>){
     e.stopPropagation();
   }
 
@@ -86,7 +97,7 @@ function FolderExplorer({ folder }: FolderProps): JSX.Element {
       <FolderStyled onClick={handleClickTab}>
         <FolderLeftContainer>
           <FolderStateIcon isFolderOpen={isFolderOpen} />
-          <FolderName onClick={handleNameClick}>{folderName}</FolderName>
+          <FolderName onClick={handleNameClick} onDoubleClick={handleNameDoubleClick}><TextEditable mode={folderNameMode} onEdit={() => {}}>{folderName}</TextEditable></FolderName>
         </FolderLeftContainer>
         <FolderRightContainer>
           <DateUpdate>
