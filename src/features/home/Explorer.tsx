@@ -4,9 +4,9 @@ import { device } from "../../Medias";
 import CreationButton from "../../ui/CreationButton";
 import { IoAdd } from "react-icons/io5";
 import { useCreateFolder } from "./useCreateFolder";
-import { useFindRepository } from "./useFindRepository";
 import Spinner from "../../ui/Spinner";
 import FolderExplorer from "./FolderExplorer";
+import { useFindRepository } from "./useFindRepository";
 
 const ExplorerStyled = styled.div`
   box-sizing: border-box;
@@ -41,7 +41,7 @@ const ExplorerMain = styled.div`
 `;
 
 function Explorer(): JSX.Element {
-  const { isLoading, repository } = useFindRepository();
+  const { repository, isRepositoryLoading } = useFindRepository();
   const { isPending, createFolder } = useCreateFolder();
 
   function handleCreateFolder() {
@@ -60,16 +60,16 @@ function Explorer(): JSX.Element {
           onClick={handleCreateFolder}
           disabled={isPending}
         >
-          <IoAdd size={20}/> New folder
+          <IoAdd size={20} /> New folder
         </CreationButton>
       </ExplorerHeader>
       <ExplorerMain>
-        {isLoading ? (
+        {isRepositoryLoading ? (
           <Spinner />
         ) : (
           <>
             {repository?.map((folder) => (
-              <FolderExplorer key={folder._id} folder={folder}/>
+              <FolderExplorer key={folder._id} folder={folder} />
             ))}
           </>
         )}

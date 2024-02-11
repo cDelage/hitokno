@@ -5,8 +5,13 @@ import {
   createFolder,
   findRepository,
   removeFolder,
+  renameFolder,
 } from "./services/apiRepository";
-import { File, Folder } from "../src/types/Repository.types";
+import {
+  File,
+  Folder,
+  RenameFolderParams,
+} from "../src/types/Repository.types";
 
 // The built directory structure
 //
@@ -89,6 +94,12 @@ function createWindow() {
     async (event: IpcMainInvokeEvent, folderId: string) => {
       await removeFolder(folderId);
     }
+  );
+
+  ipcMain.handle(
+    "rename-folder",
+    async (event: IpcMainInvokeEvent, params: RenameFolderParams) =>
+      await renameFolder(params)
   );
 }
 

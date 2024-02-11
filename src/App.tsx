@@ -7,7 +7,7 @@ import GlobalStyle from "./GlobalStyle";
 import AppLayout from "./ui/AppLayout";
 import Home from "./pages/Home";
 import FakePage from "./pages/FakePage";
-import { Folder } from "./types/Repository.types";
+import { Folder, RenameFolderParams } from "./types/Repository.types";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
@@ -26,13 +26,12 @@ declare global {
     repository: {
       createFolder: () => Promise<Folder | null>;
       findRepository: () => Promise<Folder[] | null>;
-      createFile : (folderId: string) => Promise<File | null>;
-      removeFolder: (folderId: string) => Promise<string>
+      createFile: (folderId: string) => Promise<File | null>;
+      removeFolder: (folderId: string) => Promise<string>;
+      renameFolder: (params: RenameFolderParams) => Promise<Folder>;
     };
   }
 }
-
-
 
 const routes: RouteObject[] = [
   {
@@ -63,9 +62,9 @@ const queryClient = new QueryClient({
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ReactQueryDevtools initialIsOpen={false}/>
-      <GlobalStyle />
-      <RouterProvider router={router} />
+        <ReactQueryDevtools initialIsOpen={false} />
+        <GlobalStyle />
+        <RouterProvider router={router} />
     </QueryClientProvider>
   );
 }

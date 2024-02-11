@@ -1,10 +1,3 @@
-import { Edge } from "reactflow";
-
-export type Diagram = {
-  diagramName: string;
-  nodes: Node[];
-  edges: Edge[];
-};
 
 export type Folder = {
   _id: string;
@@ -14,9 +7,16 @@ export type Folder = {
   updatedAt: Date;
 };
 
+export type Repository = Folder[]
+
 export type File = {
   _id: string;
   fileName: string;
   nodes: [];
   edges: []
 }
+
+export type RenameFolderParams = {
+  folderId: string;
+  name: string;
+};

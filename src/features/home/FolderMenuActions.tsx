@@ -13,17 +13,18 @@ import { useRemoveFolder } from "./useRemoveFolder";
 type FolderMenuActionsProps = {
   _id: string;
   folderName: string;
+  setEditModeFolder: () => void;
 };
 
 function FolderMenuActions({
   _id,
-  folderName
+  folderName,
+  setEditModeFolder,
 }: FolderMenuActionsProps): JSX.Element {
+  const { removeFolder } = useRemoveFolder();
 
-  const {removeFolder} = useRemoveFolder();
-
-  function deleteFolder(){
-    removeFolder(_id)
+  function deleteFolder() {
+    removeFolder(_id);
   }
 
   return (
@@ -36,7 +37,7 @@ function FolderMenuActions({
           <Menu.Tab>
             <IoPlay /> Execute a test
           </Menu.Tab>
-          <Menu.Tab>
+          <Menu.Tab onClick={setEditModeFolder}>
             <IoPencil /> Rename
           </Menu.Tab>
           <Menu.Tab>
@@ -50,11 +51,10 @@ function FolderMenuActions({
         </Menu.ListTabs>
       </Menu>
       <Modal.Body>
-          <ConfirmDelete deleteItem={folderName} onConfirm={deleteFolder}/>
+        <ConfirmDelete deleteItem={folderName} onConfirm={deleteFolder} />
       </Modal.Body>
     </Modal>
   );
 }
-
 
 export default FolderMenuActions;

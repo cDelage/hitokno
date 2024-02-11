@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 export function useFindRepository(){
-    const {isLoading, data : repository, error} = useQuery({
+    const {isLoading: isRepositoryLoading, data : repository, error} = useQuery({
         queryKey: ["repository"],
         queryFn: window.repository.findRepository
     })
@@ -10,5 +10,5 @@ export function useFindRepository(){
         throw new Error(error.message)
     }
 
-    return {isLoading, repository}
+    return {isRepositoryLoading, repository}
 }

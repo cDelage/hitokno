@@ -121,6 +121,8 @@ const GlobalStyle = createGlobalStyle`
   --text-main-dark: var(--color-gray-800);
   --text-menu-tab-hover: var(--color-white);
   
+  --outline-active : var(--color-primary-500);
+
   --shadow-md : 0 1px 1px 0 rgba(0, 0, 0, 0.25);
   
   --font-weight-bold: 600;

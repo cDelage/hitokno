@@ -1,5 +1,5 @@
 import { db } from "../database";
-import { File, Folder } from "../../src/types/Repository.types";
+import { File, Folder, RenameFolderParams } from "../../src/types/Repository.types";
 import { generateUUID } from "./generateUUID";
 
 const newFolder = {
@@ -44,10 +44,28 @@ export async function createFile(folderId: string): Promise<File | null> {
 }
 
 export async function removeFolder(folderId: string): Promise<string> {
-  try{
+  try {
     db.repository.remove({ _id: folderId }, { multi: false });
     return "success";
-  }catch(e){
-    throw new Error("Fail to remove document")
+  } catch (e) {
+    throw new Error("Fail to remove document");
+  }
+}
+
+
+
+export async function renameFolder({
+  folderId,
+  name,
+}: RenameFolderParams): Promise<Folder | null> {
+  try {
+    const result = (await db.repository.update(
+      { _id: folderId },
+      { $set: {folderName: name }},
+      { returnUpdatedDocs: true }
+    )) as Folder;
+    return result;
+  } catch (e) {
+    throw new Error("Fail to remove document");
   }
 }

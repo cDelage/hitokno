@@ -1,7 +1,7 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { Folder } from "../../types/Repository.types";
 
-import { MouseEvent, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import NewFileButton from "./NewFileButton";
 import { useCreateFile } from "./useCreateFile";
 import FileExplorer from "./FileExplorer";
@@ -10,12 +10,17 @@ import { FolderStateIcon } from "./FolderStateIcon";
 import FolderMenuActions from "./FolderMenuActions";
 import { TextEditMode } from "../../types/TextEditMode.type";
 import TextEditable from "../../ui/TextEditable";
+import { useRenameFolder } from "./useRenameFolder";
 
 type FolderProps = {
   folder: Folder;
 };
 
-const FolderStyled = styled.div`
+type FolderStyledProps = {
+  active: boolean;
+};
+
+const FolderStyled = styled.div<FolderStyledProps>`
   height: 36px;
   background-color: var(--bg-element);
   display: flex;
@@ -25,14 +30,19 @@ const FolderStyled = styled.div`
   padding: 0px 16px;
   justify-content: space-between;
   cursor: pointer;
+
+  ${(props) =>
+    props.active &&
+    css`
+      outline: solid 3px var(--outline-active);
+    `}
 `;
 
 const FolderLeftContainer = styled.div`
+  flex-grow: 1;
   display: flex;
   gap: 8px;
   align-items: center;
-  user-select: none;
-  cursor: auto;
 `;
 
 const FolderOpenMain = styled.div`
@@ -58,6 +68,8 @@ const FolderRightContainer = styled.div`
 const FolderName = styled.div`
   color: var(--text-main-dark);
   font-weight: var(--font-weight-bold);
+  flex-grow: 1;
+  display: flex;
 `;
 
 const DateUpdate = styled.div`
@@ -71,7 +83,10 @@ function FolderExplorer({ folder }: FolderProps): JSX.Element {
   const [isFolderOpen, setIsFolderOpen] = useState(false);
   const { isPendingCreateFile, createFile } = useCreateFile();
 
-  const [folderNameMode, setFolderNameMode] = useState<TextEditMode>("DEFAULT")
+  const { renameFolder } = useRenameFolder();
+  const [folderNameMode, setFolderNameMode] = useState<TextEditMode>("DEFAULT");
+
+  const active: boolean = folderNameMode === "EDIT";
 
   function handleClickTab() {
     setIsFolderOpen((isOpen) => !isOpen);
@@ -81,23 +96,28 @@ function FolderExplorer({ folder }: FolderProps): JSX.Element {
     createFile(_id);
   }
 
-  function handleNameDoubleClick(e: MouseEvent<HTMLDivElement>) {
-    e.stopPropagation();
-    if(folderNameMode === "DEFAULT"){
-      setFolderNameMode("EDIT")
-    }
+  function handleEditFolderName(e: ChangeEvent<HTMLInputElement>) {
+    renameFolder({ folderId: _id, name: e.target.value });
   }
 
-  function handleNameClick(e:  MouseEvent<HTMLDivElement>){
-    e.stopPropagation();
+  function handleFolderRenameClickOutside(){
+    setFolderNameMode("DEFAULT")
+  }
+
+  function setEditModeFolder(){
+    setFolderNameMode("EDIT")
   }
 
   return (
     <>
-      <FolderStyled onClick={handleClickTab}>
+      <FolderStyled onClick={handleClickTab} active={active}>
         <FolderLeftContainer>
           <FolderStateIcon isFolderOpen={isFolderOpen} />
-          <FolderName onClick={handleNameClick} onDoubleClick={handleNameDoubleClick}><TextEditable mode={folderNameMode} onEdit={() => {}}>{folderName}</TextEditable></FolderName>
+          <FolderName>
+            <TextEditable mode={folderNameMode} onEdit={handleEditFolderName} onClickOutside={handleFolderRenameClickOutside}>
+              {folderName}
+            </TextEditable>
+          </FolderName>
         </FolderLeftContainer>
         <FolderRightContainer>
           <DateUpdate>
@@ -105,7 +125,7 @@ function FolderExplorer({ folder }: FolderProps): JSX.Element {
               updatedAt.getMinutes() < 10 ? "0" : ""
             }${updatedAt.getMinutes()}`}
           </DateUpdate>
-          <FolderMenuActions _id={_id} folderName={folderName} />
+          <FolderMenuActions _id={_id} folderName={folderName} setEditModeFolder={setEditModeFolder}/>
         </FolderRightContainer>
       </FolderStyled>
       {isFolderOpen && (

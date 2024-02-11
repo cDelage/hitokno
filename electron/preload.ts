@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from "electron";
-import { File, Folder } from "../src/types/Repository.types";
+import { File, Folder, RenameFolderParams } from "../src/types/Repository.types";
 
 const windowManagement = {
   maximize: () => ipcRenderer.send("maximize"),
@@ -16,7 +16,8 @@ const repository = {
     await ipcRenderer.invoke("find-repository"),
   createFile: async (folderId : string): Promise<File | null> =>
     await ipcRenderer.invoke("create-file", folderId),
-  removeFolder: async (folderId: string) => ipcRenderer.invoke("remove-folder", folderId) 
+  removeFolder: async (folderId: string) => ipcRenderer.invoke("remove-folder", folderId),
+  renameFolder: async(params : RenameFolderParams) => ipcRenderer.invoke("rename-folder", params)
 };
 
 // --------- Expose some API to the Renderer process ---------
