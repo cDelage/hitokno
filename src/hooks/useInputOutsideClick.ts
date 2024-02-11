@@ -2,7 +2,7 @@ import { useEffect, useRef, MutableRefObject } from "react";
 
 type OutsideClickHandler = () => void;
 
-export function useInputOutsideClick(
+export function useInputOutsideDoubleClick(
   handler: OutsideClickHandler,
   listenCapturing = true
 ): MutableRefObject< HTMLInputElement | null> {
@@ -15,10 +15,10 @@ export function useInputOutsideClick(
       }
     }
 
-    document.addEventListener("click", handleClick, listenCapturing);
+    document.addEventListener("dblclick", handleClick, listenCapturing);
 
     return () =>
-      document.removeEventListener("click", handleClick, listenCapturing);
+      document.removeEventListener("dblclick", handleClick, listenCapturing);
   }, [handler, listenCapturing]);
 
   return ref;

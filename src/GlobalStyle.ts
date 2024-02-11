@@ -120,6 +120,7 @@ const GlobalStyle = createGlobalStyle`
   --text-main-medium: var(--color-gray-600);
   --text-main-dark: var(--color-gray-800);
   --text-menu-tab-hover: var(--color-white);
+  --text-disabled: var(--color-gray-400);
   
   --outline-active : var(--color-primary-500);
 
@@ -140,8 +141,12 @@ const GlobalStyle = createGlobalStyle`
 
   background-color: var(--bg-main);
   color: var(--text-main-medium);
-
  }
+
+ ::selection {
+  background-color: var(--color-primary-200); /* Couleur de fond */
+  color: var(--text-main-dark); /* Couleur du texte */
+}
 
  html, body, #root {
     height: 100%;
@@ -156,6 +161,7 @@ h1 {
   line-height  : 28px;
   font-weight: 500;
   margin: 0px;
+  user-select: none;
 }
 
 a {
@@ -173,6 +179,9 @@ ul ,li{
   margin: 0;
 }
 
+button{
+  user-select: none;
+}
 
 `;
 

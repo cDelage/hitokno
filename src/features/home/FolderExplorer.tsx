@@ -11,13 +11,14 @@ import FolderMenuActions from "./FolderMenuActions";
 import { TextEditMode } from "../../types/TextEditMode.type";
 import TextEditable from "../../ui/TextEditable";
 import { useRenameFolder } from "./useRenameFolder";
+import { useSearchParams } from "react-router-dom";
 
 type FolderProps = {
   folder: Folder;
 };
 
 type FolderStyledProps = {
-  active: boolean;
+  $active: boolean;
 };
 
 const FolderStyled = styled.div<FolderStyledProps>`
@@ -32,7 +33,7 @@ const FolderStyled = styled.div<FolderStyledProps>`
   cursor: pointer;
 
   ${(props) =>
-    props.active &&
+    props.$active &&
     css`
       outline: solid 3px var(--outline-active);
     `}
@@ -70,6 +71,7 @@ const FolderName = styled.div`
   font-weight: var(--font-weight-bold);
   flex-grow: 1;
   display: flex;
+  user-select: none;
 `;
 
 const DateUpdate = styled.div`
@@ -84,7 +86,10 @@ function FolderExplorer({ folder }: FolderProps): JSX.Element {
   const { isPendingCreateFile, createFile } = useCreateFile();
 
   const { renameFolder } = useRenameFolder();
-  const [folderNameMode, setFolderNameMode] = useState<TextEditMode>("DEFAULT");
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const folderNameMode: TextEditMode =
+    searchParams.get("selected") === _id ? "EDIT" : "DEFAULT";
 
   const active: boolean = folderNameMode === "EDIT";
 
@@ -100,21 +105,25 @@ function FolderExplorer({ folder }: FolderProps): JSX.Element {
     renameFolder({ folderId: _id, name: e.target.value });
   }
 
-  function handleFolderRenameClickOutside(){
-    setFolderNameMode("DEFAULT")
-  }
-
-  function setEditModeFolder(){
-    setFolderNameMode("EDIT")
+  function handleNameOutsideClick() {
+    setSearchParams((params : URLSearchParams) => {
+      params.delete("selected");
+      params.delete("type");
+      return params
+    })
   }
 
   return (
     <>
-      <FolderStyled onClick={handleClickTab} active={active}>
+      <FolderStyled onClick={handleClickTab} $active={active}>
         <FolderLeftContainer>
           <FolderStateIcon isFolderOpen={isFolderOpen} />
           <FolderName>
-            <TextEditable mode={folderNameMode} onEdit={handleEditFolderName} onClickOutside={handleFolderRenameClickOutside}>
+            <TextEditable
+              mode={folderNameMode}
+              onEdit={handleEditFolderName}
+              onClickOutside={handleNameOutsideClick}
+            >
               {folderName}
             </TextEditable>
           </FolderName>
@@ -125,7 +134,7 @@ function FolderExplorer({ folder }: FolderProps): JSX.Element {
               updatedAt.getMinutes() < 10 ? "0" : ""
             }${updatedAt.getMinutes()}`}
           </DateUpdate>
-          <FolderMenuActions _id={_id} folderName={folderName} setEditModeFolder={setEditModeFolder}/>
+          <FolderMenuActions _id={_id} folderName={folderName} />
         </FolderRightContainer>
       </FolderStyled>
       {isFolderOpen && (

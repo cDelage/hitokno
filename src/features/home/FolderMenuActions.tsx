@@ -9,22 +9,29 @@ import Menu from "../../ui/Menu";
 import Modal from "../../ui/Modal";
 import ConfirmDelete from "../../ui/ConfirmDelete";
 import { useRemoveFolder } from "./useRemoveFolder";
+import { useSearchParams } from "react-router-dom";
 
 type FolderMenuActionsProps = {
   _id: string;
   folderName: string;
-  setEditModeFolder: () => void;
 };
 
 function FolderMenuActions({
   _id,
   folderName,
-  setEditModeFolder,
 }: FolderMenuActionsProps): JSX.Element {
   const { removeFolder } = useRemoveFolder();
+  const [, setSearchParams] = useSearchParams();
 
   function deleteFolder() {
     removeFolder(_id);
+  }
+
+  function handleRenameFolder(){
+    setSearchParams({
+      selected: _id,
+      type: "FOLDER"
+    })
   }
 
   return (
@@ -37,7 +44,7 @@ function FolderMenuActions({
           <Menu.Tab>
             <IoPlay /> Execute a test
           </Menu.Tab>
-          <Menu.Tab onClick={setEditModeFolder}>
+          <Menu.Tab onClick={handleRenameFolder}>
             <IoPencil /> Rename
           </Menu.Tab>
           <Menu.Tab>

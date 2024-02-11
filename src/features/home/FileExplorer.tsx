@@ -1,12 +1,19 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { File } from "../../types/Repository.types";
 import HitoknoFile from "../../ui/icons/HitoknoFile";
+import { useSearchParams } from "react-router-dom";
+import { MouseEvent } from "react";
 
 type FileExplorerType = {
   file: File;
 };
 
-const FileExplorerStyled = styled.div`
+type FileExplorerStyledProps = {
+  onClick: (e: MouseEvent) => void;
+  $active?: boolean;
+};
+
+const FileExplorerStyled = styled.div<FileExplorerStyledProps>`
   width: 100%;
   aspect-ratio: 4 / 3;
   background-color: var(--bg-element);
@@ -22,6 +29,10 @@ const FileExplorerStyled = styled.div`
   &:hover {
     background-color: var(--bg-element-hover);
   }
+
+  ${(props) => props.$active && css`
+    outline: solid 3px var(--outline-active);
+  `}
 `;
 
 const IconContainer = styled.div`
@@ -36,13 +47,28 @@ const BottomContainer = styled.div`
   align-items: center;
 `;
 
-function FileExplorer({ file: { fileName } }: FileExplorerType): JSX.Element {
+function FileExplorer({
+  file: { fileName, _id },
+}: FileExplorerType): JSX.Element {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const active = searchParams.get("selected") === _id;
+
+  function handleClick() {
+    setSearchParams({
+      selected: _id,
+      type: "FILE"
+    });
+  }
+
   return (
-    <FileExplorerStyled>
+    <FileExplorerStyled onClick={handleClick} $active={active}>
       <IconContainer>
         <HitoknoFile />
       </IconContainer>
-      <BottomContainer><div>{fileName}</div></BottomContainer>
+      <BottomContainer>
+        <div>{fileName}</div>
+      </BottomContainer>
     </FileExplorerStyled>
   );
 }

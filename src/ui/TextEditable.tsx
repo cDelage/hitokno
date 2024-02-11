@@ -1,7 +1,7 @@
 import { ChangeEvent, MouseEvent, useEffect } from "react";
 import styled from "styled-components";
 import { TextEditMode } from "../types/TextEditMode.type";
-import { useInputOutsideClick } from "../hooks/useInputOutsideClick";
+import { useInputOutsideDoubleClick } from "../hooks/useInputOutsideClick";
 
 type TextEditableProps = {
   mode: TextEditMode;
@@ -12,7 +12,7 @@ type TextEditableProps = {
 
 type InputProps = {
   onClick: (e: MouseEvent) => void;
-}
+};
 
 const Input = styled.input<InputProps>`
   font-family: inherit;
@@ -26,7 +26,11 @@ const Input = styled.input<InputProps>`
   margin: 0;
   resize: none;
   outline: none;
-  cursor: inherit;
+
+  &:read-only {
+    cursor: inherit;
+    pointer-events: none;
+  }
 `;
 
 function TextEditable({
@@ -35,8 +39,10 @@ function TextEditable({
   onEdit,
   onClickOutside,
 }: TextEditableProps): JSX.Element {
-  const ref = useInputOutsideClick(() => {
-    onClickOutside?.();
+  const ref = useInputOutsideDoubleClick(() => {
+    if (mode === "EDIT") {
+      onClickOutside?.();
+    }
   });
 
   function handleClick(e: MouseEvent) {
@@ -48,17 +54,19 @@ function TextEditable({
   useEffect(() => {
     if (mode === "EDIT") {
       ref.current?.select();
+    } else {
+      ref.current?.blur();
     }
   }, [mode, ref]);
 
   return (
-      <Input
-        onChange={onEdit}
-        ref={ref}
-        value={children}
-        readOnly={mode === "DEFAULT"}
-        onClick={handleClick}
-      />
+    <Input
+      onChange={onEdit}
+      ref={ref}
+      value={children}
+      readOnly={mode === "DEFAULT"}
+      onClick={handleClick}
+    />
   );
 }
 

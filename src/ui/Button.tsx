@@ -3,7 +3,7 @@ import { ButtonType } from "../types/Buttons.type";
 
 type ButtonProps = {
     type : ButtonType;
-    icon? : boolean;
+    $icon? : boolean;
 }
 
 const Button = styled.button<ButtonProps>`
@@ -61,7 +61,7 @@ const Button = styled.button<ButtonProps>`
         `
     }
 
-    ${(props) => props.icon && css`
+    ${(props) => props.$icon && css`
         padding: 12px 16px 12px 12px;
     `}
 
