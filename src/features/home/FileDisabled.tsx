@@ -10,9 +10,10 @@ function FileDisabled(): JSX.Element {
         <FilePreview.Title>
           <IoDocumentOutline size={28} /> File preview
         </FilePreview.Title>
-        <FilePreview.Viewport>
+        <FilePreview.Viewport title={<>no file selected</>}>
           <HitoknoFileEmpty />
         </FilePreview.Viewport>
+        <FilePreview.Actions disabled={true} />
       </FilePreview>
     </Disabled>
   );

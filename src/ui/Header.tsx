@@ -2,7 +2,6 @@ import styled from "styled-components";
 
 import WindowHeaderManagement from "./WindowHeaderManagement";
 import HeaderTabs from "./HeaderTabs";
-import { useNavigate } from "react-router-dom";
 
 const HeaderStyled = styled.header`
   display: flex;
@@ -13,18 +12,10 @@ const HeaderStyled = styled.header`
   -webkit-app-region: drag;
 `;
 
-const FakeStyled = styled.div`
-  -webkit-app-region: no-drag;
-`
-
 function Header() {
-  const navigate = useNavigate();
   return (
     <HeaderStyled>
       <HeaderTabs />
-      <FakeStyled>
-        <button style={{height:"100%"}}onClick={() => navigate("/fake")}>DUMMY</button>
-      </FakeStyled>
       <WindowHeaderManagement />
     </HeaderStyled>
   );

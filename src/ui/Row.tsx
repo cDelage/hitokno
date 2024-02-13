@@ -4,6 +4,7 @@ type RowProps = {
   flexDirection: "row" | "column";
   gap: number;
   alignItems?: string;
+  justifyContent?: string;
 };
 
 const Row = styled.div<RowProps>`
@@ -15,6 +16,12 @@ const Row = styled.div<RowProps>`
     props.alignItems &&
     css`
       align-items: ${props.alignItems};
+    `}
+
+  ${(props) =>
+    props.justifyContent &&
+    css`
+      justify-content: ${props.justifyContent};
     `}
 `;
 

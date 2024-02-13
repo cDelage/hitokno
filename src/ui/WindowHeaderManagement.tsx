@@ -7,6 +7,7 @@ import {
 import WindowHeaderButton from "./WindowHeaderButton";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 
 const WindowIconContainer = styled.div`
   height: 100%;
@@ -20,6 +21,7 @@ const WindowIconContainer = styled.div`
  */
 function WindowHeaderManagement(): JSX.Element {
   const [isMaximizedWindow, setIsMaximizedWindow] = useState(false);
+  const navigate = useNavigate();
 
   const { maximize, minimize, unmaximize, close, isMaximized } =
     window.windowManagement;
@@ -44,6 +46,10 @@ function WindowHeaderManagement(): JSX.Element {
 
   return (
     <WindowIconContainer id="header-window-commands-container">
+      <button style={{ height: "100%" }} onClick={() => navigate("/fake")}>
+        DUMMY
+      </button>
+
       <WindowHeaderButton
         hoverBgColor="--bg-white"
         hoverColor="--text-layout"

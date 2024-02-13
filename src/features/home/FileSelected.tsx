@@ -13,9 +13,10 @@ function FileSelected(): JSX.Element {
         <FilePreview.Title>
           <IoDocumentOutline size={28} /> File preview
         </FilePreview.Title>
-        <FilePreview.Viewport>
+        <FilePreview.Viewport title={<>TITLE</>}>
           <div>File</div>
         </FilePreview.Viewport>
+        <FilePreview.Actions disabled={false} />
       </FilePreview>
     </FileSelectedStyled>
   );

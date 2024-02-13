@@ -1,6 +1,8 @@
 import Row from "../../ui/Row";
 import { ChildrenProps } from "../../types/ChildrenProps.type";
 import styled from "styled-components";
+import Button from "../../ui/Button";
+import { ReactNode } from "react";
 
 const ViewportContainer = styled.div`
   height: 268px;
@@ -22,15 +24,49 @@ function Title({ children }: ChildrenProps): JSX.Element {
   return <h1>{children}</h1>;
 }
 
-function Viewport({children} : ChildrenProps) {
-  return <Row flexDirection="column" gap={8}>
-    <ViewportContainer>
-      {children}
-    </ViewportContainer>
-  </Row>;
+type ViewportProps = ChildrenProps & {
+  title : ReactNode;
+}
+
+function Viewport({ children, title }: ViewportProps) {
+  return (
+    <Row flexDirection="column" gap={8}>
+      <ViewportContainer>{children}</ViewportContainer>
+      <Row flexDirection="row" gap={0} alignItems="center" justifyContent="center">{title}</Row>
+    </Row>
+  );
+}
+
+type ActionProps = {
+  disabled: boolean;
+  displayFile?: () => void;
+  editFile?: () => void;
+  executeATest?: () => void;
+};
+
+function Actions({
+  disabled,
+  displayFile,
+  editFile,
+  executeATest,
+}: ActionProps): JSX.Element {
+  return (
+    <Row flexDirection="column" gap={8}>
+      <Button type="primary" disabled={disabled} onClick={displayFile}>
+        Display file
+      </Button>
+      <Button type="primary" disabled={disabled} onClick={editFile}>
+        Edit file
+      </Button>
+      <Button type="primary" disabled={disabled} onClick={executeATest}>
+        Execute a test
+      </Button>
+    </Row>
+  );
 }
 
 FilePreview.Title = Title;
 FilePreview.Viewport = Viewport;
+FilePreview.Actions = Actions;
 
 export default FilePreview;
