@@ -37,12 +37,12 @@ function HomeHeaderButton() {
 
   function goToHome() {
     if (!isHomeActive) {
-      navigate("/");
+      navigate("/explorer");
     }
   }
 
   useEffect(() => {
-    setIsHomeActive(location.pathname === "/");
+    setIsHomeActive(location.pathname.startsWith("/explorer"));
   }, [location, setIsHomeActive]);
 
   return (

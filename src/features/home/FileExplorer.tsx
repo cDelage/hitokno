@@ -1,10 +1,10 @@
 import styled, { css } from "styled-components";
 import { File } from "../../types/Repository.types";
 import HitoknoFile from "../../ui/icons/HitoknoFile";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { MouseEvent } from "react";
 
-type FileExplorerType = {
+type FileExplorerProps = {
   file: File;
 };
 
@@ -30,9 +30,11 @@ const FileExplorerStyled = styled.div<FileExplorerStyledProps>`
     background-color: var(--bg-element-hover);
   }
 
-  ${(props) => props.$active && css`
-    outline: solid 3px var(--outline-active);
-  `}
+  ${(props) =>
+    props.$active &&
+    css`
+      outline: solid 3px var(--outline-active);
+    `}
 `;
 
 const IconContainer = styled.div`
@@ -49,16 +51,14 @@ const BottomContainer = styled.div`
 
 function FileExplorer({
   file: { fileName, _id },
-}: FileExplorerType): JSX.Element {
-  const [searchParams, setSearchParams] = useSearchParams();
+}: FileExplorerProps): JSX.Element {
+  const navigate = useNavigate();
+  const { fileId } = useParams();
 
-  const active = searchParams.get("selected") === _id;
+  const active = fileId === _id;
 
   function handleClick() {
-    setSearchParams({
-      selected: _id,
-      type: "FILE"
-    });
+    navigate(`/explorer/file/${_id}`);
   }
 
   return (

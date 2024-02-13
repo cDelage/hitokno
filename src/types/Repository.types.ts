@@ -20,3 +20,7 @@ export type RenameFolderParams = {
   folderId: string;
   name: string;
 };
+
+export type FindFileParams = {
+  fileId: string
+}

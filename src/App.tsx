@@ -7,9 +7,10 @@ import GlobalStyle from "./GlobalStyle";
 import AppLayout from "./ui/AppLayout";
 import Home from "./pages/Home";
 import FakePage from "./pages/FakePage";
-import { Folder, RenameFolderParams } from "./types/Repository.types";
+import { File, Folder, FindFileParams, RenameFolderParams } from "./types/Repository.types";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import FileDisabled from "./features/home/FileDisabled";
 
 /**
  * When i add it into a file .d.ts, then typescript not recognize the interface.
@@ -29,6 +30,7 @@ declare global {
       createFile: (folderId: string) => Promise<File | null>;
       removeFolder: (folderId: string) => Promise<string>;
       renameFolder: (params: RenameFolderParams) => Promise<Folder>;
+      findFile: (params: FindFileParams) => Promise<File>
     };
   }
 }
@@ -36,10 +38,24 @@ declare global {
 const routes: RouteObject[] = [
   {
     element: <AppLayout />,
+    path: "/",
     children: [
       {
-        path: "/",
+        path: "/explorer",
         element: <Home />,
+        children: [
+          {
+            path: "/explorer",
+            element: <FileDisabled/>,
+            index: true
+          },{
+            path: "/explorer/file/:fileId",
+            element: <FileDisabled/>
+          },{
+            path: "/explorer/folder/:folderId",
+            element: <FileDisabled/>
+          }
+        ],
       },
       {
         path: "/fake",

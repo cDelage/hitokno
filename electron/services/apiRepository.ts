@@ -1,5 +1,10 @@
 import { db } from "../database";
-import { File, Folder, RenameFolderParams } from "../../src/types/Repository.types";
+import {
+  File,
+  Folder,
+  FindFileParams,
+  RenameFolderParams,
+} from "../../src/types/Repository.types";
 import { generateUUID } from "./generateUUID";
 
 const newFolder = {
@@ -52,8 +57,6 @@ export async function removeFolder(folderId: string): Promise<string> {
   }
 }
 
-
-
 export async function renameFolder({
   folderId,
   name,
@@ -61,11 +64,27 @@ export async function renameFolder({
   try {
     const result = (await db.repository.update(
       { _id: folderId },
-      { $set: {folderName: name }},
+      { $set: { folderName: name } },
       { returnUpdatedDocs: true }
     )) as Folder;
     return result;
   } catch (e) {
     throw new Error("Fail to remove document");
   }
+}
+
+export async function findFile({
+  fileId,
+}: FindFileParams): Promise<File | undefined> {
+  const folder = await db.repository.findOne(
+    {
+      "files._id": fileId,
+    },
+    { files: 1 }
+  );
+
+  const files = folder?.files as File[];
+  const file = files.find((e) => e._id === fileId);
+  
+  return file
 }
