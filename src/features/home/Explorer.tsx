@@ -26,11 +26,7 @@ const ExplorerHeader = styled.div`
   justify-content: space-between;
 `;
 
-const TitleContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+const TitleContainer = styled.h1`
   color: var(--text-main-blue);
 `;
 
@@ -53,7 +49,7 @@ function Explorer(): JSX.Element {
       <ExplorerHeader>
         <TitleContainer>
           <IoFolderOpenOutline size={28} />
-          <h1>Explorer</h1>
+          Explorer
         </TitleContainer>
         <CreationButton
           $isContainIcon={true}

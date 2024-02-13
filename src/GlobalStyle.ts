@@ -157,6 +157,9 @@ const GlobalStyle = createGlobalStyle`
 }
 
 h1 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 24px;
   line-height  : 28px;
   font-weight: 500;

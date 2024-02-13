@@ -11,6 +11,7 @@ import { File, Folder, FindFileParams, RenameFolderParams } from "./types/Reposi
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import FileDisabled from "./features/home/FileDisabled";
+import FileSelected from "./features/home/FileSelected";
 
 /**
  * When i add it into a file .d.ts, then typescript not recognize the interface.
@@ -50,7 +51,7 @@ const routes: RouteObject[] = [
             index: true
           },{
             path: "/explorer/file/:fileId",
-            element: <FileDisabled/>
+            element: <FileSelected/>
           },{
             path: "/explorer/folder/:folderId",
             element: <FileDisabled/>
