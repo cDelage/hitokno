@@ -7,6 +7,7 @@ import { useSearchParams } from "react-router-dom";
 import { TextEditMode } from "../../types/TextEditMode.type";
 import { ChangeEvent } from "react";
 import { useRenameFile } from "./useRenameFile";
+import { useTabs } from "./useTabs";
 
 const FileSelectedStyled = styled.div`
   color: var(--text-main-dark);
@@ -35,6 +36,8 @@ function FileSelected(): JSX.Element {
   const [searchParams, setSearchParams] = useSearchParams();
   const { renameFile } = useRenameFile();
 
+  const { openTab: pushTab } = useTabs();
+
   const paramsMode = searchParams.get("mode");
   const mode = paramsMode ? paramsMode : "DEFAULT";
 
@@ -57,6 +60,12 @@ function FileSelected(): JSX.Element {
         fileId: fileDetail.file._id,
         filename: e.target.value,
       });
+    }
+  }
+
+  function handleDisplayFile() {
+    if (fileDetail?.file._id) {
+      pushTab(fileDetail.file._id);
     }
   }
 
@@ -98,7 +107,10 @@ function FileSelected(): JSX.Element {
         >
           <h1>PREVIEW {fileDetail?.file.fileName}</h1>
         </FilePreview.Viewport>
-        <FilePreview.Actions disabled={isLoadingFile} />
+        <FilePreview.Actions
+          disabled={isLoadingFile}
+          displayFile={handleDisplayFile}
+        />
       </FilePreview>
     </FileSelectedStyled>
   );

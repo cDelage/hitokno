@@ -31,7 +31,7 @@ declare global {
       createFile: (folderId: string) => Promise<File | null>;
       removeFolder: (folderId: string) => Promise<string>;
       renameFolder: (params: RenameFolderParams) => Promise<Folder>;
-      findFile: (params: string) => Promise<FileDetail | undefined>;
+      findFile: (fileId: string) => Promise<FileDetail | undefined>;
       renameFile : (params : FileRename) => Promise<Folder>;
     };
   }
