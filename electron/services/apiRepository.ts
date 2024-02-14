@@ -1,5 +1,12 @@
 import { db } from "../database";
-import { File, Folder, RenameFolderParams } from "../../src/types/Repository.types";
+import {
+  CompleteFolder,
+  File,
+  FileDetail,
+  FileRename,
+  Folder,
+  RenameFolderParams,
+} from "../../src/types/Repository.types";
 import { generateUUID } from "./generateUUID";
 
 const newFolder = {
@@ -52,8 +59,6 @@ export async function removeFolder(folderId: string): Promise<string> {
   }
 }
 
-
-
 export async function renameFolder({
   folderId,
   name,
@@ -61,11 +66,44 @@ export async function renameFolder({
   try {
     const result = (await db.repository.update(
       { _id: folderId },
-      { $set: {folderName: name }},
+      { $set: { folderName: name } },
       { returnUpdatedDocs: true }
     )) as Folder;
     return result;
   } catch (e) {
     throw new Error("Fail to remove document");
   }
+}
+
+export async function findFile(
+  fileId: string
+): Promise<FileDetail | undefined> {
+  const folder = await db.repository.findOne(
+    {
+      "files._id": fileId,
+    },
+    { files: 1, folderName: 1 }
+  );
+  const files = folder?.files as File[];
+  const file = files.find((e) => e._id === fileId);
+  return file && folder
+    ? ({ file, folderName: folder?.folderName } as FileDetail)
+    : undefined;
+}
+
+export async function renameFile({ fileId, filename }: FileRename) {
+  const folder = (await db.repository.findOne({
+    "files._id": fileId,
+  })) as CompleteFolder;
+
+  const updatedFiles = folder.files.map((file) => {
+    return { ...file, fileName: file._id === fileId ? filename : file.fileName };
+  });
+
+  await db.repository.updateOne(
+    { "files._id": fileId },
+    { $set: { files: updatedFiles } }
+  );
+
+  return folder;
 }

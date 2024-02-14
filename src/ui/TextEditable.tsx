@@ -1,18 +1,37 @@
 import { ChangeEvent, MouseEvent, useEffect } from "react";
-import styled from "styled-components";
+import styled, { CSSProperties, css } from "styled-components";
 import { TextEditMode } from "../types/TextEditMode.type";
 import { useInputOutsideDoubleClick } from "../hooks/useInputOutsideClick";
 
 type TextEditableProps = {
   mode: TextEditMode;
-  children: string;
+  value: string;
   onEdit: (e: ChangeEvent<HTMLInputElement>) => void;
   onClickOutside?: () => void;
+  resizable?: boolean;
+  style?: CSSProperties;
+  fontWeigth?: string;
 };
 
 type InputProps = {
   onClick: (e: MouseEvent) => void;
+  $resizable: boolean;
+  $style?: CSSProperties;
+  $fontWeigth?: string;
 };
+
+function getTextWidth(text: string, fontWeigth?: string) {
+  const element = document.createElement("div");
+  element.style.display = "inline-block";
+  if (fontWeigth) {
+    element.style.fontWeight = fontWeigth;
+  }
+  element.innerHTML = text;
+  document.body.appendChild(element);
+  const width = element.offsetWidth;
+  document.body.removeChild(element);
+  return width;
+}
 
 const Input = styled.input<InputProps>`
   font-family: inherit;
@@ -20,7 +39,7 @@ const Input = styled.input<InputProps>`
   color: inherit;
   background-color: inherit;
   border: inherit;
-  flex-grow: 1;
+  font-weight: inherit;
   height: 100%;
   padding: 0;
   margin: 0;
@@ -31,13 +50,25 @@ const Input = styled.input<InputProps>`
     cursor: inherit;
     pointer-events: none;
   }
+
+  ${(props) =>
+    props.$resizable
+      ? css`
+          width: ${getTextWidth(props.value as string, props.$fontWeigth)}px;
+          padding: 0px 4px;
+        `
+      : css`
+          flex-grow: 1;
+        `};
 `;
 
 function TextEditable({
   mode,
-  children,
+  value,
   onEdit,
   onClickOutside,
+  resizable,
+  fontWeigth,
 }: TextEditableProps): JSX.Element {
   const ref = useInputOutsideDoubleClick(() => {
     if (mode === "EDIT") {
@@ -63,9 +94,11 @@ function TextEditable({
     <Input
       onChange={onEdit}
       ref={ref}
-      value={children}
+      value={value}
       readOnly={mode === "DEFAULT"}
       onClick={handleClick}
+      $resizable={resizable as boolean}
+      $fontWeigth={fontWeigth}
     />
   );
 }

@@ -1,55 +1,101 @@
-import styled, { css } from "styled-components";
-import { IoDocumentOutline } from "react-icons/io5";
-import { device } from "../../Medias";
-import { useSearchParams } from "react-router-dom";
+import Row from "../../ui/Row";
+import { ChildrenProps } from "../../types/ChildrenProps.type";
+import styled from "styled-components";
+import Button from "../../ui/Button";
+import { ReactNode } from "react";
+import { IoClose } from "react-icons/io5";
+import IconButton from "../../ui/IconButton";
+import { useLocation, useNavigate } from "react-router-dom";
 
-type FilePreviewProps = {
-  $active: boolean;
-};
-
-const FilePreviewStyled = styled.div<FilePreviewProps>`
-  box-sizing: border-box;
-  height: 100%;
-  padding: 16px;
-  background-color: var(--bg-element);
+const ViewportContainer = styled.div`
+  height: 268px;
   box-shadow: var(--shadow-md);
-
-  ${(props) =>
-    props.$active === true
-      ? css`
-          color: var(--text-main-dark);
-        `
-      : css`
-          color: var(--text-disabled);
-        `}
-
-  @media ${device.lg} {
-    flex: 2;
-  }
-`;
-
-const TitleContainer = styled.div`
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 8px;
 `;
 
-function FilePreview(): JSX.Element {
-  const [searchParams] = useSearchParams();
-
-  const selected = searchParams.get("selected");
-
-  const active: boolean =
-    selected !== null && searchParams.get("type") === "FILE";
-
+function FilePreview({ children }: ChildrenProps): JSX.Element {
   return (
-    <FilePreviewStyled $active={active}>
-      <TitleContainer>
-        <IoDocumentOutline size={28} />
-        <h1>File preview</h1>
-      </TitleContainer>
-    </FilePreviewStyled>
+    <Row $flexDirection="column" $gap={20}>
+      {children}
+    </Row>
   );
 }
+
+function Title({ children }: ChildrenProps): JSX.Element {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const closable = location.pathname !== "/explorer";
+
+  return (
+    <Row
+      $flexDirection="row"
+      $gap={0}
+      $alignItems="center"
+      $justifyContent="space-between"
+    >
+      <h1>{children}</h1>
+      {closable && (
+        <IconButton onClick={() => navigate("/explorer")}>
+          <IoClose size={20} />
+        </IconButton>
+      )}
+    </Row>
+  );
+}
+
+type ViewportProps = ChildrenProps & {
+  title: ReactNode;
+};
+
+function Viewport({ children, title }: ViewportProps) {
+  return (
+    <Row $flexDirection="column" $gap={8}>
+      <ViewportContainer>{children}</ViewportContainer>
+      <Row
+        $flexDirection="row"
+        $gap={4}
+        $alignItems="center"
+        $justifyContent="center"
+      >
+        {title}
+      </Row>
+    </Row>
+  );
+}
+
+type ActionProps = {
+  disabled: boolean;
+  displayFile?: () => void;
+  editFile?: () => void;
+  executeATest?: () => void;
+};
+
+function Actions({
+  disabled,
+  displayFile,
+  editFile,
+  executeATest,
+}: ActionProps): JSX.Element {
+  return (
+    <Row $flexDirection="column" $gap={8}>
+      <Button type="primary" disabled={disabled} onClick={displayFile}>
+        Display file
+      </Button>
+      <Button type="primary" disabled={disabled} onClick={editFile}>
+        Edit file
+      </Button>
+      <Button type="primary" disabled={disabled} onClick={executeATest}>
+        Execute a test
+      </Button>
+    </Row>
+  );
+}
+
+FilePreview.Title = Title;
+FilePreview.Viewport = Viewport;
+FilePreview.Actions = Actions;
 
 export default FilePreview;

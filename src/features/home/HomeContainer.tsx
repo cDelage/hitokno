@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import Explorer from "./Explorer";
-import FilePreview from "./FilePreview";
+import FilePreviewContainer from "./FilePreviewContainer";
 import { device } from "../../Medias";
 
 const HomeStyled = styled.div`
@@ -21,7 +21,7 @@ function HomeContainer(): JSX.Element {
   return (
     <HomeStyled>
       <Explorer />
-      <FilePreview />
+      <FilePreviewContainer />
     </HomeStyled>
   );
 }

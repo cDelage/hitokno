@@ -1,9 +1,10 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Header from "./Header";
 import styled from "styled-components";
+import { useEffect } from "react";
 
 const AppLayoutStyled = styled.div`
-height: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
 `;
@@ -13,6 +14,15 @@ const MainStyled = styled.main`
 `;
 
 function AppLayout(): JSX.Element {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (location.pathname === "/") {
+      navigate("/explorer");
+    }
+  }, [location, navigate]);
+
   return (
     <AppLayoutStyled>
       <Header />

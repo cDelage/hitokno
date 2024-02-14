@@ -9,7 +9,7 @@ import Menu from "../../ui/Menu";
 import Modal from "../../ui/Modal";
 import ConfirmDelete from "../../ui/ConfirmDelete";
 import { useRemoveFolder } from "./useRemoveFolder";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 type FolderMenuActionsProps = {
   _id: string;
@@ -21,17 +21,14 @@ function FolderMenuActions({
   folderName,
 }: FolderMenuActionsProps): JSX.Element {
   const { removeFolder } = useRemoveFolder();
-  const [, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   function deleteFolder() {
     removeFolder(_id);
   }
 
-  function handleRenameFolder(){
-    setSearchParams({
-      selected: _id,
-      type: "FOLDER"
-    })
+  function handleRenameFolder() {
+    navigate(`/explorer/folder/${_id}`);
   }
 
   return (

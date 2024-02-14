@@ -11,7 +11,7 @@ import FolderMenuActions from "./FolderMenuActions";
 import { TextEditMode } from "../../types/TextEditMode.type";
 import TextEditable from "../../ui/TextEditable";
 import { useRenameFolder } from "./useRenameFolder";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 type FolderProps = {
   folder: Folder;
@@ -84,12 +84,11 @@ function FolderExplorer({ folder }: FolderProps): JSX.Element {
   const { folderName, _id, files, updatedAt } = folder;
   const [isFolderOpen, setIsFolderOpen] = useState(false);
   const { isPendingCreateFile, createFile } = useCreateFile();
-
   const { renameFolder } = useRenameFolder();
+  const { folderId } = useParams();
+  const navigate = useNavigate();
 
-  const [searchParams, setSearchParams] = useSearchParams();
-  const folderNameMode: TextEditMode =
-    searchParams.get("selected") === _id ? "EDIT" : "DEFAULT";
+  const folderNameMode: TextEditMode = folderId === _id ? "EDIT" : "DEFAULT";
 
   const active: boolean = folderNameMode === "EDIT";
 
@@ -106,11 +105,7 @@ function FolderExplorer({ folder }: FolderProps): JSX.Element {
   }
 
   function handleNameOutsideClick() {
-    setSearchParams((params : URLSearchParams) => {
-      params.delete("selected");
-      params.delete("type");
-      return params
-    })
+    navigate("/explorer");
   }
 
   return (
@@ -123,9 +118,8 @@ function FolderExplorer({ folder }: FolderProps): JSX.Element {
               mode={folderNameMode}
               onEdit={handleEditFolderName}
               onClickOutside={handleNameOutsideClick}
-            >
-              {folderName}
-            </TextEditable>
+              value={folderName}
+            />
           </FolderName>
         </FolderLeftContainer>
         <FolderRightContainer>
