@@ -3,7 +3,7 @@ import FilePreview from "./FilePreview";
 import styled, { css } from "styled-components";
 import useFindFile from "./useFindFile";
 import TextEditable from "../../ui/TextEditable";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { TextEditMode } from "../../types/TextEditMode.type";
 import { ChangeEvent } from "react";
 import { useRenameFile } from "./useRenameFile";
@@ -34,9 +34,10 @@ const FileName = styled.span<FileNameProps>`
 function FileSelected(): JSX.Element {
   const { isLoadingFile, fileDetail } = useFindFile();
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const { renameFile } = useRenameFile();
 
-  const { openTab: pushTab } = useTabs();
+  const { openTab } = useTabs();
 
   const paramsMode = searchParams.get("mode");
   const mode = paramsMode ? paramsMode : "DEFAULT";
@@ -65,7 +66,8 @@ function FileSelected(): JSX.Element {
 
   function handleDisplayFile() {
     if (fileDetail?.file._id) {
-      pushTab(fileDetail.file._id);
+      openTab(fileDetail.file._id);
+      navigate(`/cartography/${fileDetail.file._id}`);
     }
   }
 

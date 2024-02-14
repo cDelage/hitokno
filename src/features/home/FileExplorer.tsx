@@ -3,6 +3,7 @@ import { File } from "../../types/Repository.types";
 import HitoknoFile from "../../ui/icons/HitoknoFile";
 import { useNavigate, useParams } from "react-router-dom";
 import { MouseEvent } from "react";
+import { useTabs } from "./useTabs";
 
 type FileExplorerProps = {
   file: File;
@@ -54,6 +55,7 @@ function FileExplorer({
 }: FileExplorerProps): JSX.Element {
   const navigate = useNavigate();
   const { fileId } = useParams();
+  const { openTab } = useTabs();
 
   const active = fileId === _id;
 
@@ -61,8 +63,17 @@ function FileExplorer({
     navigate(`/explorer/file/${_id}`);
   }
 
+  function handleDoubleClick() {
+    openTab(_id);
+    navigate(`/cartography/${_id}`);
+  }
+
   return (
-    <FileExplorerStyled onClick={handleClick} $active={active}>
+    <FileExplorerStyled
+      onClick={handleClick}
+      onDoubleClick={handleDoubleClick}
+      $active={active}
+    >
       <IconContainer>
         <HitoknoFile />
       </IconContainer>

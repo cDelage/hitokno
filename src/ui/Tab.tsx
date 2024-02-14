@@ -1,14 +1,20 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { useFindFileById } from "../features/home/useFindFileById";
-import { IoDocumentOutline, IoClose } from "react-icons/io5";
+import { IoDocumentOutline, IoClose, IoDocument } from "react-icons/io5";
 import { useState } from "react";
 import { useTabs } from "../features/home/useTabs";
+import { useLocation, useNavigate } from "react-router-dom";
 
 type tabProps = {
   id: string;
 };
 
-const TabStyled = styled.button`
+type TabStyledProps = {
+  $active: boolean;
+  onClick: (e: MouseEvent) => void;
+};
+
+const TabStyled = styled.button<TabStyledProps>`
   display: flex;
   gap: 8px;
   padding: 4px 4px 4px 8px;
@@ -23,11 +29,17 @@ const TabStyled = styled.button`
   &:hover {
     background-color: var(--bg-white);
   }
+
+  ${(props) =>
+    props.$active &&
+    css`
+      background-color: var(--bg-white);
+    `}
 `;
 
 type CloseButtonProps = {
   $isDisplay: boolean;
-  onClick: (e : MouseEvent) => void
+  onClick: (e: MouseEvent) => void;
 };
 
 const CloseButton = styled.button<CloseButtonProps>`
@@ -40,29 +52,49 @@ const CloseButton = styled.button<CloseButtonProps>`
   opacity: ${(props) => (props.$isDisplay ? 1 : 0)};
   color: var(--text-main-medium);
   cursor: pointer;
-  &:hover{
-    color: var(--text-main-dark)
+  &:hover {
+    color: var(--text-main-dark);
   }
 `;
 
 function Tab({ id }: tabProps): JSX.Element | null {
   const { fileDetail, isFileLoading } = useFindFileById(id);
   const [isHover, setIsHover] = useState<boolean>(false);
-  const {closeTab} = useTabs();
+  const { closeTab } = useTabs();
+  const navigate = useNavigate();
+
+  const location = useLocation();
+
+  const tabActive: boolean = fileDetail
+    ? location.pathname.startsWith(`/cartography/${fileDetail.file._id}`)
+    : false;
 
   if (isFileLoading || !fileDetail) return null;
 
-  function handleCloseTab(e : MouseEvent){
+  function handleCloseTab(e: MouseEvent) {
     e.stopPropagation();
+    if (tabActive) {
+      navigate(`/explorer/`);
+    }
     closeTab(id);
+  }
+
+  function handleClick(e: MouseEvent) {
+    e.stopPropagation();
+    if (!tabActive) {
+      navigate(`/cartography/${id}`);
+    }
   }
 
   return (
     <TabStyled
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
+      onClick={handleClick}
+      $active={tabActive}
     >
-      <IoDocumentOutline size={20} />
+      {tabActive ? <IoDocument size={20} /> : <IoDocumentOutline size={20} />}
+
       {fileDetail.file.fileName}
       <CloseButton $isDisplay={isHover} onClick={handleCloseTab}>
         <IoClose size={20} />

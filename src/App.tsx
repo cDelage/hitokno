@@ -7,11 +7,19 @@ import GlobalStyle from "./GlobalStyle";
 import AppLayout from "./ui/AppLayout";
 import Home from "./pages/Home";
 import FakePage from "./pages/FakePage";
-import { File, FileDetail, FileRename, Folder, RenameFolderParams } from "./types/Repository.types";
+import {
+  File,
+  FileDetail,
+  FileRename,
+  Folder,
+  RenameFolderParams,
+} from "./types/Repository.types";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import FileDisabled from "./features/home/FileDisabled";
 import FileSelected from "./features/home/FileSelected";
+import Cartography from "./pages/Cartography";
+import Sheet from "./pages/Sheet";
 
 /**
  * When i add it into a file .d.ts, then typescript not recognize the interface.
@@ -32,7 +40,7 @@ declare global {
       removeFolder: (folderId: string) => Promise<string>;
       renameFolder: (params: RenameFolderParams) => Promise<Folder>;
       findFile: (fileId: string) => Promise<FileDetail | undefined>;
-      renameFile : (params : FileRename) => Promise<Folder>;
+      renameFile: (params: FileRename) => Promise<Folder>;
     };
   }
 }
@@ -48,15 +56,27 @@ const routes: RouteObject[] = [
         children: [
           {
             path: "/explorer",
-            element: <FileDisabled/>,
-            index: true
-          },{
+            element: <FileDisabled />,
+            index: true,
+          },
+          {
             path: "/explorer/file/:fileId",
-            element: <FileSelected/>
-          },{
+            element: <FileSelected />,
+          },
+          {
             path: "/explorer/folder/:folderId",
-            element: <FileDisabled/>
-          }
+            element: <FileDisabled />,
+          },
+        ],
+      },
+      {
+        path: "/cartography/:fileId",
+        element: <Cartography />,
+        children: [
+          {
+            path: "/cartography/:fileId/sheet/:nodeId",
+            element: <Sheet />,
+          },
         ],
       },
       {
@@ -80,9 +100,9 @@ const queryClient = new QueryClient({
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-        <ReactQueryDevtools initialIsOpen={false} />
-        <GlobalStyle />
-        <RouterProvider router={router} />
+      <ReactQueryDevtools initialIsOpen={false} />
+      <GlobalStyle />
+      <RouterProvider router={router} />
     </QueryClientProvider>
   );
 }
