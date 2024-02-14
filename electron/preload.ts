@@ -1,8 +1,8 @@
 import { contextBridge, ipcRenderer } from "electron";
 import {
   File,
+  FileRename,
   Folder,
-  FindFileParams,
   RenameFolderParams,
 } from "../src/types/Repository.types";
 
@@ -22,11 +22,13 @@ const repository = {
   createFile: async (folderId: string): Promise<File | null> =>
     await ipcRenderer.invoke("create-file", folderId),
   removeFolder: async (folderId: string) =>
-    ipcRenderer.invoke("remove-folder", folderId),
+    await ipcRenderer.invoke("remove-folder", folderId),
   renameFolder: async (params: RenameFolderParams) =>
-    ipcRenderer.invoke("rename-folder", params),
-  findFile: async ({ fileId }: FindFileParams): Promise<File | undefined> =>
-    ipcRenderer.invoke("find-file", { fileId }),
+    await ipcRenderer.invoke("rename-folder", params),
+  findFile: async (fileId: string): Promise<File> =>
+    await ipcRenderer.invoke("find-file", fileId),
+  renameFile: async (params: FileRename) =>
+    await ipcRenderer.invoke("rename-file", params),
 };
 
 // --------- Expose some API to the Renderer process ---------

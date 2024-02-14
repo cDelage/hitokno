@@ -1,8 +1,10 @@
 import { db } from "../database";
 import {
+  CompleteFolder,
   File,
+  FileDetail,
+  FileRename,
   Folder,
-  FindFileParams,
   RenameFolderParams,
 } from "../../src/types/Repository.types";
 import { generateUUID } from "./generateUUID";
@@ -73,18 +75,35 @@ export async function renameFolder({
   }
 }
 
-export async function findFile({
-  fileId,
-}: FindFileParams): Promise<File | undefined> {
+export async function findFile(
+  fileId: string
+): Promise<FileDetail | undefined> {
   const folder = await db.repository.findOne(
     {
       "files._id": fileId,
     },
-    { files: 1 }
+    { files: 1, folderName: 1 }
   );
-
   const files = folder?.files as File[];
   const file = files.find((e) => e._id === fileId);
-  
-  return file
+  return file && folder
+    ? ({ file, folderName: folder?.folderName } as FileDetail)
+    : undefined;
+}
+
+export async function renameFile({ fileId, filename }: FileRename) {
+  const folder = (await db.repository.findOne({
+    "files._id": fileId,
+  })) as CompleteFolder;
+
+  const updatedFiles = folder.files.map((file) => {
+    return { ...file, fileName: file._id === fileId ? filename : file.fileName };
+  });
+
+  await db.repository.updateOne(
+    { "files._id": fileId },
+    { $set: { files: updatedFiles } }
+  );
+
+  return folder;
 }

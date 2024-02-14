@@ -7,11 +7,12 @@ import {
   findFile,
   removeFolder,
   renameFolder,
+  renameFile,
 } from "./services/apiRepository";
 import {
   File,
+  FileRename,
   Folder,
-  FindFileParams,
   RenameFolderParams,
 } from "../src/types/Repository.types";
 
@@ -106,8 +107,13 @@ function createWindow() {
 
   ipcMain.handle(
     "find-file",
-    async (event: IpcMainInvokeEvent, params: FindFileParams) =>
-      await findFile(params)
+    async (event: IpcMainInvokeEvent, fileId: string) => await findFile(fileId)
+  );
+
+  ipcMain.handle(
+    "rename-file",
+    async (event: IpcMainInvokeEvent, params: FileRename) =>
+      await renameFile(params)
   );
 }
 

@@ -1,19 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
-import { useSearchParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
+
 
 function useFindFile() {
-    const [searchParams] = useSearchParams();
+  const { fileId } = useParams() as { fileId: string };
 
-    const fileId = searchParams.get("selected") as string;
+  const { data: fileDetail, isLoading: isLoadingFile } = useQuery({
+    queryKey: ["file", fileId],
+    queryFn: () => window.repository.findFile(fileId),
+  });
 
-    const {data: file, isLoading: isLoadingFile} = useQuery({
-        queryKey: ["file"],
-        queryFn: () => {
-            window.repository.findFile({fileId});
-        }
-    });
-
-    return {file, isLoadingFile}
+  return { fileDetail, isLoadingFile };
 }
 
 export default useFindFile;

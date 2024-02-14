@@ -77,7 +77,6 @@ function Modal({ children }: ModalProps): JSX.Element {
   }
 
   function close() {
-    console.log("close");
     setOpenId(null);
   }
 

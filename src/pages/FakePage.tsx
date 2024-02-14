@@ -4,6 +4,16 @@ import { IoAirplane } from "react-icons/io5";
 import { ChangeEvent, useState } from "react";
 import TextEditable from "../ui/TextEditable";
 
+const getWidthOfText = function(text: string) {
+  const element = document.createElement('div');
+  element.style.display = 'inline-block';
+  element.innerHTML = text;
+  document.body.appendChild(element);
+  const width = element.offsetWidth;
+  document.body.removeChild(element);
+  return width;
+};
+
 const DummyStyled = styled.div`
   display: flex;
   flex-direction: column;
@@ -14,11 +24,27 @@ const DummyStyled = styled.div`
 const Line = styled.div`
   display: flex;
   gap: 32px;
-`
+`;
+
+type InputTestProps = {
+  $width : number;
+}
+
+const InputTest = styled.input<InputTestProps>`
+  border: 2px black solid;
+  width: fit-content;
+  font-size: 1rem;
+  width: ${(props) => props.$width}px;
+`;
+
+const InputContainer = styled.div`
+  font-size: 1rem;
+`;
 
 function FakePage() {
   const [mode, setMode] = useState<"DEFAULT" | "EDIT">("DEFAULT");
-  const [text, setText] = useState<string>("Hello")
+  const [text, setText] = useState<string>("Hello");
+  const [inpVal, setInpVal] = useState("");
 
   function toggleMode() {
     setMode((mode) => {
@@ -27,8 +53,8 @@ function FakePage() {
     });
   }
 
-  function EditText(event: ChangeEvent<HTMLInputElement>){
-    setText(event.target.value)
+  function EditText(event: ChangeEvent<HTMLInputElement>) {
+    setText(event.target.value);
   }
 
   return (
@@ -54,10 +80,23 @@ function FakePage() {
         </Button>
       </div>
       <Line>
-        <Button type="primary" onClick={toggleMode}>Toggle Mode</Button>
-        <TextEditable mode={mode} onEdit={EditText}>{text}</TextEditable>
-
+        <Button type="primary" onClick={toggleMode}>
+          Toggle Mode
+        </Button>
+        <TextEditable mode={mode} onEdit={EditText}>
+          {text}
+        </TextEditable>
       </Line>
+      <InputContainer>
+        <InputTest
+          type="text"
+          value={inpVal}
+          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+            setInpVal(e.target.value)
+          }
+          $width={getWidthOfText(inpVal)}
+        />
+      </InputContainer>
     </DummyStyled>
   );
 }

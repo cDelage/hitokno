@@ -84,11 +84,10 @@ function FolderExplorer({ folder }: FolderProps): JSX.Element {
   const { folderName, _id, files, updatedAt } = folder;
   const [isFolderOpen, setIsFolderOpen] = useState(false);
   const { isPendingCreateFile, createFile } = useCreateFile();
-
   const { renameFolder } = useRenameFolder();
-
-  const navigate = useNavigate();
   const { folderId } = useParams();
+  const navigate = useNavigate();
+
   const folderNameMode: TextEditMode = folderId === _id ? "EDIT" : "DEFAULT";
 
   const active: boolean = folderNameMode === "EDIT";
@@ -119,9 +118,8 @@ function FolderExplorer({ folder }: FolderProps): JSX.Element {
               mode={folderNameMode}
               onEdit={handleEditFolderName}
               onClickOutside={handleNameOutsideClick}
-            >
-              {folderName}
-            </TextEditable>
+              value={folderName}
+            />
           </FolderName>
         </FolderLeftContainer>
         <FolderRightContainer>

@@ -7,7 +7,7 @@ import GlobalStyle from "./GlobalStyle";
 import AppLayout from "./ui/AppLayout";
 import Home from "./pages/Home";
 import FakePage from "./pages/FakePage";
-import { File, Folder, FindFileParams, RenameFolderParams } from "./types/Repository.types";
+import { File, FileDetail, FileRename, Folder, RenameFolderParams } from "./types/Repository.types";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import FileDisabled from "./features/home/FileDisabled";
@@ -31,7 +31,8 @@ declare global {
       createFile: (folderId: string) => Promise<File | null>;
       removeFolder: (folderId: string) => Promise<string>;
       renameFolder: (params: RenameFolderParams) => Promise<Folder>;
-      findFile: (params: FindFileParams) => Promise<File>
+      findFile: (params: string) => Promise<FileDetail | undefined>;
+      renameFile : (params : FileRename) => Promise<Folder>;
     };
   }
 }
