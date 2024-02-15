@@ -1,15 +1,15 @@
-import { useParams, useSearchParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import styled from "styled-components";
-import { CartographyMode } from "../../types/Cartography.type";
 import EditToggle from "../../ui/EditToggle";
 import { useFindFileById } from "../home/useFindFileById";
+import { useTabs } from "../home/useTabs";
 
 const CartographyHeaderStyled = styled.div`
   display: flex;
   justify-content: space-between;
   background-color: var(--bg-white);
   align-items: center;
-  height: 32px;
+  height: 40px;
   padding: 0px 8px;
 `;
 
@@ -26,23 +26,15 @@ const ToggleContainer = styled.div`
 
 function CartographyHeader() {
   const { fileId } = useParams();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const mode = searchParams.get("mode");
-  const cartographyMode: CartographyMode =
-    (mode && mode === "DEFAULT") || mode === "EDIT" ? mode : "DEFAULT";
-
+  const {getCartographyMode, toggleCartographyMode} = useTabs();
   const { fileDetail, isFileLoading } = useFindFileById(fileId as string);
 
-  function handleChangeMode() {
-    setSearchParams({
-      mode: cartographyMode === "DEFAULT" ? "EDIT" : "DEFAULT",
-    });
-  }
-
-  if (!fileDetail || isFileLoading)
-    return <CartographyHeaderStyled></CartographyHeaderStyled>;
-
+  
+  if (!fileDetail || isFileLoading || !fileId)
+  return <CartographyHeaderStyled></CartographyHeaderStyled>;
+  
   const {file : {fileName}, folderName} = fileDetail
+  const cartographyMode = getCartographyMode(fileId)
 
   return (
     <CartographyHeaderStyled>
@@ -50,7 +42,7 @@ function CartographyHeader() {
         <ToggleContainer>
           <EditToggle
             isChecked={cartographyMode === "EDIT"}
-            handleChange={handleChangeMode}
+            handleChange={() => toggleCartographyMode(fileId)}
           />
         </ToggleContainer>
         Edit

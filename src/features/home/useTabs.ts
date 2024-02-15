@@ -1,12 +1,14 @@
 import { create } from "zustand";
 import { HeaderTab, TabsMode } from "../../types/Tabs.types";
 import { persist } from "zustand/middleware";
+import { CartographyMode } from "../../types/Cartography.type";
 
 type useTabsStore = {
   tabs: HeaderTab[];
   openTab: (fileId: string, mode: TabsMode) => void;
   closeTab: (fileId: string) => void;
-  toggleTabMode: (fileId: string) => void;
+  toggleCartographyMode: (fileId: string) => void;
+  getCartographyMode : (fileId: string) => CartographyMode;
 };
 
 const useTabs = create(persist<useTabsStore>(
@@ -39,7 +41,7 @@ const useTabs = create(persist<useTabsStore>(
    * Info not save
    * @param fileId 
    */
-  toggleTabMode: (fileId: string) => {
+  toggleCartographyMode: (fileId: string) => {
     set((state) => {
       return {
         tabs: state.tabs.map((tab) => {
@@ -52,6 +54,10 @@ const useTabs = create(persist<useTabsStore>(
       };
     });
   },
+  getCartographyMode(fileId: string){
+    const tabMode : TabsMode | undefined = get().tabs.find(tab => tab.fileId === fileId)?.mode
+    return tabMode ? tabMode : "DEFAULT"
+  }
 }),{name : 'tab-storage'}));
 
 export { useTabs };
