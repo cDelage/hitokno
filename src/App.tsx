@@ -6,7 +6,7 @@ import {
 import GlobalStyle from "./GlobalStyle";
 import AppLayout from "./ui/AppLayout";
 import Home from "./pages/Home";
-import FakePage from "./pages/FakePage";
+import Dummy from "./pages/Dummy";
 import {
   File,
   FileDetail,
@@ -81,7 +81,7 @@ const routes: RouteObject[] = [
       },
       {
         path: "/fake",
-        element: <FakePage />,
+        element: <Dummy />,
       },
     ],
   },

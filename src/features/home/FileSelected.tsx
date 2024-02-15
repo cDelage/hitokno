@@ -66,7 +66,14 @@ function FileSelected(): JSX.Element {
 
   function handleDisplayFile() {
     if (fileDetail?.file._id) {
-      openTab(fileDetail.file._id);
+      openTab(fileDetail.file._id, "DEFAULT");
+      navigate(`/cartography/${fileDetail.file._id}`);
+    }
+  }
+
+  function handleEditFile(){
+    if (fileDetail?.file._id) {
+      openTab(fileDetail.file._id, "EDIT");
       navigate(`/cartography/${fileDetail.file._id}`);
     }
   }
@@ -112,6 +119,7 @@ function FileSelected(): JSX.Element {
         <FilePreview.Actions
           disabled={isLoadingFile}
           displayFile={handleDisplayFile}
+          editFile={handleEditFile}
         />
       </FilePreview>
     </FileSelectedStyled>

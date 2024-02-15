@@ -1,12 +1,12 @@
 import styled, { css } from "styled-components";
-import { File } from "../../types/Repository.types";
+import { FileShort } from "../../types/Repository.types";
 import HitoknoFile from "../../ui/icons/HitoknoFile";
 import { useNavigate, useParams } from "react-router-dom";
 import { MouseEvent } from "react";
 import { useTabs } from "./useTabs";
 
 type FileExplorerProps = {
-  file: File;
+  file: FileShort;
 };
 
 type FileExplorerStyledProps = {
@@ -64,7 +64,7 @@ function FileExplorer({
   }
 
   function handleDoubleClick() {
-    openTab(_id);
+    openTab(_id,"EDIT");
     navigate(`/cartography/${_id}`);
   }
 

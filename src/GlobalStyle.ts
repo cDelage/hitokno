@@ -121,10 +121,20 @@ const GlobalStyle = createGlobalStyle`
   --text-main-dark: var(--color-gray-800);
   --text-menu-tab-hover: var(--color-white);
   --text-disabled: var(--color-gray-400);
-  
+
+  /**
+  * Toggle
+  */
+  --bg-toggle-active : var(--color-primary-600);
+  --bg-thumb-active: var(--color-white);
+  --bg-toggle : var(--color-gray-300);
+  --bg-thumb: var(--color-primary-600);
+
+
   --outline-active : var(--color-primary-500);
 
   --shadow-md : 0 1px 1px 0 rgba(0, 0, 0, 0.25);
+  --shadow-toggle : 0 2px 2px 0 rgba(0, 0, 0, 0.40);
   
   --font-weight-bold: 600;
   

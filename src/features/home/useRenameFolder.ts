@@ -12,6 +12,7 @@ export function useRenameFolder() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["repository"] });
+      queryClient.invalidateQueries({ queryKey: ["file"] });
     },
   });
 

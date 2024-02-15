@@ -2,11 +2,11 @@ import styled from "styled-components";
 import Button from "../ui/Button";
 import { IoAirplane } from "react-icons/io5";
 import { ChangeEvent, useState } from "react";
-import TextEditable from "../ui/TextEditable";
+import EditToggle from "../ui/EditToggle";
 
-const getWidthOfText = function(text: string) {
-  const element = document.createElement('div');
-  element.style.display = 'inline-block';
+const getWidthOfText = function (text: string) {
+  const element = document.createElement("div");
+  element.style.display = "inline-block";
   element.innerHTML = text;
   document.body.appendChild(element);
   const width = element.offsetWidth;
@@ -21,14 +21,9 @@ const DummyStyled = styled.div`
   padding: 32px;
 `;
 
-const Line = styled.div`
-  display: flex;
-  gap: 32px;
-`;
-
 type InputTestProps = {
-  $width : number;
-}
+  $width: number;
+};
 
 const InputTest = styled.input<InputTestProps>`
   border: 2px black solid;
@@ -41,21 +36,9 @@ const InputContainer = styled.div`
   font-size: 1rem;
 `;
 
-function FakePage() {
-  const [mode, setMode] = useState<"DEFAULT" | "EDIT">("DEFAULT");
-  const [text, setText] = useState<string>("Hello");
+
+function Dummy() {
   const [inpVal, setInpVal] = useState("");
-
-  function toggleMode() {
-    setMode((mode) => {
-      if (mode === "DEFAULT") return "EDIT";
-      else return "DEFAULT";
-    });
-  }
-
-  function EditText(event: ChangeEvent<HTMLInputElement>) {
-    setText(event.target.value);
-  }
 
   return (
     <DummyStyled>
@@ -79,14 +62,9 @@ function FakePage() {
           <IoAirplane /> Disabled
         </Button>
       </div>
-      <Line>
-        <Button type="primary" onClick={toggleMode}>
-          Toggle Mode
-        </Button>
-        <TextEditable mode={mode} onEdit={EditText}>
-          {text}
-        </TextEditable>
-      </Line>
+      <div>
+        <EditToggle/>
+      </div>
       <InputContainer>
         <InputTest
           type="text"
@@ -101,4 +79,4 @@ function FakePage() {
   );
 }
 
-export default FakePage;
+export default Dummy;

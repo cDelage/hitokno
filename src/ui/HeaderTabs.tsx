@@ -17,7 +17,7 @@ function HeaderTabs(): JSX.Element {
     <HeaderTabsStyled id="header-tabs-container">
       <HomeHeaderButton />
       {tabs.map((tab) => (
-        <Tab key={tab} id={tab} />
+        <Tab key={tab.fileId} id={tab.fileId} />
       ))}
     </HeaderTabsStyled>
   );
