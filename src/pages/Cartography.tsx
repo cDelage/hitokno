@@ -1,7 +1,12 @@
 import CartographyContainer from "../features/cartography/CartographyContainer";
+import CartographyProvider from "../features/cartography/CartographyProvider";
 
 function Cartography(): JSX.Element {
-  return <CartographyContainer/>;
+  return (
+    <CartographyProvider>
+      <CartographyContainer />
+    </CartographyProvider>
+  );
 }
 
 export default Cartography;

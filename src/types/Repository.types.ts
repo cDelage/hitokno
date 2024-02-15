@@ -1,3 +1,5 @@
+import { Edge, Node } from "reactflow";
+
 export type FileDetail = {
   file: File;
   folderName: string;
@@ -31,8 +33,8 @@ export type Repository = Folder[];
 export type File = {
   _id: string;
   fileName: string;
-  nodes: [];
-  edges: [];
+  nodes: Node[];
+  edges: Edge[];
 };
 
 export type RenameFolderParams = {

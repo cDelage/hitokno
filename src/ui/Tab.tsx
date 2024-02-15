@@ -14,7 +14,7 @@ type TabStyledProps = {
   onClick: (e: MouseEvent) => void;
 };
 
-const TabStyled = styled.button<TabStyledProps>`
+const TabStyled = styled.div<TabStyledProps>`
   display: flex;
   gap: 8px;
   padding: 4px 4px 4px 8px;
@@ -25,6 +25,7 @@ const TabStyled = styled.button<TabStyledProps>`
   color: var(--text-layout);
   font-size: 1rem;
   cursor: pointer;
+  user-select: none;
 
   &:hover {
     background-color: var(--bg-white);
