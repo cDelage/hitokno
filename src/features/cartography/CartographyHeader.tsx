@@ -11,6 +11,8 @@ const CartographyHeaderStyled = styled.div`
   align-items: center;
   height: 40px;
   padding: 0px 8px;
+  box-shadow: var(--shadow-md);
+  z-index: 10;
 `;
 
 const CartographyBlock = styled.span`

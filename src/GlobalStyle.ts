@@ -133,9 +133,12 @@ const GlobalStyle = createGlobalStyle`
 
   --outline-active : var(--color-primary-500);
 
-  --shadow-md : 0 1px 1px 0 rgba(0, 0, 0, 0.25);
-  --shadow-toggle : 0 2px 2px 0 rgba(0, 0, 0, 0.40);
+  --shadow-md : 1px 1px 0 rgba(0, 0, 0, 0.25);
+  --shadow-toggle : 2px 2px 0 rgba(0, 0, 0, 0.40);
   
+  --shadow-shape-md: 0px 1px 0.5px rgba(0, 0, 0, 0.25);
+  --shadow-shape-lg: 0px 3px 4px rgba(0, 0, 0, 0.08);
+
   --font-weight-bold: 600;
   
   
