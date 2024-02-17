@@ -3,7 +3,7 @@ import { HeaderTab, TabsMode } from "../../types/Tabs.types";
 import { persist } from "zustand/middleware";
 import { CartographyMode } from "../../types/Cartography.type";
 
-type useTabsStore = {
+type TabsStore = {
   tabs: HeaderTab[];
   openTab: (fileId: string, mode: TabsMode) => void;
   closeTab: (fileId: string) => void;
@@ -11,7 +11,7 @@ type useTabsStore = {
   getCartographyMode : (fileId: string) => CartographyMode;
 };
 
-const useTabs = create(persist<useTabsStore>(
+const useTabs = create(persist<TabsStore>(
   (set, get) => ({
   tabs: [] as HeaderTab[],
   openTab: (fileId: string, mode: TabsMode) => {

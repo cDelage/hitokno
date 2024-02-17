@@ -23,6 +23,7 @@ export type DataNode = {
   mode: string;
   shape: Shape;
   shadow: Shadow;
+  showNodeToolbar?: boolean;
 };
 
 export type Fill = {

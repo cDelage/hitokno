@@ -1,5 +1,5 @@
 <svg width="57" height="56" viewBox="0 0 57 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g clip-path="url(#clip0_372_1359)">
+<g clipPath="url(#clip0_372_1359)">
 <g filter="url(#filter0_d_372_1359)">
 <path d="M53.3614 28C53.3614 41.8071 42.3407 53 28.746 53C15.1513 53 4.13062 41.8071 4.13062 28C4.13062 14.1929 15.1513 3 28.746 3C42.3407 3 53.3614 14.1929 53.3614 28Z" fill="#FEFCE8"/>
 </g>
@@ -12,7 +12,7 @@
 </g>
 <defs>
 <filter id="filter0_d_372_1359" x="3.67991" y="3" width="50.1321" height="50.9014" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
-<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feFlood floodOpacity="0" result="BackgroundImageFix"/>
 <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
 <feOffset dy="0.450704"/>
 <feGaussianBlur stdDeviation="0.225352"/>
