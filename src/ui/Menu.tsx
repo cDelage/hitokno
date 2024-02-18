@@ -5,11 +5,11 @@ import {
   useContext,
   useState,
 } from "react";
-import { AbsolutePositionRight } from "../types/AbsolutePosition.type";
 import IconButton from "./IconButton";
 import styled from "styled-components";
 import { useUlOutsideClick } from "../hooks/useUlOutsideClick";
 import { createPortal } from "react-dom";
+import { PositionAbsoluteRight } from "../types/Position.type";
 
 const ListTabsStyled = styled.ul<ListTabsStyledProps>`
   background-color: var(--bg-element);
@@ -46,8 +46,8 @@ type MenuProps = {
 };
 
 type MenuContextProps = {
-  position: AbsolutePositionRight | null;
-  open: (pos: AbsolutePositionRight, id: string) => void;
+  position: PositionAbsoluteRight | null;
+  open: (pos: PositionAbsoluteRight, id: string) => void;
   close: () => void;
   openId: string | null;
 };
@@ -57,7 +57,7 @@ type ListTabsProps = {
 };
 
 type ListTabsStyledProps = {
-  position: AbsolutePositionRight;
+  position: PositionAbsoluteRight;
 };
 
 type TabMenuProps = {
@@ -74,10 +74,10 @@ type ToggleMenuProps = {
 const MenuContext = createContext<MenuContextProps | null>(null);
 
 function Menu({ children }: MenuProps): JSX.Element {
-  const [position, setPosition] = useState<AbsolutePositionRight | null>(null);
+  const [position, setPosition] = useState<PositionAbsoluteRight | null>(null);
   const [openId, setOpenId] = useState<string | null>(null);
 
-  function open(pos: AbsolutePositionRight, id: string) {
+  function open(pos: PositionAbsoluteRight, id: string) {
     setPosition(pos);
     setOpenId(id);
   }
@@ -142,7 +142,7 @@ function Toggle({ children, id }: ToggleMenuProps): JSX.Element {
       .closest("button")
       ?.getBoundingClientRect();
     if (rect) {
-      const menuPosition: AbsolutePositionRight = {
+      const menuPosition: PositionAbsoluteRight = {
         right: window.innerWidth - rect.width - rect.x,
         top: rect.y + rect.height,
       };
