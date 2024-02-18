@@ -1,7 +1,6 @@
 export type CartographyMode = "DEFAULT" | "EDIT";
 
-export type Shape = "rect" | "circle";
-
+export type Shape = "rect" | "rect-radius" | "ellipse" | "triangle" | "cylinder";
 
 export type Shadow =
   | "none"
@@ -23,8 +22,10 @@ export type Theme = {
 };
 
 export type ShapeProps = {
+  shape?: Shape | undefined;
   fill: string;
-  shadow: Shadow;
+  $shadow: Shadow;
+  border?: string;
 };
 
 export type DataNode = {

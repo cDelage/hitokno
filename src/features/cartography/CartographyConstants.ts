@@ -8,22 +8,22 @@ export const NodeCustomsComponents = {
   shape: NodeShape,
 };
 
-export const ShadowsMenu : ShadowMenu[] = [
+export const ShadowsMenu: ShadowMenu[] = [
   {
     shadow: "none",
-    shadowMenu: "none"
+    shadowMenu: "none",
   },
   {
     shadow: "var(--shadow-shape-md)",
-    shadowMenu: "var(--shadow-shape-menu-md)"
+    shadowMenu: "var(--shadow-shape-menu-md)",
   },
   {
     shadow: "var(--shadow-shape-lg)",
-    shadowMenu: "var(--shadow-shape-menu-lg)"
-  }
-]
+    shadowMenu: "var(--shadow-shape-menu-lg)",
+  },
+];
 
-export const ShapeMenu = []
+export const ShapeMenu: Shape[] = ["rect", "rect-radius", "ellipse", "triangle","cylinder"];
 
 export const NODE_SIZE_DEFAULT = {
   width: PX_UNIT_GAP * 16,
@@ -63,7 +63,7 @@ export const NODE_DEFAULT_2 = {
   data: {
     label: "LABEL",
     mode: "DEFAULT",
-    shape: "circle" as Shape,
+    shape: "ellipse" as Shape,
     shadow: "var(--shadow-shape-lg)" as Shadow,
     theme: {
       id: "purple-dark",

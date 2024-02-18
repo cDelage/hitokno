@@ -138,7 +138,7 @@ const GlobalStyle = createGlobalStyle`
   --shadow-md : 1px 1px 0 rgba(0, 0, 0, 0.25);
   --shadow-toggle : 2px 2px 0 rgba(0, 0, 0, 0.40);
   
-  --shadow-shape-md: 0px 2px 0.5px rgba(33, 5, 32, 0.25);
+  --shadow-shape-md: 0px 3px 0.5px rgba(33, 5, 32, 0.25);
   --shadow-shape-lg: 0px 3px 4px rgba(33, 5, 32, 0.25);
   --shadow-shape-menu-md: 0px 2px 0.5px rgba(33, 5, 32, 0.50);
   --shadow-shape-menu-lg: 0px 3px 4px rgba(33, 5, 32, 0.50);

@@ -3,10 +3,10 @@ import ShapeContainer from "./ShapeContainer";
 import { ShapeProps } from "../../../types/Cartography.type";
 
 const RectStyled = styled.rect<ShapeProps>`
-  filter: drop-shadow(${(props) => props.shadow});
+  filter: drop-shadow(${(props) => props.$shadow});
 `
 
-function Rect({ fill, shadow }: ShapeProps): JSX.Element {
+function Rect({ fill, $shadow, border }: ShapeProps): JSX.Element {
   return (
     <ShapeContainer
       width="100%"
@@ -14,7 +14,7 @@ function Rect({ fill, shadow }: ShapeProps): JSX.Element {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <RectStyled width="100%" height="100%" fill={fill} shadow={shadow}/>
+      <RectStyled width="100%" height="100%" fill={fill} $shadow={$shadow} stroke={border} strokeWidth={1}/>
     </ShapeContainer>
   );
 }

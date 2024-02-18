@@ -8,6 +8,7 @@ import { BiBold, BiItalic, BiUnderline, BiListUl } from "react-icons/bi";
 import {
   MenuBorderRight,
   ShadowsMenu,
+  ShapeMenu,
   ThemeLight,
   ThemesDark,
 } from "./CartographyConstants";
@@ -15,7 +16,8 @@ import OpenSheetIcon from "../../ui/icons/OpenSheetIcon";
 import useNodeToolbar from "./useNodeToolbar";
 import FakeSelector from "../../ui/FakeSelector";
 import useCartography from "./useCartography";
-import { Shadow, Theme } from "../../types/Cartography.type";
+import { Shadow, Shape, Theme } from "../../types/Cartography.type";
+import ShapeDispatch from "./shapes/ShapeDispatch";
 
 const IconContainer = styled.div`
   height: 28px;
@@ -23,6 +25,13 @@ const IconContainer = styled.div`
   overflow: visible;
   display: flex;
   align-items: center;
+`;
+
+const ShapeContainer = styled.div`
+  height: 40px;
+  width: 40px;
+  overflow: visible;
+  position: relative;
 `;
 
 const IconContainerLarge = styled.div`
@@ -52,7 +61,7 @@ function NodeToolbar(): JSX.Element | null {
 
   if (!positionToolbar.top || !selectedNodeId) return null;
   const data = getNodeData(selectedNodeId);
-  const { theme, shadow } = data;
+  const { theme, shadow, shape } = data;
 
   function handleSetTheme(theme: Theme) {
     setNodeData(selectedNodeId, {
@@ -68,15 +77,24 @@ function NodeToolbar(): JSX.Element | null {
     });
   }
 
+  function handleSetShape(shape: Shape) {
+    setNodeData(selectedNodeId, {
+      ...data,
+      shape: shape,
+    });
+  }
+
   return (
     <MenuToolbar $position={{ ...positionToolbar }}>
       <MenuToolbar.ActionLine>
-        <MenuToolbar.Action>
-          <IconContainer>
-            <ShapesIcon />
-          </IconContainer>
-          <HiChevronUp size={12} />
-        </MenuToolbar.Action>
+        <MenuToolbar.ToggleSubMenu name="shape">
+          <MenuToolbar.Action>
+            <IconContainer>
+              <ShapesIcon />
+            </IconContainer>
+            <HiChevronUp size={12} />
+          </MenuToolbar.Action>
+        </MenuToolbar.ToggleSubMenu>
         <MenuToolbar.ToggleSubMenu name="color">
           <MenuToolbar.Action>
             <IconContainer>
@@ -168,6 +186,25 @@ function NodeToolbar(): JSX.Element | null {
               <IconContainer>
                 <ShadowDiv shadow={shadowsMenu.shadowMenu} />
               </IconContainer>
+            </MenuToolbar.Action>
+          ))}
+        </MenuToolbar.ActionLine>
+      </MenuToolbar.SubMenu>
+      <MenuToolbar.SubMenu name="shape">
+        <MenuToolbar.ActionLine>
+          {ShapeMenu.map((shapeMenu) => (
+            <MenuToolbar.Action
+              key={shapeMenu}
+              $active={shape === shapeMenu}
+              onClick={() => handleSetShape(shapeMenu)}
+            >
+              <ShapeContainer>
+                <ShapeDispatch
+                  shape={shapeMenu}
+                  fill={theme.fill}
+                  $shadow="var(--shadow-shape-menu-md)"
+                />
+              </ShapeContainer>
             </MenuToolbar.Action>
           ))}
         </MenuToolbar.ActionLine>

@@ -1,13 +1,12 @@
 import { CSSProperties, useEffect } from "react";
 import { NodeResizer, useReactFlow, useViewport } from "reactflow";
 import styled from "styled-components";
-import Rect from "./shapes/Rect";
 import { DataNode } from "../../types/Cartography.type";
-import Ellipse from "./shapes/Ellipse";
 import { PX_UNIT_GAP } from "./CartographyConstants";
 import { PositionAbsolute } from "../../types/Position.type";
 import useNodeToolbar from "./useNodeToolbar";
 import useCartography from "./useCartography";
+import ShapeDispatch from "./shapes/ShapeDispatch";
 
 const NodeShapeStyled = styled.div`
   display: flex;
@@ -86,9 +85,7 @@ function NodeShape({
 
   return (
     <NodeShapeStyled>
-      {shape === "rect" && <Rect fill={theme.fill} shadow={shadow} />}
-      {shape === "circle" && <Ellipse fill={theme.fill} shadow={shadow} />}
-
+      <ShapeDispatch shape={shape} fill={theme.fill} $shadow={shadow} />
       <TopContainer>
         <NodeResizer
           minWidth={PX_UNIT_GAP * 2}
