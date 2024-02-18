@@ -7,8 +7,8 @@ const NewFileButtonStyled = styled.button`
   background-color: transparent;
   font-size: 1rem;
   border-radius: 4px;
-  border: 2px dashed var(--text-main-blue);
-  color : var(--text-main-blue);
+  border: 2px dashed var(--text-main-active);
+  color : var(--text-main-active);
   cursor: pointer;
   user-select: none;
   &:hover {

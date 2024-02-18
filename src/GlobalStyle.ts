@@ -84,6 +84,8 @@ const GlobalStyle = createGlobalStyle`
   --bg-white: var(--color-white);
   --bg-element: var(--color-white);
   --bg-element-hover: var(--color-gray-100);
+  --bg-element-active: var(--color-primary-600);
+  --bg-menu-active: var(--color-gray-200);
   --bg-menu-tab-hover: var(--color-primary-600);
   --bg-button-secondary-hover: var(--color-white);
 
@@ -115,7 +117,7 @@ const GlobalStyle = createGlobalStyle`
   
   --text-layout : var(--color-primary-600);
   --text-close: var(--color-white);
-  --text-main-blue: var(--color-primary-600);
+  --text-main-active: var(--color-primary-600);
   --text-main-light: var(--color-gray-500);
   --text-main-medium: var(--color-gray-600);
   --text-main-dark: var(--color-gray-800);
@@ -136,8 +138,10 @@ const GlobalStyle = createGlobalStyle`
   --shadow-md : 1px 1px 0 rgba(0, 0, 0, 0.25);
   --shadow-toggle : 2px 2px 0 rgba(0, 0, 0, 0.40);
   
-  --shadow-shape-md: 0px 1px 0.5px rgba(0, 0, 0, 0.25);
-  --shadow-shape-lg: 0px 3px 4px rgba(0, 0, 0, 0.08);
+  --shadow-shape-md: 0px 2px 0.5px rgba(33, 5, 32, 0.25);
+  --shadow-shape-lg: 0px 3px 4px rgba(33, 5, 32, 0.25);
+  --shadow-shape-menu-md: 0px 2px 0.5px rgba(33, 5, 32, 0.50);
+  --shadow-shape-menu-lg: 0px 3px 4px rgba(33, 5, 32, 0.50);
 
   --font-weight-bold: 600;
   

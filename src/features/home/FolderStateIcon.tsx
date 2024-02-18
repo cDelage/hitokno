@@ -3,7 +3,7 @@ import { IoFolderOpen } from "react-icons/io5";
 import styled from "styled-components";
 
 const FolderOpenIcon = styled(IoFolderOpen)`
-  color: var(--text-main-blue);
+  color: var(--text-main-active);
 `;
 
 const FolderIconsContainer = styled.div`

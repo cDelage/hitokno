@@ -27,7 +27,7 @@ const ExplorerHeader = styled.div`
 `;
 
 const TitleContainer = styled.h1`
-  color: var(--text-main-blue);
+  color: var(--text-main-active);
 `;
 
 const ExplorerMain = styled.div`

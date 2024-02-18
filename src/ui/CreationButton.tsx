@@ -6,10 +6,10 @@ type CreationButtonProps = {
 
 const CreationButton = styled.button<CreationButtonProps>`
   background-color: transparent;
-  color: var(--text-main-blue);
+  color: var(--text-main-active);
   font-size: 1rem;
   border-radius: 4px;
-  border: 2px dashed var(--text-main-blue);
+  border: 2px dashed var(--text-main-active);
   display: flex;
   align-items: center;
   gap: 4px;
