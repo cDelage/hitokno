@@ -87,6 +87,7 @@ const GlobalStyle = createGlobalStyle`
   --bg-element-active: var(--color-primary-600);
   --bg-menu-active: var(--color-gray-200);
   --bg-menu-tab-hover: var(--color-primary-600);
+  --bg-toolbar-action-icon: var(--color-gray-700);
   --bg-button-secondary-hover: var(--color-white);
 
   /**

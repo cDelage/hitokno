@@ -10,12 +10,13 @@ import { NodeCustomsComponents, PX_UNIT_GAP } from "./CartographyConstants";
 import NodeToolbar from "./NodeToolbar";
 import useNodeToolbar from "./useNodeToolbar";
 import { useEffect } from "react";
+import MainToolbar from "./MainToolbar";
 
 const ViewportContainer = styled.div`
   flex-grow: 1;
 `;
 
-function CartographyViewport(): JSX.Element {
+function Viewport(): JSX.Element {
   const { nodes, edges, onNodesChange, setShowNodeToolbar } = useCartography();
   const { zoom } = useViewport();
   const { clearPositionToolbar } = useNodeToolbar();
@@ -42,6 +43,7 @@ function CartographyViewport(): JSX.Element {
   return (
     <ViewportContainer>
       <NodeToolbar />
+      <MainToolbar />
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -78,4 +80,4 @@ function CartographyViewport(): JSX.Element {
   );
 }
 
-export default CartographyViewport;
+export default Viewport;

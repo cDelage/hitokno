@@ -20,9 +20,10 @@ const MenuToolbarStyled = styled.menu<PositionObject>`
 `;
 
 const ActionStyled = styled.div<BorderProps & ActionProps>`
-  padding: 8px 8px;
   cursor: pointer;
-
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
   ${(props) => {
     return props.border;
   }}
@@ -36,6 +37,14 @@ const ActionStyled = styled.div<BorderProps & ActionProps>`
           &:hover {
             background-color: var(--bg-element-hover);
           }
+        `}
+  ${(props) =>
+    props.$padding
+      ? css`
+          padding: ${props.$padding};
+        `
+      : css`
+          padding: 8px;
         `}
 `;
 
@@ -122,7 +131,15 @@ function MenuToolbar({
 
 function ActionLine({ children }: ChildrenProps): JSX.Element {
   return (
-    <Row $flexDirection="row" $alignItems="stretch" $gap={0}>
+    <Row $flexDirection="row" $alignItems="stretch" $gap={0} $flexGrow={1}>
+      {children}
+    </Row>
+  );
+}
+
+function ActionColumn({ children }: ChildrenProps): JSX.Element {
+  return (
+    <Row $flexDirection="column" $alignItems="stretch" $gap={0}>
       {children}
     </Row>
   );
@@ -131,16 +148,23 @@ function ActionLine({ children }: ChildrenProps): JSX.Element {
 type ActionProps = {
   $active?: boolean;
   onClick?: () => void;
+  $padding?: string;
 };
 
 function Action({
   children,
   border,
   $active,
-  onClick
+  onClick,
+  $padding,
 }: ChildrenProps & BorderProps & ActionProps): JSX.Element {
   return (
-    <ActionStyled border={border} $active={$active} onClick={onClick}>
+    <ActionStyled
+      border={border}
+      $active={$active}
+      onClick={onClick}
+      $padding={$padding}
+    >
       <Row $flexDirection="row" $gap={2} $alignItems="center">
         {children}
       </Row>
@@ -178,5 +202,6 @@ MenuToolbar.Action = Action;
 MenuToolbar.SubMenu = SubMenu;
 MenuToolbar.ActionLine = ActionLine;
 MenuToolbar.ToggleSubMenu = ToggleSubMenu;
+MenuToolbar.ActionColumn = ActionColumn;
 
 export default MenuToolbar;

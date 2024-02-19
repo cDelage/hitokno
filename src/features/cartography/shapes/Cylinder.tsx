@@ -24,7 +24,7 @@ function Cylinder({ fill, $shadow, border }: ShapeProps): JSX.Element {
               $shadow={$shadow}
               fill={fill}
               stroke={border}
-              strokeWidth={2}
+              strokeWidth={4}
             />
             <PathStyled
               d="M256,85.333c105.28,0,170.667-16.363,170.667-42.667c0-1.621-0.405-3.115-1.067-4.48
@@ -33,7 +33,7 @@ function Cylinder({ fill, $shadow, border }: ShapeProps): JSX.Element {
               $shadow={$shadow}
               fill={fill}
               stroke={border}
-              strokeWidth={2}
+              strokeWidth={4}
             />
           </g>
         </g>

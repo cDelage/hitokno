@@ -33,6 +33,7 @@ export type DataNode = {
   mode: string;
   shape: Shape;
   shadow: Shadow;
+  border: boolean;
   showNodeToolbar?: boolean;
   theme: Theme;
 };

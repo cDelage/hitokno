@@ -14,7 +14,7 @@ function Rect({ fill, $shadow, border }: ShapeProps): JSX.Element {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <RectStyled width="100%" height="100%" fill={fill} $shadow={$shadow} stroke={border} strokeWidth={1}/>
+      <RectStyled width="100%" height="100%" fill={fill} $shadow={$shadow} stroke={border} strokeWidth={2}/>
     </ShapeContainer>
   );
 }

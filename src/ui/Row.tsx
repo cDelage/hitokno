@@ -5,6 +5,7 @@ type RowProps = {
   $gap: number;
   $alignItems?: string;
   $justifyContent?: string;
+  $flexGrow?: number;
 };
 
 const Row = styled.div<RowProps>`
@@ -22,6 +23,12 @@ const Row = styled.div<RowProps>`
     props.$justifyContent &&
     css`
       justify-content: ${props.$justifyContent};
+    `}
+  
+  ${(props) =>
+    props.$flexGrow &&
+    css`
+      flex-grow: ${props.$flexGrow};
     `}
 `;
 

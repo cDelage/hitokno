@@ -46,7 +46,7 @@ type NodeShapeProps = {
 function NodeShape({
   id,
   selected,
-  data: { shape, shadow, showNodeToolbar, theme },
+  data: { shape, shadow, showNodeToolbar, theme, border },
   xPos,
   yPos,
 }: NodeShapeProps): JSX.Element {
@@ -85,7 +85,7 @@ function NodeShape({
 
   return (
     <NodeShapeStyled>
-      <ShapeDispatch shape={shape} fill={theme.fill} $shadow={shadow} />
+      <ShapeDispatch shape={shape} fill={theme.fill} $shadow={shadow} border={border ? theme.stroke : undefined}/>
       <TopContainer>
         <NodeResizer
           minWidth={PX_UNIT_GAP * 2}

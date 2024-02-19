@@ -39,6 +39,7 @@ export const NODE_DEFAULT = {
     label: "LABEL",
     mode: "DEFAULT",
     shape: "rect" as Shape,
+    border: false,
     shadow: "var(--shadow-shape-md)" as Shadow,
     theme: {
       id: "yellow-light",
@@ -64,6 +65,7 @@ export const NODE_DEFAULT_2 = {
     label: "LABEL",
     mode: "DEFAULT",
     shape: "ellipse" as Shape,
+    border: true,
     shadow: "var(--shadow-shape-lg)" as Shadow,
     theme: {
       id: "purple-dark",

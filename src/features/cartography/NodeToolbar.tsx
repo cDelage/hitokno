@@ -18,14 +18,9 @@ import FakeSelector from "../../ui/FakeSelector";
 import useCartography from "./useCartography";
 import { Shadow, Shape, Theme } from "../../types/Cartography.type";
 import ShapeDispatch from "./shapes/ShapeDispatch";
-
-const IconContainer = styled.div`
-  height: 28px;
-  width: 28px;
-  overflow: visible;
-  display: flex;
-  align-items: center;
-`;
+import { ToolbarSmallIcon } from "../../ui/ToolbarSmallIcon";
+import { RxBorderAll } from "react-icons/rx";
+import { RxBorderNone } from "react-icons/rx";
 
 const ShapeContainer = styled.div`
   height: 40px;
@@ -61,26 +56,33 @@ function NodeToolbar(): JSX.Element | null {
 
   if (!positionToolbar.top || !selectedNodeId) return null;
   const data = getNodeData(selectedNodeId);
-  const { theme, shadow, shape } = data;
+  const { theme, shadow, shape, border } = data;
 
   function handleSetTheme(theme: Theme) {
     setNodeData(selectedNodeId, {
       ...data,
-      theme: theme,
+      theme,
     });
   }
 
   function handleSetShadow(shadow: Shadow) {
     setNodeData(selectedNodeId, {
       ...data,
-      shadow: shadow,
+      shadow,
     });
   }
 
   function handleSetShape(shape: Shape) {
     setNodeData(selectedNodeId, {
       ...data,
-      shape: shape,
+      shape,
+    });
+  }
+
+  function handleSetBorder(border: boolean) {
+    setNodeData(selectedNodeId, {
+      ...data,
+      border,
     });
   }
 
@@ -88,26 +90,37 @@ function NodeToolbar(): JSX.Element | null {
     <MenuToolbar $position={{ ...positionToolbar }}>
       <MenuToolbar.ActionLine>
         <MenuToolbar.ToggleSubMenu name="shape">
-          <MenuToolbar.Action>
-            <IconContainer>
+          <MenuToolbar.Action $padding="8px 4px 8px 8px">
+            <ToolbarSmallIcon>
               <ShapesIcon />
-            </IconContainer>
+            </ToolbarSmallIcon>
             <HiChevronUp size={12} />
           </MenuToolbar.Action>
         </MenuToolbar.ToggleSubMenu>
         <MenuToolbar.ToggleSubMenu name="color">
-          <MenuToolbar.Action>
-            <IconContainer>
+          <MenuToolbar.Action $padding="8px 4px 8px 8px">
+            <ToolbarSmallIcon>
               <ColorNodeIcon fill={theme.fill} />
-            </IconContainer>
+            </ToolbarSmallIcon>
+            <HiChevronUp size={12} />
+          </MenuToolbar.Action>
+        </MenuToolbar.ToggleSubMenu>
+        <MenuToolbar.ToggleSubMenu name="stroke">
+          <MenuToolbar.Action $padding="8px 4px 8px 8px">
+            <ToolbarSmallIcon>
+              <RxBorderAll size={"100%"} />
+            </ToolbarSmallIcon>
             <HiChevronUp size={12} />
           </MenuToolbar.Action>
         </MenuToolbar.ToggleSubMenu>
         <MenuToolbar.ToggleSubMenu name="shadow">
-          <MenuToolbar.Action border={MenuBorderRight}>
-            <IconContainer>
+          <MenuToolbar.Action
+            border={MenuBorderRight}
+            $padding="8px 4px 8px 8px"
+          >
+            <ToolbarSmallIcon>
               <ShadowIcon />
-            </IconContainer>
+            </ToolbarSmallIcon>
             <HiChevronUp size={12} />
           </MenuToolbar.Action>
         </MenuToolbar.ToggleSubMenu>
@@ -122,24 +135,27 @@ function NodeToolbar(): JSX.Element | null {
           </FakeSelector>
         </MenuToolbar.Action>
         <MenuToolbar.Action>
-          <IconContainer>
-            <BiBold size={"90%"} />
-          </IconContainer>
+          <ToolbarSmallIcon>
+            <BiBold size={"100%"} />
+          </ToolbarSmallIcon>
         </MenuToolbar.Action>
         <MenuToolbar.Action>
-          <IconContainer>
-            <BiItalic size={"90%"} />
-          </IconContainer>
+          <ToolbarSmallIcon>
+            <BiItalic size={"100%"} />
+          </ToolbarSmallIcon>
         </MenuToolbar.Action>
         <MenuToolbar.Action>
-          <IconContainer>
-            <BiUnderline size={"90%"} />
-          </IconContainer>
+          <ToolbarSmallIcon>
+            <BiUnderline
+              size={"100%"}
+              style={{ transform: "translateY(1px)" }}
+            />
+          </ToolbarSmallIcon>
         </MenuToolbar.Action>
         <MenuToolbar.Action border={MenuBorderRight}>
-          <IconContainer>
-            <BiListUl size={"90%"} />
-          </IconContainer>
+          <ToolbarSmallIcon>
+            <BiListUl size={"100%"} />
+          </ToolbarSmallIcon>
         </MenuToolbar.Action>
         <MenuToolbar.Action>
           <IconContainerLarge>
@@ -155,9 +171,9 @@ function NodeToolbar(): JSX.Element | null {
               $active={themeDark.id === theme.id}
               onClick={() => handleSetTheme(themeDark)}
             >
-              <IconContainer>
+              <ToolbarSmallIcon>
                 <ColorNodeIcon fill={themeDark.fill} />
-              </IconContainer>
+              </ToolbarSmallIcon>
             </MenuToolbar.Action>
           ))}
         </MenuToolbar.ActionLine>
@@ -168,9 +184,9 @@ function NodeToolbar(): JSX.Element | null {
               $active={themeLight.id === theme.id}
               onClick={() => handleSetTheme(themeLight)}
             >
-              <IconContainer>
+              <ToolbarSmallIcon>
                 <ColorNodeIcon fill={themeLight.fill} />
-              </IconContainer>
+              </ToolbarSmallIcon>
             </MenuToolbar.Action>
           ))}
         </MenuToolbar.ActionLine>
@@ -183,9 +199,9 @@ function NodeToolbar(): JSX.Element | null {
               $active={shadow === shadowsMenu.shadow}
               onClick={() => handleSetShadow(shadowsMenu.shadow)}
             >
-              <IconContainer>
+              <ToolbarSmallIcon>
                 <ShadowDiv shadow={shadowsMenu.shadowMenu} />
-              </IconContainer>
+              </ToolbarSmallIcon>
             </MenuToolbar.Action>
           ))}
         </MenuToolbar.ActionLine>
@@ -207,6 +223,20 @@ function NodeToolbar(): JSX.Element | null {
               </ShapeContainer>
             </MenuToolbar.Action>
           ))}
+        </MenuToolbar.ActionLine>
+      </MenuToolbar.SubMenu>
+      <MenuToolbar.SubMenu name="stroke">
+        <MenuToolbar.ActionLine>
+          <MenuToolbar.Action $active={!border} onClick={() => handleSetBorder(false)}>
+            <ToolbarSmallIcon>
+              <RxBorderNone size={"100%"} />
+            </ToolbarSmallIcon>
+          </MenuToolbar.Action>
+          <MenuToolbar.Action $active={border} onClick={() => handleSetBorder(true)}>
+            <ToolbarSmallIcon>
+              <RxBorderAll size={"100%"} />
+            </ToolbarSmallIcon>
+          </MenuToolbar.Action>
         </MenuToolbar.ActionLine>
       </MenuToolbar.SubMenu>
     </MenuToolbar>

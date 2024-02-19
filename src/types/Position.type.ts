@@ -1,8 +1,8 @@
 export type PositionAbsolute = {
-  top?: number;
-  left?: number;
-  bottom?: number;
-  right?: number;
+  top?: number | string;
+  left?: number | string;
+  bottom?: number | string;
+  right?: number | string;
   transform?: string;
 };
 

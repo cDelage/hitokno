@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import CartographyHeader from "./CartographyHeader";
 import "reactflow/dist/style.css";
-import CartographyViewport from "./CartographyViewport";
+import Viewport from "./Viewport";
 
 const CartographyContainerStyled = styled.div`
   height: 100%;
@@ -15,7 +15,7 @@ function CartographyContainer(): JSX.Element {
   return (
     <CartographyContainerStyled>
       <CartographyHeader />
-      <CartographyViewport/>
+      <Viewport/>
     </CartographyContainerStyled>
   );
 }

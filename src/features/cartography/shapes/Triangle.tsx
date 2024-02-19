@@ -4,7 +4,7 @@ import ShapeContainer from "./ShapeContainer";
 
 const TriangleStyled = styled.polygon<ShapeProps>`
   filter: drop-shadow(${(props) => props.$shadow});
-`
+`;
 
 function Triangle({ fill, $shadow, border }: ShapeProps): JSX.Element {
   return (
@@ -15,10 +15,15 @@ function Triangle({ fill, $shadow, border }: ShapeProps): JSX.Element {
       viewBox="0 0 100 100"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <TriangleStyled points="50 0, 100 100, 0 100" fill={fill} $shadow={$shadow} stroke={border} strokeWidth={1}/>
+      <TriangleStyled
+        points="50 0, 100 100, 0 100"
+        fill={fill}
+        $shadow={$shadow}
+        stroke={border}
+        strokeWidth={2}
+      />
     </ShapeContainer>
   );
 }
-
 
 export default Triangle;
