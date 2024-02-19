@@ -16,7 +16,7 @@ import OpenSheetIcon from "../../ui/icons/OpenSheetIcon";
 import useNodeToolbar from "./useNodeToolbar";
 import FakeSelector from "../../ui/FakeSelector";
 import useCartography from "./useCartography";
-import { Shadow, Shape, Theme } from "../../types/Cartography.type";
+import { Shadow, ShadowProps, Shape, Theme } from "../../types/Cartography.type";
 import ShapeDispatch from "./shapes/ShapeDispatch";
 import { ToolbarSmallIcon } from "../../ui/ToolbarSmallIcon";
 import { RxBorderAll } from "react-icons/rx";
@@ -37,9 +37,7 @@ const IconContainerLarge = styled.div`
   align-items: center;
 `;
 
-type ShadowProps = {
-  shadow?: string;
-};
+
 
 const ShadowDiv = styled.div<ShadowProps>`
   height: 24px;
@@ -89,6 +87,7 @@ function NodeToolbar(): JSX.Element | null {
   return (
     <MenuToolbar $position={{ ...positionToolbar }}>
       <MenuToolbar.ActionLine>
+        {/* Shapes (select rect, ellipse, triangle...) */}
         <MenuToolbar.ToggleSubMenu name="shape">
           <MenuToolbar.Action $padding="8px 4px 8px 8px">
             <ToolbarSmallIcon>
@@ -97,6 +96,8 @@ function NodeToolbar(): JSX.Element | null {
             <HiChevronUp size={12} />
           </MenuToolbar.Action>
         </MenuToolbar.ToggleSubMenu>
+
+        {/* Color of the shape */}
         <MenuToolbar.ToggleSubMenu name="color">
           <MenuToolbar.Action $padding="8px 4px 8px 8px">
             <ToolbarSmallIcon>
@@ -105,6 +106,8 @@ function NodeToolbar(): JSX.Element | null {
             <HiChevronUp size={12} />
           </MenuToolbar.Action>
         </MenuToolbar.ToggleSubMenu>
+
+        {/* Stroke of the shape */}
         <MenuToolbar.ToggleSubMenu name="stroke">
           <MenuToolbar.Action $padding="8px 4px 8px 8px">
             <ToolbarSmallIcon>
@@ -113,6 +116,8 @@ function NodeToolbar(): JSX.Element | null {
             <HiChevronUp size={12} />
           </MenuToolbar.Action>
         </MenuToolbar.ToggleSubMenu>
+
+        {/* Shadow */}
         <MenuToolbar.ToggleSubMenu name="shadow">
           <MenuToolbar.Action
             border={MenuBorderRight}
@@ -124,26 +129,36 @@ function NodeToolbar(): JSX.Element | null {
             <HiChevronUp size={12} />
           </MenuToolbar.Action>
         </MenuToolbar.ToggleSubMenu>
+
+        {/* Police */}
         <MenuToolbar.Action>
           <FakeSelector>
             Police <HiChevronUp size={12} />
           </FakeSelector>
         </MenuToolbar.Action>
+
+        {/* Title */}
         <MenuToolbar.Action>
           <FakeSelector>
             H1 <HiChevronUp size={12} />
           </FakeSelector>
         </MenuToolbar.Action>
+
+        {/* Bold */}
         <MenuToolbar.Action>
           <ToolbarSmallIcon>
             <BiBold size={"100%"} />
           </ToolbarSmallIcon>
         </MenuToolbar.Action>
+
+        {/* Italic */}
         <MenuToolbar.Action>
           <ToolbarSmallIcon>
             <BiItalic size={"100%"} />
           </ToolbarSmallIcon>
         </MenuToolbar.Action>
+
+        {/* Underline */}
         <MenuToolbar.Action>
           <ToolbarSmallIcon>
             <BiUnderline
@@ -152,17 +167,26 @@ function NodeToolbar(): JSX.Element | null {
             />
           </ToolbarSmallIcon>
         </MenuToolbar.Action>
+
+        {/* List */}
         <MenuToolbar.Action border={MenuBorderRight}>
           <ToolbarSmallIcon>
             <BiListUl size={"100%"} />
           </ToolbarSmallIcon>
         </MenuToolbar.Action>
+
+        {/* Open sheet */}
         <MenuToolbar.Action>
           <IconContainerLarge>
             <OpenSheetIcon />
           </IconContainerLarge>
         </MenuToolbar.Action>
       </MenuToolbar.ActionLine>
+
+      {/*
+       * SUBMENUS
+       */}
+
       <MenuToolbar.SubMenu name="color">
         <MenuToolbar.ActionLine>
           {ThemesDark.map((themeDark) => (
@@ -190,6 +214,8 @@ function NodeToolbar(): JSX.Element | null {
             </MenuToolbar.Action>
           ))}
         </MenuToolbar.ActionLine>
+
+
       </MenuToolbar.SubMenu>
       <MenuToolbar.SubMenu name="shadow">
         <MenuToolbar.ActionLine>
@@ -206,6 +232,8 @@ function NodeToolbar(): JSX.Element | null {
           ))}
         </MenuToolbar.ActionLine>
       </MenuToolbar.SubMenu>
+
+
       <MenuToolbar.SubMenu name="shape">
         <MenuToolbar.ActionLine>
           {ShapeMenu.map((shapeMenu) => (
@@ -225,14 +253,22 @@ function NodeToolbar(): JSX.Element | null {
           ))}
         </MenuToolbar.ActionLine>
       </MenuToolbar.SubMenu>
+
+
       <MenuToolbar.SubMenu name="stroke">
         <MenuToolbar.ActionLine>
-          <MenuToolbar.Action $active={!border} onClick={() => handleSetBorder(false)}>
+          <MenuToolbar.Action
+            $active={!border}
+            onClick={() => handleSetBorder(false)}
+          >
             <ToolbarSmallIcon>
               <RxBorderNone size={"100%"} />
             </ToolbarSmallIcon>
           </MenuToolbar.Action>
-          <MenuToolbar.Action $active={border} onClick={() => handleSetBorder(true)}>
+          <MenuToolbar.Action
+            $active={border}
+            onClick={() => handleSetBorder(true)}
+          >
             <ToolbarSmallIcon>
               <RxBorderAll size={"100%"} />
             </ToolbarSmallIcon>

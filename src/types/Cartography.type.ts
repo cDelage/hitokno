@@ -14,6 +14,10 @@ export type ShadowMenu = {
   shadowMenu: Shadow;
 };
 
+export type ShadowProps = {
+  shadow?: string;
+};
+
 export type Theme = {
   id: string;
   fill: string;

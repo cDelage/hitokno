@@ -75,6 +75,24 @@ function Viewport(): JSX.Element {
             />
           </>
         )}
+        {zoom < 1.5 && (
+          <>
+            <Background
+              variant={"lines" as BackgroundVariant}
+              color={"#BAE6FD"}
+              gap={PX_UNIT_GAP * 2}
+              size={1}
+              id="back"
+            />
+            <Background
+              variant={"lines" as BackgroundVariant}
+              color="#BAE6FD"
+              gap={PX_UNIT_GAP * 8}
+              size={1}
+              id="top"
+            />
+          </>
+        )}
       </ReactFlow>
     </ViewportContainer>
   );
