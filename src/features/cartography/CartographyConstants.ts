@@ -19,9 +19,9 @@ export const NodeCustomsComponents = {
 };
 
 export const DefaultShape: ShapeDescription = {
-  shape: "ellipse" as Shape,
-  border: true,
-  shadow: "var(--shadow-shape-lg)" as Shadow,
+  shape: "rect" as Shape,
+  border: false,
+  shadow: "none" as Shadow,
   theme: {
     id: "purple-dark",
     fill: "#4F46E5",

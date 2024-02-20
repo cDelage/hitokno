@@ -66,7 +66,7 @@ function MainToolbar() {
   } = useCartography();
 
   const {
-    theme: { fill, stroke },
+    theme: { id : themeId, fill, stroke },
     shape,
     shadow,
     border,
@@ -217,7 +217,7 @@ function MainToolbar() {
                     shape={shape}
                     fill={fill}
                     $shadow={shadow}
-                    border={border ? stroke : "none"}
+                    border={border || themeId === "white-light" ? stroke : "none"}
                   />
                 </ToolbarMediumIconContainer>
               </ToolbarLargeIconContainer>

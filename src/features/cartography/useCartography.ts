@@ -12,6 +12,7 @@ import {
   PaneOnDragMode,
   ShapeDescription,
 } from "../../types/Cartography.type";
+import { v4 as uuidv4 } from "uuid";
 
 type UseCartographyStore = {
   nodes: Node<DataNode>[];
@@ -31,6 +32,12 @@ type UseCartographyStore = {
   setNodeData: (nodeId: string, data: DataNode) => void;
   setCreateNodeMode: () => void;
   clearCreateNodeMode: () => void;
+  handleCreateNode: (
+    xPos: number,
+    yPos: number,
+    width: number,
+    height: number
+  ) => void;
   updateNode: (node: Node<DataNode>) => void;
   findNodeById: (nodeId: string) => Node;
 };
@@ -136,6 +143,32 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
     set((state) => {
       return {
         nodes: state.nodes.filter((node) => node.type !== "creation"),
+      };
+    });
+  },
+  handleCreateNode: (x, y, width, height) => {
+    set((state) => {
+      return {
+        mainToolbarActiveMenu: undefined,
+        nodes: [
+          ...state.nodes,
+          {
+            id: uuidv4(),
+            type: "shape",
+            data: {
+              mode: "DEFAULT",
+              shapeDescription: state.shapeCreationDesc,
+            },
+            style: {
+              width,
+              height,
+            },
+            position: {
+              x,
+              y,
+            },
+          },
+        ],
       };
     });
   },

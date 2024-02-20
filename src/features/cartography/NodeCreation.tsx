@@ -12,12 +12,17 @@ const NodeCreationStyled = styled.div`
 `;
 
 function NodeCreation({ xPos, yPos }: NodeProps<DataNode>) {
-  const { findNodeById, updateNode } = useCartography();
+  const {
+    findNodeById,
+    updateNode,
+    handleCreateNode,
+    shapeCreationDesc: { border, shadow, shape, theme },
+  } = useCartography();
   const { screenToFlowPosition } = useReactFlow();
   const [isClicked, setIsClicked] = useState(false);
 
   useEffect(() => {
-    function handleMouseMove(event: MouseEvent) {
+    function MouseMoveReplaceInitialPosition(event: MouseEvent) {
       const node = findNodeById("node-creation");
       const position = screenToFlowPosition({
         x: event.clientX,
@@ -26,7 +31,7 @@ function NodeCreation({ xPos, yPos }: NodeProps<DataNode>) {
       updateNode({ ...node, position });
     }
 
-    function handleResizeCreationNode(event: MouseEvent) {
+    function MouseMoveResizeNodeCreation(event: MouseEvent) {
       const node = findNodeById("node-creation");
       const cursorPosition = screenToFlowPosition({
         x: event.clientX,
@@ -38,8 +43,8 @@ function NodeCreation({ xPos, yPos }: NodeProps<DataNode>) {
       const scaleX: boolean = width < 0;
       const scaleY: boolean = height < 0;
       //When the cursor is under X or Y axis, then move the translate
-      const transform = `translate(${scaleX ? xPos - width : xPos}px, ${
-        scaleY ? yPos - height : yPos
+      const transform = `translate(${scaleX ? xPos + width : xPos}px, ${
+        scaleY ? yPos + height : yPos
       }px)`;
 
       updateNode({
@@ -52,30 +57,55 @@ function NodeCreation({ xPos, yPos }: NodeProps<DataNode>) {
       });
     }
 
-    function handleMouseDown() {
+    function MouseDownStartCreateNode() {
       setIsClicked(true);
     }
 
-    if (isClicked) {
-      document.removeEventListener("mousemove", handleMouseMove);
-      document.addEventListener("mousemove", handleResizeCreationNode);
-    } else {
-      document.removeEventListener("mousemove", handleResizeCreationNode);
-      document.addEventListener("mousemove", handleMouseMove);
+    function MouseUpCreateNewNode(event : MouseEvent){
+      document.removeEventListener("mousemove", MouseMoveResizeNodeCreation);
+      const cursorPosition = screenToFlowPosition({
+        x: event.clientX,
+        y: event.clientY,
+      });
+
+      const width = cursorPosition.x - xPos;
+      const height = cursorPosition.y - yPos;
+      const scaleX: boolean = width < 0;
+      const scaleY: boolean = height < 0;
+
+      const newX = scaleX ? xPos + width : xPos;
+      const newY = scaleY ? yPos + height : yPos;
+
+      handleCreateNode(newX, newY, width, height)
     }
 
-    document.addEventListener("mousedown", handleMouseDown);
-
+    if (isClicked) {
+      document.removeEventListener("mousemove", MouseMoveReplaceInitialPosition);
+      document.addEventListener("mousemove", MouseMoveResizeNodeCreation);
+      document.addEventListener("mouseup", MouseUpCreateNewNode)
+    } else {
+      document.removeEventListener("mousemove", MouseMoveResizeNodeCreation);
+      document.addEventListener("mousemove", MouseMoveReplaceInitialPosition);
+    }
+    
+    document.addEventListener("mousedown", MouseDownStartCreateNode);
+    
     return () => {
-      document.removeEventListener("mousemove", handleMouseMove);
-      document.removeEventListener("mousemove", handleResizeCreationNode);
-      document.removeEventListener("mousedown", handleMouseDown);
+      document.removeEventListener("mouseup", MouseUpCreateNewNode)
+      document.removeEventListener("mousemove", MouseMoveReplaceInitialPosition);
+      document.removeEventListener("mousemove", MouseMoveResizeNodeCreation);
+      document.removeEventListener("mousedown", MouseDownStartCreateNode);
     };
-  }, [findNodeById, updateNode, screenToFlowPosition, isClicked, xPos, yPos]);
+  }, [findNodeById, updateNode, screenToFlowPosition, isClicked, xPos, yPos, handleCreateNode]);
 
   return (
     <NodeCreationStyled id="node-creation-container">
-      <ShapeDispatch shape={"ellipse"} fill={"#22a3ee"} $shadow={"none"} />
+      <ShapeDispatch
+        shape={shape}
+        fill={theme.fill}
+        $shadow={shadow}
+        border={border ? theme.stroke : "none"}
+      />
     </NodeCreationStyled>
   );
 }
