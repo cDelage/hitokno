@@ -1,5 +1,13 @@
+import { Node } from "reactflow";
 import { Border } from "../../types/Border.type";
-import { Shadow, ShadowMenu, Shape, Theme } from "../../types/Cartography.type";
+import {
+  DataNode,
+  Shadow,
+  ShadowMenu,
+  Shape,
+  ShapeDescription,
+  Theme,
+} from "../../types/Cartography.type";
 import NodeCreation from "./NodeCreation";
 import NodeShape from "./NodeShape";
 
@@ -7,7 +15,19 @@ export const PX_UNIT_GAP = 8;
 
 export const NodeCustomsComponents = {
   shape: NodeShape,
-  creation : NodeCreation
+  creation: NodeCreation,
+};
+
+export const DefaultShape: ShapeDescription = {
+  shape: "ellipse" as Shape,
+  border: true,
+  shadow: "var(--shadow-shape-lg)" as Shadow,
+  theme: {
+    id: "purple-dark",
+    fill: "#4F46E5",
+    color: "#FFFFFF",
+    stroke: "#3730A3",
+  },
 };
 
 export const ShadowsMenu: ShadowMenu[] = [
@@ -25,14 +45,20 @@ export const ShadowsMenu: ShadowMenu[] = [
   },
 ];
 
-export const ShapeMenu: Shape[] = ["rect", "rect-radius", "ellipse", "triangle","cylinder"];
+export const ShapeMenu: Shape[] = [
+  "rect",
+  "rect-radius",
+  "ellipse",
+  "triangle",
+  "cylinder",
+];
 
 export const NODE_SIZE_DEFAULT = {
   width: PX_UNIT_GAP * 16,
   height: PX_UNIT_GAP * 8,
 };
 
-export const NODE_DEFAULT = {
+export const NODE_DEFAULT: Node<DataNode> = {
   id: "1",
   type: "shape",
   position: { x: 0, y: 0 },
@@ -40,14 +66,16 @@ export const NODE_DEFAULT = {
   data: {
     label: "LABEL",
     mode: "DEFAULT",
-    shape: "rect" as Shape,
-    border: false,
-    shadow: "var(--shadow-shape-md)" as Shadow,
-    theme: {
-      id: "yellow-light",
-      fill: "#FEF08A",
-      color: "#1C1917",
-      stroke: "#FACC15",
+    shapeDescription: {
+      shape: "rect" as Shape,
+      border: false,
+      shadow: "var(--shadow-shape-md)" as Shadow,
+      theme: {
+        id: "yellow-light",
+        fill: "#FEF08A",
+        color: "#1C1917",
+        stroke: "#FACC15",
+      },
     },
     showNodeToolbar: false,
   },
@@ -58,7 +86,7 @@ export const NODE_DEFAULT = {
   },
 };
 
-export const NODE_DEFAULT_2 = {
+export const NODE_DEFAULT_2: Node<DataNode> = {
   id: "2",
   type: "shape",
   position: { x: 200, y: 150 },
@@ -66,14 +94,16 @@ export const NODE_DEFAULT_2 = {
   data: {
     label: "LABEL",
     mode: "DEFAULT",
-    shape: "ellipse" as Shape,
-    border: true,
-    shadow: "var(--shadow-shape-lg)" as Shadow,
-    theme: {
-      id: "purple-dark",
-      fill: "#4F46E5",
-      color: "#FFFFFF",
-      stroke: "#3730A3",
+    shapeDescription: {
+      shape: "ellipse" as Shape,
+      border: true,
+      shadow: "var(--shadow-shape-lg)" as Shadow,
+      theme: {
+        id: "purple-dark",
+        fill: "#4F46E5",
+        color: "#FFFFFF",
+        stroke: "#3730A3",
+      },
     },
     showNodeToolbar: false,
   },
@@ -84,7 +114,7 @@ export const NODE_DEFAULT_2 = {
   },
 };
 
-export const NODE_CREATION = {
+export const NODE_CREATION: Node<DataNode> = {
   id: "node-creation",
   type: "creation",
   position: { x: 0, y: 0 },
@@ -92,14 +122,16 @@ export const NODE_CREATION = {
   data: {
     label: "LABEL",
     mode: "DEFAULT",
-    shape: "rect" as Shape,
-    border: false,
-    shadow: "var(--shadow-shape-md)" as Shadow,
-    theme: {
-      id: "yellow-light",
-      fill: "#FEF08A",
-      color: "#1C1917",
-      stroke: "#FACC15",
+    shapeDescription: {
+      shape: "rect" as Shape,
+      border: false,
+      shadow: "var(--shadow-shape-md)" as Shadow,
+      theme: {
+        id: "yellow-light",
+        fill: "#FEF08A",
+        color: "#1C1917",
+        stroke: "#FACC15",
+      },
     },
     showNodeToolbar: false,
   },

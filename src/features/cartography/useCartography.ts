@@ -1,6 +1,7 @@
 import { Edge, Node, NodeChange, applyNodeChanges } from "reactflow";
 import { create } from "zustand";
 import {
+  DefaultShape,
   NODE_CREATION,
   NODE_DEFAULT,
   NODE_DEFAULT_2,
@@ -9,6 +10,7 @@ import {
   DataNode,
   MainToolbarMode,
   PaneOnDragMode,
+  ShapeDescription,
 } from "../../types/Cartography.type";
 
 type UseCartographyStore = {
@@ -16,6 +18,8 @@ type UseCartographyStore = {
   edges: Edge[];
   mainToolbarActiveMenu: MainToolbarMode;
   panOnDragMode: PaneOnDragMode;
+  shapeCreationDesc: ShapeDescription;
+  setShapeCreationDesc: (shapeDesc: ShapeDescription) => void;
   setPanOnDragMode: (panOnDragMode: PaneOnDragMode) => void;
   setMainToolbarActiveMenu: (mode: MainToolbarMode) => void;
   setNodes: (nds: Node[]) => void;
@@ -36,6 +40,12 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
   edges: [],
   mainToolbarActiveMenu: undefined,
   panOnDragMode: undefined,
+  shapeCreationDesc: DefaultShape,
+  setShapeCreationDesc(shapeDesc: ShapeDescription) {
+    set({
+      shapeCreationDesc: shapeDesc,
+    });
+  },
   setNodes: (nds: Node<DataNode>[]) => {
     set({
       nodes: nds,

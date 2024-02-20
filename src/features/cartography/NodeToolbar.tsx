@@ -16,7 +16,12 @@ import OpenSheetIcon from "../../ui/icons/OpenSheetIcon";
 import useNodeToolbar from "./useNodeToolbar";
 import FakeSelector from "../../ui/FakeSelector";
 import useCartography from "./useCartography";
-import { Shadow, ShadowProps, Shape, Theme } from "../../types/Cartography.type";
+import {
+  Shadow,
+  ShadowProps,
+  Shape,
+  Theme,
+} from "../../types/Cartography.type";
 import ShapeDispatch from "./shapes/ShapeDispatch";
 import { ToolbarSmallIcon } from "../../ui/ToolbarSmallIcon";
 import { RxBorderAll } from "react-icons/rx";
@@ -37,8 +42,6 @@ const IconContainerLarge = styled.div`
   align-items: center;
 `;
 
-
-
 const ShadowDiv = styled.div<ShadowProps>`
   height: 24px;
   width: 24px;
@@ -54,33 +57,47 @@ function NodeToolbar(): JSX.Element | null {
 
   if (!positionToolbar.top || !selectedNodeId) return null;
   const data = getNodeData(selectedNodeId);
-  const { theme, shadow, shape, border } = data;
+  const {
+    shapeDescription: { theme, shadow, shape, border },
+  } = data;
 
   function handleSetTheme(theme: Theme) {
     setNodeData(selectedNodeId, {
       ...data,
-      theme,
+      shapeDescription: {
+        ...data.shapeDescription,
+        theme,
+      },
     });
   }
 
   function handleSetShadow(shadow: Shadow) {
     setNodeData(selectedNodeId, {
       ...data,
-      shadow,
+      shapeDescription: {
+        ...data.shapeDescription,
+        shadow,
+      },
     });
   }
 
   function handleSetShape(shape: Shape) {
     setNodeData(selectedNodeId, {
       ...data,
-      shape,
+      shapeDescription: {
+        ...data.shapeDescription,
+        shape,
+      },
     });
   }
 
   function handleSetBorder(border: boolean) {
     setNodeData(selectedNodeId, {
       ...data,
-      border,
+      shapeDescription: {
+        ...data.shapeDescription,
+        border,
+      },
     });
   }
 
@@ -214,8 +231,6 @@ function NodeToolbar(): JSX.Element | null {
             </MenuToolbar.Action>
           ))}
         </MenuToolbar.ActionLine>
-
-
       </MenuToolbar.SubMenu>
       <MenuToolbar.SubMenu name="shadow">
         <MenuToolbar.ActionLine>
@@ -232,7 +247,6 @@ function NodeToolbar(): JSX.Element | null {
           ))}
         </MenuToolbar.ActionLine>
       </MenuToolbar.SubMenu>
-
 
       <MenuToolbar.SubMenu name="shape">
         <MenuToolbar.ActionLine>
@@ -253,7 +267,6 @@ function NodeToolbar(): JSX.Element | null {
           ))}
         </MenuToolbar.ActionLine>
       </MenuToolbar.SubMenu>
-
 
       <MenuToolbar.SubMenu name="stroke">
         <MenuToolbar.ActionLine>

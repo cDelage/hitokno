@@ -70,7 +70,7 @@ function Viewport(): JSX.Element {
         fitView
         snapGrid={[8, 8]}
         panOnScroll
-        selectionOnDrag
+        selectionOnDrag={!mainToolbarActiveMenu?.startsWith("CREATION")}
         panOnDrag={panOnDragMode}
         selectionMode={SelectionMode.Full}
         minZoom={1}

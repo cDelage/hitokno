@@ -1,15 +1,38 @@
 export type CartographyMode = "DEFAULT" | "EDIT";
 
-export type MainToolbarMode = "DEFAULT" | "CREATION-NODE" | "CREATION-EDGE" | "CREATION-GROUP" | "SELECT" | undefined;
+export type MainToolbarMode =
+  | "DEFAULT"
+  | "CREATION-NODE"
+  | "CREATION-EDGE"
+  | "CREATION-GROUP"
+  | "SELECT"
+  | "UPDATE-SHAPE"
+  | "UPDATE-COLOR"
+  | "UPDATE-BORDER"
+  | "UPDATE-SHADOW"
+  | undefined;
 
-export type PaneOnDragOption = 0 | 1 | 2 | 3 | 4 | 5
+export type NodeProps = {
+  id: string;
+  selected: boolean;
+  data: DataNode;
+  xPos: number;
+  yPos: number;
+};
+
+export type PaneOnDragOption = 0 | 1 | 2 | 3 | 4 | 5;
 
 /**
  * Control the scroll with panOnDrag
  */
-export type PaneOnDragMode = undefined | PaneOnDragOption[]
+export type PaneOnDragMode = undefined | PaneOnDragOption[];
 
-export type Shape = "rect" | "rect-radius" | "ellipse" | "triangle" | "cylinder";
+export type Shape =
+  | "rect"
+  | "rect-radius"
+  | "ellipse"
+  | "triangle"
+  | "cylinder";
 
 export type Shadow =
   | "none"
@@ -41,14 +64,18 @@ export type ShapeProps = {
   border?: string;
 };
 
-export type DataNode = {
-  label: string;
-  mode: string;
+export type ShapeDescription = {
   shape: Shape;
   shadow: Shadow;
   border: boolean;
-  showNodeToolbar?: boolean;
   theme: Theme;
+};
+
+export type DataNode = {
+  label?: string;
+  mode: string;
+  showNodeToolbar?: boolean;
+  shapeDescription: ShapeDescription;
 };
 
 export type Fill = {

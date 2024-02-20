@@ -1,12 +1,12 @@
 import { CSSProperties, useEffect } from "react";
-import { NodeResizer, useReactFlow, useViewport } from "reactflow";
+import { NodeProps, NodeResizer, useReactFlow, useViewport } from "reactflow";
 import styled from "styled-components";
-import { DataNode } from "../../types/Cartography.type";
 import { PX_UNIT_GAP } from "./CartographyConstants";
 import { PositionAbsolute } from "../../types/Position.type";
 import useNodeToolbar from "./useNodeToolbar";
 import useCartography from "./useCartography";
 import ShapeDispatch from "./shapes/ShapeDispatch";
+import { DataNode } from "../../types/Cartography.type";
 
 const NodeShapeStyled = styled.div`
   display: flex;
@@ -35,21 +35,16 @@ const ResizerBorderStyle: CSSProperties = {
   boxSizing: "border-box",
 };
 
-type NodeShapeProps = {
-  id: string;
-  selected: boolean;
-  data: DataNode;
-  xPos: number;
-  yPos: number;
-};
-
 function NodeShape({
   id,
   selected,
-  data: { shape, shadow, showNodeToolbar, theme, border },
+  data: {
+    showNodeToolbar,
+    shapeDescription: { shape, shadow, theme, border },
+  },
   xPos,
   yPos,
-}: NodeShapeProps): JSX.Element {
+}: NodeProps<DataNode>): JSX.Element {
   const { flowToScreenPosition } = useReactFlow();
   const { setSelectedNode } = useNodeToolbar();
   const { nodes, getNodeWidth } = useCartography();
@@ -85,7 +80,12 @@ function NodeShape({
 
   return (
     <NodeShapeStyled>
-      <ShapeDispatch shape={shape} fill={theme.fill} $shadow={shadow} border={border ? theme.stroke : undefined}/>
+      <ShapeDispatch
+        shape={shape}
+        fill={theme.fill}
+        $shadow={shadow}
+        border={border ? theme.stroke : undefined}
+      />
       <TopContainer>
         <NodeResizer
           minWidth={PX_UNIT_GAP * 2}

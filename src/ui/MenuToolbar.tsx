@@ -72,7 +72,7 @@ type MenuToolbarContextProps = {
   activeSubMenu: string | undefined;
   position: PositionAbsolute;
   handleToggleSubMenu: (
-    name: string,
+    name: string | undefined,
     offsetLeftSubmenu: number | undefined
   ) => void;
   offsetLeft: number | undefined;
@@ -103,7 +103,7 @@ function MenuToolbar({
   const [offsetLeft, setOffsetLeft] = useState<number | undefined>(undefined);
 
   function handleToggleSubMenu(
-    name: string,
+    name: string | undefined,
     offsetLeftSubmenu: number | undefined
   ) {
     setOffsetLeft(offsetLeftSubmenu);
@@ -174,7 +174,7 @@ function Action({
 }
 
 type SubMenuProps = {
-  name: string;
+  name?: string;
 };
 
 function SubMenu({
@@ -187,10 +187,8 @@ function SubMenu({
 }
 
 const ToggleSubMenuStyled = styled.div`
-  height: 100%;
-  width: 100%;
-  flex-grow: 1;
   display: flex;
+  flex-grow: 1;
 `;
 
 function ToggleSubMenu({ children, name }: ChildrenProps & SubMenuProps) {

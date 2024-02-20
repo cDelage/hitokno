@@ -4,6 +4,7 @@ import ShapeContainer from "./ShapeContainer";
 
 const PathStyled = styled.path<ShapeProps>`
   filter: drop-shadow(${(props) => props.$shadow});
+  transform: inherit;
 `;
 
 function Cylinder({ fill, $shadow, border }: ShapeProps): JSX.Element {
