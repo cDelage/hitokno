@@ -13,9 +13,6 @@ const ToolbarActionStyled = styled.div`
   align-items: center;
   position: relative;
   padding: 8px;
-  &:hover {
-    background-color: var(--bg-element-hover);
-  }
 `;
 
 const ActionButtonStyled = styled.button<HoverTransformProps>`

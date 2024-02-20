@@ -67,6 +67,7 @@ const SubMenuStyled = styled.menu<SubMenuStyledProps>`
   left: ${(props) => (props.$offsetLeft ? props.$offsetLeft : 0)}px;
   transform: translateY(-100%);
 `;
+
 type MenuToolbarContextProps = {
   activeSubMenu: string | undefined;
   position: PositionAbsolute;
@@ -185,6 +186,13 @@ function SubMenu({
   return <SubMenuStyled $offsetLeft={offsetLeft}>{children}</SubMenuStyled>;
 }
 
+const ToggleSubMenuStyled = styled.div`
+  height: 100%;
+  width: 100%;
+  flex-grow: 1;
+  display: flex;
+`;
+
 function ToggleSubMenu({ children, name }: ChildrenProps & SubMenuProps) {
   const subMenuRef = useRef<HTMLDivElement>(null);
   const { handleToggleSubMenu } = useMenuToolbarContext();
@@ -192,9 +200,9 @@ function ToggleSubMenu({ children, name }: ChildrenProps & SubMenuProps) {
     handleToggleSubMenu(name, subMenuRef.current?.offsetLeft);
   }
   return (
-    <div ref={subMenuRef} onClick={handleClick}>
+    <ToggleSubMenuStyled ref={subMenuRef} onClick={handleClick}>
       {children}
-    </div>
+    </ToggleSubMenuStyled>
   );
 }
 

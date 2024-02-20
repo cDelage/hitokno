@@ -1,6 +1,7 @@
 import ReactFlow, {
   Background,
   BackgroundVariant,
+  SelectionMode,
   useOnSelectionChange,
   useViewport,
 } from "reactflow";
@@ -17,13 +18,17 @@ const ViewportContainer = styled.div`
 `;
 
 function Viewport(): JSX.Element {
-  const { nodes, edges, onNodesChange, setShowNodeToolbar } = useCartography();
+  const {
+    nodes,
+    edges,
+    onNodesChange,
+    setShowNodeToolbar,
+    panOnDragMode,
+    mainToolbarActiveMenu,
+    setPanOnDragMode,
+  } = useCartography();
   const { zoom } = useViewport();
   const { clearPositionToolbar } = useNodeToolbar();
-  //Check mode
-  //const { getCartographyMode } = useTabs();
-  //const {fileId} = useParams();
-  //const mode : CartographyMode = fileId ? getCartographyMode(fileId) : "DEFAULT";
 
   useOnSelectionChange({
     onChange: ({ nodes }) => {
@@ -34,11 +39,23 @@ function Viewport(): JSX.Element {
     },
   });
 
+  //Clear node toolbar when no nodes are selected
   useEffect(() => {
     if (!nodes.find((node) => node.selected)) {
       clearPositionToolbar();
     }
   }, [nodes, clearPositionToolbar, setShowNodeToolbar]);
+
+  //Manage panOnDragMode (scroll, zoom, etc...) by regarding MainToolbar menu selected
+  useEffect(() => {
+    if (mainToolbarActiveMenu === "SELECT") {
+      setPanOnDragMode([1, 2]);
+    } else if (mainToolbarActiveMenu === "CREATION-NODE") {
+      setPanOnDragMode([2]);
+    } else {
+      setPanOnDragMode(undefined);
+    }
+  }, [mainToolbarActiveMenu, setPanOnDragMode]);
 
   return (
     <ViewportContainer>
@@ -50,12 +67,14 @@ function Viewport(): JSX.Element {
         onNodesChange={onNodesChange}
         nodeTypes={NodeCustomsComponents}
         snapToGrid={true}
+        fitView
         snapGrid={[8, 8]}
         panOnScroll
         selectionOnDrag
+        panOnDrag={panOnDragMode}
+        selectionMode={SelectionMode.Full}
         minZoom={1}
         maxZoom={2.5}
-        fitView
       >
         {zoom > 1.5 && (
           <>

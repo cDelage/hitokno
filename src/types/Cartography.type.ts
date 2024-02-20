@@ -1,5 +1,14 @@
 export type CartographyMode = "DEFAULT" | "EDIT";
 
+export type MainToolbarMode = "DEFAULT" | "CREATION-NODE" | "CREATION-EDGE" | "CREATION-GROUP" | "SELECT" | undefined;
+
+export type PaneOnDragOption = 0 | 1 | 2 | 3 | 4 | 5
+
+/**
+ * Control the scroll with panOnDrag
+ */
+export type PaneOnDragMode = undefined | PaneOnDragOption[]
+
 export type Shape = "rect" | "rect-radius" | "ellipse" | "triangle" | "cylinder";
 
 export type Shadow =

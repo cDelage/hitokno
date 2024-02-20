@@ -1,11 +1,13 @@
 import { Border } from "../../types/Border.type";
 import { Shadow, ShadowMenu, Shape, Theme } from "../../types/Cartography.type";
+import NodeCreation from "./NodeCreation";
 import NodeShape from "./NodeShape";
 
 export const PX_UNIT_GAP = 8;
 
 export const NodeCustomsComponents = {
   shape: NodeShape,
+  creation : NodeCreation
 };
 
 export const ShadowsMenu: ShadowMenu[] = [
@@ -79,6 +81,33 @@ export const NODE_DEFAULT_2 = {
   draggable: true,
   style: {
     ...NODE_SIZE_DEFAULT,
+  },
+};
+
+export const NODE_CREATION = {
+  id: "node-creation",
+  type: "creation",
+  position: { x: 0, y: 0 },
+  selected: false,
+  data: {
+    label: "LABEL",
+    mode: "DEFAULT",
+    shape: "rect" as Shape,
+    border: false,
+    shadow: "var(--shadow-shape-md)" as Shadow,
+    theme: {
+      id: "yellow-light",
+      fill: "#FEF08A",
+      color: "#1C1917",
+      stroke: "#FACC15",
+    },
+    showNodeToolbar: false,
+  },
+  selectable: false,
+  draggable: false,
+  style: {
+    width: PX_UNIT_GAP,
+    height: PX_UNIT_GAP,
   },
 };
 
