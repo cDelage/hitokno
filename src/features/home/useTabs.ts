@@ -26,7 +26,6 @@ const useTabs = create(persist<TabsStore>(
         };
       });
     }
-    console.log(get().tabs);
   },
   closeTab: (fileId: string) => {
     set((state) => {

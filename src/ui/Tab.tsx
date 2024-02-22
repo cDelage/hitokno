@@ -4,6 +4,7 @@ import { IoDocumentOutline, IoClose, IoDocument } from "react-icons/io5";
 import { useState } from "react";
 import { useTabs } from "../features/home/useTabs";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 
 type tabProps = {
   id: string;
@@ -45,7 +46,6 @@ type CloseButtonProps = {
 
 const CloseButton = styled.button<CloseButtonProps>`
   display: flex;
-  height: 100%;
   align-items: center;
   padding: 0;
   background-color: transparent;
@@ -63,6 +63,7 @@ function Tab({ id }: tabProps): JSX.Element | null {
   const [isHover, setIsHover] = useState<boolean>(false);
   const { closeTab } = useTabs();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const location = useLocation();
 
@@ -83,6 +84,7 @@ function Tab({ id }: tabProps): JSX.Element | null {
   function handleClick(e: MouseEvent) {
     e.stopPropagation();
     if (!tabActive) {
+      queryClient.invalidateQueries({queryKey: ["file"]})
       navigate(`/cartography/${id}`);
     }
   }

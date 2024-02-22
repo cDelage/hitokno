@@ -18,15 +18,17 @@ export const NodeCustomsComponents = {
   creation: NodeCreation,
 };
 
+export const NodeToSave = ["shape"];
+
 export const DefaultShape: ShapeDescription = {
   shape: "rect" as Shape,
   border: false,
   shadow: "none" as Shadow,
-  theme: {
-    id: "purple-dark",
-    fill: "#4F46E5",
-    color: "#FFFFFF",
-    stroke: "#3730A3",
+  theme:   {
+    id: "bleu-light",
+    fill: "#BAE6FD",
+    color: "#1C1917",
+    stroke: "#38BDF8",
   },
 };
 
@@ -64,7 +66,6 @@ export const NODE_DEFAULT: Node<DataNode> = {
   position: { x: 0, y: 0 },
   selected: false,
   data: {
-    label: "LABEL",
     mode: "DEFAULT",
     shapeDescription: {
       shape: "rect" as Shape,
@@ -92,7 +93,6 @@ export const NODE_DEFAULT_2: Node<DataNode> = {
   position: { x: 200, y: 150 },
   selected: false,
   data: {
-    label: "LABEL",
     mode: "DEFAULT",
     shapeDescription: {
       shape: "ellipse" as Shape,
@@ -120,7 +120,6 @@ export const NODE_CREATION: Node<DataNode> = {
   position: { x: 0, y: 0 },
   selected: false,
   data: {
-    label: "LABEL",
     mode: "DEFAULT",
     shapeDescription: {
       shape: "rect" as Shape,
@@ -273,3 +272,11 @@ export const ThemeLight: Theme[] = [
     stroke: "#F87171",
   },
 ];
+
+export const initialNodeConfig = {
+  namespace: "NodeEditor",
+  editable : false,
+  onError: (err: Error) => {
+    console.log(err);
+  },
+};

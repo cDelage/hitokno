@@ -7,16 +7,22 @@ import useNodeToolbar from "./useNodeToolbar";
 import useCartography from "./useCartography";
 import ShapeDispatch from "./shapes/ShapeDispatch";
 import { DataNode } from "../../types/Cartography.type";
+import NodeToolbar from "./NodeToolbar";
+import NodeText from "./NodeText";
+import PluginReadEditMode from "./lexicalPlugins/PluginReadEditMode";
+import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
+import PluginUpdateNodeText from "./lexicalPlugins/PluginUpdateNodeText";
 
 const NodeShapeStyled = styled.div`
-  display: flex;
   height: 100%;
   width: 100%;
   position: relative;
+  display: flex;
 `;
 
 const TopContainer = styled.div`
   z-index: 1;
+  flex-grow: 1;
 `;
 
 const ResizerHandleStyle: CSSProperties = {
@@ -40,6 +46,8 @@ function NodeShape({
   selected,
   data: {
     showNodeToolbar,
+    mode,
+    editorState,
     shapeDescription: { shape, shadow, theme, border },
   },
   xPos,
@@ -47,8 +55,14 @@ function NodeShape({
 }: NodeProps<DataNode>): JSX.Element {
   const { flowToScreenPosition } = useReactFlow();
   const { setSelectedNode } = useNodeToolbar();
-  const { nodes, getNodeWidth } = useCartography();
+  const { nodes, getNodeWidth, toggleEditMode } = useCartography();
   const { zoom, x, y } = useViewport();
+
+  function handleDoubleClick() {
+    if (mode !== "EDIT" && selected) {
+      toggleEditMode(id);
+    }
+  }
 
   useEffect(() => {
     if (showNodeToolbar && selected) {
@@ -86,7 +100,7 @@ function NodeShape({
         $shadow={shadow}
         border={border ? theme.stroke : undefined}
       />
-      <TopContainer>
+      <TopContainer onDoubleClick={handleDoubleClick}>
         <NodeResizer
           minWidth={PX_UNIT_GAP * 2}
           minHeight={PX_UNIT_GAP * 2}
@@ -94,6 +108,12 @@ function NodeShape({
           lineStyle={ResizerBorderStyle}
           isVisible={selected}
         />
+        <NodeText mode={mode} editorState={editorState} theme={theme}>
+          <PluginReadEditMode mode={mode} />
+          <PluginUpdateNodeText id={id}/>
+          <NodeToolbar id={id} mode={mode} />
+          <HistoryPlugin />
+        </NodeText>
       </TopContainer>
     </NodeShapeStyled>
   );

@@ -43,7 +43,6 @@ function FileSelected(): JSX.Element {
   const mode = paramsMode ? paramsMode : "DEFAULT";
 
   function switchModeEditFilename() {
-    console.log("EDIT");
     setSearchParams({
       mode: "EDIT",
     });

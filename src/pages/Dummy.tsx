@@ -2,7 +2,6 @@ import styled from "styled-components";
 import Button from "../ui/Button";
 import { IoAirplane } from "react-icons/io5";
 import { ChangeEvent, useState } from "react";
-import EditToggle from "../ui/EditToggle";
 
 const getWidthOfText = function (text: string) {
   const element = document.createElement("div");
@@ -61,9 +60,6 @@ function Dummy() {
         <Button type="danger" $icon={true} disabled>
           <IoAirplane /> Disabled
         </Button>
-      </div>
-      <div>
-        <EditToggle/>
       </div>
       <InputContainer>
         <InputTest

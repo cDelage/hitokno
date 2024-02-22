@@ -41,6 +41,7 @@ declare global {
       renameFolder: (params: RenameFolderParams) => Promise<Folder>;
       findFile: (fileId: string) => Promise<FileDetail | undefined>;
       renameFile: (params: FileRename) => Promise<Folder>;
+      updateCartography: (file : File) => Promise<number>;
     };
   }
 }

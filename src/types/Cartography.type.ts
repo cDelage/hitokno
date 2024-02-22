@@ -71,9 +71,11 @@ export type ShapeDescription = {
   theme: Theme;
 };
 
+export type NodeMode = "DEFAULT" | "EDIT"
+
 export type DataNode = {
-  label?: string;
-  mode: string;
+  mode: NodeMode;
+  editorState?: string;
   showNodeToolbar?: boolean;
   shapeDescription: ShapeDescription;
 };

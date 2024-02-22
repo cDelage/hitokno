@@ -1,10 +1,11 @@
 import styled from "styled-components";
+import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
 import MenuToolbar from "../../ui/MenuToolbar";
 import ShapesIcon from "../../ui/icons/ShapesIcon";
 import { HiChevronUp } from "react-icons/hi2";
 import ColorNodeIcon from "../../ui/icons/ColorNodeIcon";
 import ShadowIcon from "../../ui/icons/ShadowIcon";
-import { BiBold, BiItalic, BiUnderline, BiListUl } from "react-icons/bi";
+import { BiBold, BiItalic, BiUnderline, BiListUl, BiPen } from "react-icons/bi";
 import {
   MenuBorderRight,
   ShadowsMenu,
@@ -17,6 +18,7 @@ import useNodeToolbar from "./useNodeToolbar";
 import FakeSelector from "../../ui/FakeSelector";
 import useCartography from "./useCartography";
 import {
+  NodeMode,
   Shadow,
   ShadowProps,
   Shape,
@@ -26,6 +28,7 @@ import ShapeDispatch from "./shapes/ShapeDispatch";
 import { ToolbarSmallIcon } from "../../ui/ToolbarSmallIcon";
 import { RxBorderAll } from "react-icons/rx";
 import { RxBorderNone } from "react-icons/rx";
+import { FORMAT_TEXT_COMMAND } from "lexical";
 
 const ShapeContainer = styled.div`
   height: 40px;
@@ -51,12 +54,24 @@ const ShadowDiv = styled.div<ShadowProps>`
   box-shadow: ${(props) => props.shadow};
 `;
 
-function NodeToolbar(): JSX.Element | null {
+function NodeToolbar({
+  id,
+  mode,
+}: {
+  id: string;
+  mode: NodeMode;
+}): JSX.Element | null {
   const { positionToolbar, selectedNodeId } = useNodeToolbar();
-  const { getNodeData, setNodeData } = useCartography();
+  const { getNodeData, setNodeData, toggleEditMode } = useCartography();
+  const [editor] = useLexicalComposerContext()
 
-  if (!positionToolbar.top || !selectedNodeId) return null;
+  if (!positionToolbar.top || !selectedNodeId || selectedNodeId !== id)
+    return null;
+
   const data = getNodeData(selectedNodeId);
+
+  if (!data) return null;
+
   const {
     shapeDescription: { theme, shadow, shape, border },
   } = data;
@@ -100,6 +115,20 @@ function NodeToolbar(): JSX.Element | null {
       },
     });
   }
+
+  function handleSetBold(){
+    editor.dispatchCommand(FORMAT_TEXT_COMMAND,"bold")
+  }
+  
+  function handleSetItalic(){
+    editor.dispatchCommand(FORMAT_TEXT_COMMAND,"italic")
+  }
+  
+  function handleSetUnderline(){
+    editor.dispatchCommand(FORMAT_TEXT_COMMAND,"underline")
+  }
+
+
 
   return (
     <MenuToolbar $position={{ ...positionToolbar }}>
@@ -147,6 +176,18 @@ function NodeToolbar(): JSX.Element | null {
           </MenuToolbar.Action>
         </MenuToolbar.ToggleSubMenu>
 
+        {/* Edit */}
+        <MenuToolbar.Action
+          onClick={() => {
+            toggleEditMode(id);
+          }}
+          $active={mode === "EDIT"}
+        >
+          <ToolbarSmallIcon>
+            <BiPen size={"100%"} />
+          </ToolbarSmallIcon>
+        </MenuToolbar.Action>
+
         {/* Police */}
         <MenuToolbar.Action>
           <FakeSelector>
@@ -162,21 +203,21 @@ function NodeToolbar(): JSX.Element | null {
         </MenuToolbar.Action>
 
         {/* Bold */}
-        <MenuToolbar.Action>
+        <MenuToolbar.Action onClick={handleSetBold}>
           <ToolbarSmallIcon>
             <BiBold size={"100%"} />
           </ToolbarSmallIcon>
         </MenuToolbar.Action>
 
         {/* Italic */}
-        <MenuToolbar.Action>
+        <MenuToolbar.Action onClick={handleSetItalic}>
           <ToolbarSmallIcon>
             <BiItalic size={"100%"} />
           </ToolbarSmallIcon>
         </MenuToolbar.Action>
 
         {/* Underline */}
-        <MenuToolbar.Action>
+        <MenuToolbar.Action onClick={handleSetUnderline}>
           <ToolbarSmallIcon>
             <BiUnderline
               size={"100%"}

@@ -97,7 +97,10 @@ export async function renameFile({ fileId, filename }: FileRename) {
   })) as CompleteFolder;
 
   const updatedFiles = folder.files.map((file) => {
-    return { ...file, fileName: file._id === fileId ? filename : file.fileName };
+    return {
+      ...file,
+      fileName: file._id === fileId ? filename : file.fileName,
+    };
   });
 
   await db.repository.updateOne(
@@ -106,4 +109,31 @@ export async function renameFile({ fileId, filename }: FileRename) {
   );
 
   return folder;
+}
+
+export async function updateCartography({ _id, nodes, edges }: File) {
+  const folder = (await db.repository.findOne({
+    "files._id": _id,
+  })) as CompleteFolder;
+
+  const files = folder.files.map((file) => {
+    if (file._id === _id) {
+      return {
+        ...file,
+        nodes,
+        edges,
+      };
+    } else {
+      return { ...file };
+    }
+  });
+
+  const result = await db.repository.updateOne(
+    { "files._id": _id },
+    { $set: { files: files } }
+  );
+
+  if (!result) throw new Error("Fail to update cartography");
+
+  return result;
 }

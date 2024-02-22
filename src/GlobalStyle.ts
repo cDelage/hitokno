@@ -210,6 +210,11 @@ menu{
   margin: 0;
 }
 
+p{
+  padding: 8px;
+  margin: 0px;
+}
+
 `;
 
 export default GlobalStyle;

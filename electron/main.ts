@@ -8,6 +8,7 @@ import {
   removeFolder,
   renameFolder,
   renameFile,
+  updateCartography,
 } from "./services/apiRepository";
 import {
   File,
@@ -114,6 +115,12 @@ function createWindow() {
     "rename-file",
     async (event: IpcMainInvokeEvent, params: FileRename) =>
       await renameFile(params)
+  );
+
+  ipcMain.handle(
+    "update-cartography",
+    async (event: IpcMainInvokeEvent, file: File) =>
+      await updateCartography(file)
   );
 }
 

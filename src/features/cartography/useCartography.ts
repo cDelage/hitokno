@@ -3,16 +3,27 @@ import { create } from "zustand";
 import {
   DefaultShape,
   NODE_CREATION,
-  NODE_DEFAULT,
-  NODE_DEFAULT_2,
+  NodeToSave,
 } from "./CartographyConstants";
 import {
   DataNode,
   MainToolbarMode,
+  NodeMode,
   PaneOnDragMode,
   ShapeDescription,
 } from "../../types/Cartography.type";
 import { v4 as uuidv4 } from "uuid";
+import { File } from "../../types/Repository.types";
+
+const applyNodeMode = (node: Node<DataNode>, mode: NodeMode) => {
+  return {
+    ...node,
+    data: {
+      ...node.data,
+      mode: mode,
+    },
+  };
+};
 
 type UseCartographyStore = {
   nodes: Node<DataNode>[];
@@ -20,6 +31,9 @@ type UseCartographyStore = {
   mainToolbarActiveMenu: MainToolbarMode;
   panOnDragMode: PaneOnDragMode;
   shapeCreationDesc: ShapeDescription;
+  isSyncWithDB: boolean;
+  setIsSyncWithDB: (isSync: boolean) => void;
+  getNodesForSave: () => Node[];
   setShapeCreationDesc: (shapeDesc: ShapeDescription) => void;
   setPanOnDragMode: (panOnDragMode: PaneOnDragMode) => void;
   setMainToolbarActiveMenu: (mode: MainToolbarMode) => void;
@@ -40,18 +54,42 @@ type UseCartographyStore = {
   ) => void;
   updateNode: (node: Node<DataNode>) => void;
   findNodeById: (nodeId: string) => Node;
+  setSelectionMode: (selectable: boolean) => void;
+  initCartography: (file: File) => void;
+  toggleEditMode: (nodeId: string) => void;
 };
 
 const useCartography = create<UseCartographyStore>((set, get) => ({
-  nodes: [NODE_DEFAULT, NODE_DEFAULT_2],
+  nodes: [],
   edges: [],
   mainToolbarActiveMenu: undefined,
   panOnDragMode: undefined,
   shapeCreationDesc: DefaultShape,
+  isSyncWithDB: true,
+  setIsSyncWithDB: (isSyncWithDB: boolean) => {
+    set({
+      isSyncWithDB,
+    });
+  },
   setShapeCreationDesc(shapeDesc: ShapeDescription) {
     set({
       shapeCreationDesc: shapeDesc,
     });
+  },
+  getNodesForSave: () => {
+    return get()
+      .nodes.filter((node) => NodeToSave.includes(node.type as string))
+      .map((node) => {
+        return {
+          ...node,
+          selected: false,
+          draggable: true,
+          data: {
+            ...node.data,
+            mode: "DEFAULT",
+          },
+        };
+      });
   },
   setNodes: (nds: Node<DataNode>[]) => {
     set({
@@ -61,6 +99,12 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
   setEdges: (edg: Edge[]) => {
     set({
       edges: edg,
+    });
+  },
+  initCartography: ({ nodes, edges }: File) => {
+    set({
+      nodes,
+      edges,
     });
   },
   setMainToolbarActiveMenu: (mainToolbarMode: MainToolbarMode) => {
@@ -74,11 +118,23 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
     });
   },
   onNodesChange: (changes: NodeChange[]) => {
+    const beforeSelected = get().nodes.find((node) => node.selected);
+
     set((state) => {
       return {
         nodes: applyNodeChanges<DataNode>(changes, state.nodes),
       };
     });
+
+    const afterSelected = get().nodes.find((node) => node.selected);
+
+    if (beforeSelected && beforeSelected.id !== afterSelected?.id) {
+      set((state) => {
+        return {
+          nodes: state.nodes.map((node) => applyNodeMode(node, "DEFAULT")),
+        };
+      });
+    }
   },
   setPanOnDragMode: (panOnDragMode: PaneOnDragMode) => {
     set({
@@ -169,6 +225,33 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
             },
           },
         ],
+      };
+    });
+  },
+  setSelectionMode: (selectable: boolean) => {
+    set((state) => {
+      return {
+        nodes: state.nodes.map((node) => {
+          return {
+            ...node,
+            selectable,
+            selected: false,
+          };
+        }),
+      };
+    });
+  },
+  toggleEditMode: (nodeId: string) => {
+    set((state) => {
+      return {
+        nodes: state.nodes.map((node) => {
+          if (node.id === nodeId) {
+            const newMode = node.data.mode === "EDIT" ? "DEFAULT" : "EDIT";
+            return applyNodeMode(node, newMode);
+          } else {
+            return applyNodeMode(node, "DEFAULT");
+          }
+        }),
       };
     });
   },

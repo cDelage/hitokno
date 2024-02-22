@@ -1,4 +1,5 @@
 import { Edge, Node } from "reactflow";
+import { DataNode } from "./Cartography.type";
 
 export type FileDetail = {
   file: File;
@@ -33,7 +34,7 @@ export type Repository = Folder[];
 export type File = {
   _id: string;
   fileName: string;
-  nodes: Node[];
+  nodes: Node<DataNode>[];
   edges: Edge[];
 };
 
