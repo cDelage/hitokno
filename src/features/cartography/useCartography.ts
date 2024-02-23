@@ -1,4 +1,13 @@
-import { Edge, Node, NodeChange, applyNodeChanges } from "reactflow";
+import {
+  Edge,
+  EdgeChange,
+  Node,
+  NodeChange,
+  NodeSelectionChange,
+  Position,
+  applyEdgeChanges,
+  applyNodeChanges,
+} from "reactflow";
 import { create } from "zustand";
 import {
   DefaultShape,
@@ -6,7 +15,9 @@ import {
   NodeToSave,
 } from "./CartographyConstants";
 import {
+  CreatedHandle,
   DataNode,
+  EdgeCreationProps,
   MainToolbarMode,
   NodeMode,
   PaneOnDragMode,
@@ -25,6 +36,11 @@ const applyNodeMode = (node: Node<DataNode>, mode: NodeMode) => {
   };
 };
 
+const selectedNodeOnChange = (change: NodeChange) =>
+  change.type === "select" && change.selected === true;
+const unSelectedNodeOnChange = (change: NodeChange) =>
+  change.type === "select" && change.selected === false;
+
 type UseCartographyStore = {
   nodes: Node<DataNode>[];
   edges: Edge[];
@@ -32,6 +48,11 @@ type UseCartographyStore = {
   panOnDragMode: PaneOnDragMode;
   shapeCreationDesc: ShapeDescription;
   isSyncWithDB: boolean;
+  edgeCreationProps: EdgeCreationProps;
+  handlesActive: string[];
+  addHandlesActive: (handles: string[]) => void;
+  removeHandlesActive: (handles: string[]) => void;
+  setEdgeCreationProps: (edgeCreationProps: EdgeCreationProps) => void;
   setIsSyncWithDB: (isSync: boolean) => void;
   getNodesForSave: () => Node[];
   setShapeCreationDesc: (shapeDesc: ShapeDescription) => void;
@@ -40,6 +61,7 @@ type UseCartographyStore = {
   setNodes: (nds: Node[]) => void;
   setEdges: (edg: Edge[]) => void;
   onNodesChange: (changes: NodeChange[]) => void;
+  onEdgesChange: (changes: EdgeChange[]) => void;
   setShowNodeToolbar: (nodeId: string | undefined) => void;
   getNodeWidth: (nodeId: string) => number;
   getNodeData: (nodeId: string) => DataNode;
@@ -57,6 +79,12 @@ type UseCartographyStore = {
   setSelectionMode: (selectable: boolean) => void;
   initCartography: (file: File) => void;
   toggleEditMode: (nodeId: string) => void;
+  createNewEdge: () => void;
+  deleteEdge: (
+    edgeId: string,
+    sourceHandleId: string,
+    targetHandleId: string
+  ) => void;
 };
 
 const useCartography = create<UseCartographyStore>((set, get) => ({
@@ -66,6 +94,126 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
   panOnDragMode: undefined,
   shapeCreationDesc: DefaultShape,
   isSyncWithDB: true,
+  edgeCreationProps: {} as EdgeCreationProps,
+  handlesActive: [],
+  addHandlesActive: (handles: string[]) => {
+    set((state) => {
+      return {
+        handlesActive: [...state.handlesActive, ...handles],
+      };
+    });
+  },
+  removeHandlesActive: (handles: string[]) => {
+    set((state) => {
+      return {
+        handlesActive: state.handlesActive.filter(
+          (handle) => !handles.includes(handle)
+        ),
+      };
+    });
+  },
+  createNewEdge: () => {
+    const {
+      isCreateEdge,
+      sourceHandleId,
+      sourceNodeId,
+      sourcePosition,
+      targetHandleId,
+      targetNodeId,
+      targetPosition,
+    } = get().edgeCreationProps;
+
+    if (
+      isCreateEdge &&
+      sourcePosition &&
+      targetPosition &&
+      sourceHandleId &&
+      targetHandleId &&
+      sourceNodeId &&
+      targetNodeId
+    ) {
+      const newSourceHandle: CreatedHandle = {
+        handleId: uuidv4(),
+        position: sourcePosition ? sourcePosition : Position.Top,
+        type: "source",
+      };
+
+      const newTargetHandle: CreatedHandle = {
+        handleId: uuidv4(),
+        position: targetPosition ? targetPosition : Position.Top,
+        type: "target",
+      };
+
+      const newEdge: Edge = {
+        id: uuidv4(),
+        source: sourceNodeId,
+        target: targetNodeId,
+        type: "custom",
+        sourceHandle: newSourceHandle.handleId,
+        targetHandle: newTargetHandle.handleId,
+      };
+
+      set((state) => {
+        return {
+          nodes: state.nodes.map((node) => {
+            if (node.id === sourceNodeId) {
+              return {
+                ...node,
+                data: {
+                  ...node.data,
+                  handles: [...node.data.handles, newSourceHandle],
+                },
+              };
+            }
+            if (node.id === targetNodeId) {
+              return {
+                ...node,
+                data: {
+                  ...node.data,
+                  handles: [...node.data.handles, newTargetHandle],
+                },
+              };
+            }
+            return node;
+          }),
+          edges: [...state.edges, newEdge],
+        };
+      });
+    }
+
+    get().setMainToolbarActiveMenu(undefined);
+  },
+  deleteEdge: (
+    edgeId: string,
+    sourceHandleId: string,
+    targetHandleId: string
+  ) => {
+    set((state) => {
+      return {
+        edges: state.edges.filter((edge) => edge.id !== edgeId),
+        nodes: state.nodes.map((node) => {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              handles: node.data.handles.filter(
+                (handle) =>
+                  handle.handleId !== sourceHandleId &&
+                  handle.handleId !== targetHandleId
+              ),
+            },
+          };
+        }),
+      };
+    });
+  },
+  setEdgeCreationProps: (edgeCreationProps: EdgeCreationProps) => {
+    set((state) => {
+      return {
+        edgeCreationProps: { ...state.edgeCreationProps, ...edgeCreationProps },
+      };
+    });
+  },
   setIsSyncWithDB: (isSyncWithDB: boolean) => {
     set({
       isSyncWithDB,
@@ -120,6 +268,17 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
   onNodesChange: (changes: NodeChange[]) => {
     const beforeSelected = get().nodes.find((node) => node.selected);
 
+    if (changes.filter(selectedNodeOnChange).length === 1) {
+      const nodeSelected = changes.find(
+        selectedNodeOnChange
+      ) as NodeSelectionChange;
+      if (nodeSelected.id !== beforeSelected?.id) {
+        get().setShowNodeToolbar(nodeSelected.id);
+      }
+    } else if (changes.find(unSelectedNodeOnChange)) {
+      get().setShowNodeToolbar(undefined);
+    }
+
     set((state) => {
       return {
         nodes: applyNodeChanges<DataNode>(changes, state.nodes),
@@ -135,6 +294,13 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
         };
       });
     }
+  },
+  onEdgesChange: (changes: EdgeChange[]) => {
+    set((state) => {
+      return {
+        edges: applyEdgeChanges(changes, state.edges),
+      };
+    });
   },
   setPanOnDragMode: (panOnDragMode: PaneOnDragMode) => {
     set({
@@ -213,6 +379,7 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
             type: "shape",
             data: {
               mode: "DEFAULT",
+              handles: [] as CreatedHandle[],
               shapeDescription: state.shapeCreationDesc,
             },
             style: {

@@ -1,5 +1,7 @@
+import SheetContainer from "../features/sheet/SheetContainer";
+
 function Sheet(): JSX.Element {
-  return <div>Sheet</div>;
+  return <SheetContainer/>;
 }
 
 export default Sheet;

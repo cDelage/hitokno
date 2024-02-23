@@ -1,11 +1,12 @@
 import styled from "styled-components";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { v4 as uuidv4 } from "uuid";
 import MenuToolbar from "../../ui/MenuToolbar";
 import ShapesIcon from "../../ui/icons/ShapesIcon";
 import { HiChevronUp } from "react-icons/hi2";
 import ColorNodeIcon from "../../ui/icons/ColorNodeIcon";
 import ShadowIcon from "../../ui/icons/ShadowIcon";
-import { BiBold, BiItalic, BiUnderline, BiPen } from "react-icons/bi";
+import { BiBold, BiItalic, BiUnderline, BiPen, BiTrash } from "react-icons/bi";
 import {
   MenuBorderRight,
   ShadowsMenu,
@@ -14,7 +15,7 @@ import {
   ThemesDark,
   fontFamilies,
 } from "./CartographyConstants";
-import OpenSheetIcon from "../../ui/icons/OpenSheetIcon";
+import SheetIcon from "../../ui/icons/SheetIcon";
 import useNodeToolbar from "./useNodeToolbar";
 import FakeSelector from "../../ui/FakeSelector";
 import useCartography from "./useCartography";
@@ -24,6 +25,7 @@ import {
   Shadow,
   ShadowProps,
   Shape,
+  SheetToolbarMode,
   Theme,
 } from "../../types/Cartography.type";
 import ShapeDispatch from "./shapes/ShapeDispatch";
@@ -46,6 +48,8 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import { $findMatchingParent } from "@lexical/utils";
 import TitleFormatToolbar from "./TitleFormatToolbar";
+import { useNavigate, useParams } from "react-router-dom";
+import { IoClose } from "react-icons/io5";
 
 const ShapeContainer = styled.div`
   height: 40px;
@@ -75,14 +79,19 @@ const TitleContainer = styled.div`
   width: 160px;
 `;
 
+const OptionContainer = styled.span<{color?: string}>`
+  display: flex;
+  gap: 4px;
+`
+
 type FontFamilyProp = {
   fontFamily: string;
 };
 const FontFamilyStyled = styled.div<FontFamilyProp>`
   font-family: ${(props) => props.fontFamily};
   padding: 0px 16px 0px 0px;
-  font-size: 1.2rem;
 `;
+
 
 function NodeToolbar({
   id,
@@ -98,6 +107,8 @@ function NodeToolbar({
   const [isItalic, setIsItalic] = useState(false);
   const [isUnderline, setIsUnderline] = useState(false);
   const [currentNode, setCurrentNode] = useState<undefined | string>(undefined);
+  const navigate = useNavigate();
+  const { fileId, sheetId } = useParams();
   const [currentStyle, setCurrentStyle] = useState<undefined | string>(
     undefined
   );
@@ -212,6 +223,26 @@ function NodeToolbar({
     [editor]
   );
 
+  const handleCreateSheet = useCallback(() => {
+    setNodeData(selectedNodeId, {
+      ...data,
+      sheet: {
+        sheetId: uuidv4(),
+      },
+    });
+  }, [setNodeData, data, selectedNodeId]);
+
+  const handleOpenSheet = useCallback(
+    (sheetId: string) => {
+      navigate(`/cartography/${fileId}/sheet/${sheetId}`);
+    },
+    [navigate, fileId]
+  );
+
+  const handleCloseSheet = useCallback(() => {
+    navigate(`/cartography/${fileId}`);
+  }, [navigate, fileId]);
+
   useEffect(() => {
     const removeListener = editor.registerUpdateListener(({ editorState }) => {
       editorState.read(() => {
@@ -250,53 +281,60 @@ function NodeToolbar({
 
   const {
     shapeDescription: { theme, shadow, shape, border },
+    sheet,
   } = data;
 
+  const sheetMode: SheetToolbarMode = sheet
+    ? sheetId
+      ? "CLOSE"
+      : "OPEN"
+    : "CREATE";
+
+  const sheetCallback =
+    sheetMode === "CREATE"
+      ? handleCreateSheet
+      : sheetId
+      ? handleCloseSheet
+      : () => handleOpenSheet(sheet?.sheetId as string);
+
   return (
-    <MenuToolbar $position={{ ...positionToolbar }}>
+    <MenuToolbar $position={{ ...positionToolbar, transform: "translate(-50%,-130%)" }}>
       <MenuToolbar.ActionLine>
         {/* Shapes (select rect, ellipse, triangle...) */}
-        <MenuToolbar.ToggleSubMenu name="shape">
-          <MenuToolbar.Action $padding="8px 4px 8px 8px">
+          <MenuToolbar.Action $padding="8px 4px 8px 8px" toggle="shape">
             <ToolbarSmallIcon>
               <ShapesIcon />
             </ToolbarSmallIcon>
             <HiChevronUp size={12} />
           </MenuToolbar.Action>
-        </MenuToolbar.ToggleSubMenu>
 
         {/* Color of the shape */}
-        <MenuToolbar.ToggleSubMenu name="color">
-          <MenuToolbar.Action $padding="8px 4px 8px 8px">
+          <MenuToolbar.Action $padding="8px 4px 8px 8px" toggle="color">
             <ToolbarSmallIcon>
               <ColorNodeIcon fill={theme.fill} />
             </ToolbarSmallIcon>
             <HiChevronUp size={12} />
           </MenuToolbar.Action>
-        </MenuToolbar.ToggleSubMenu>
 
         {/* Stroke of the shape */}
-        <MenuToolbar.ToggleSubMenu name="stroke">
-          <MenuToolbar.Action $padding="8px 4px 8px 8px">
+          <MenuToolbar.Action $padding="8px 4px 8px 8px" toggle="stroke">
             <ToolbarSmallIcon>
               <RxBorderAll size={"100%"} />
             </ToolbarSmallIcon>
             <HiChevronUp size={12} />
           </MenuToolbar.Action>
-        </MenuToolbar.ToggleSubMenu>
 
         {/* Shadow */}
-        <MenuToolbar.ToggleSubMenu name="shadow">
           <MenuToolbar.Action
             border={MenuBorderRight}
             $padding="8px 4px 8px 8px"
+            toggle="shadow"
           >
             <ToolbarSmallIcon>
               <ShadowIcon />
             </ToolbarSmallIcon>
             <HiChevronUp size={12} />
           </MenuToolbar.Action>
-        </MenuToolbar.ToggleSubMenu>
 
         {/* Edit */}
         <MenuToolbar.Action
@@ -310,24 +348,27 @@ function NodeToolbar({
           </ToolbarSmallIcon>
         </MenuToolbar.Action>
 
+        {/* Trash */}
+          <MenuToolbar.Action toggle="delete-node">
+            <ToolbarSmallIcon>
+              <BiTrash size={"100%"} />
+            </ToolbarSmallIcon>
+          </MenuToolbar.Action>
+
         {/* Police */}
-        <MenuToolbar.ToggleSubMenu name="font-family">
-          <MenuToolbar.Action>
+          <MenuToolbar.Action toggle="font-family">
             <FakeSelector fontFamily={currentPolice.fontCss}>
               {currentPolice?.fontName} <HiChevronUp size={12} />
             </FakeSelector>
           </MenuToolbar.Action>
-        </MenuToolbar.ToggleSubMenu>
 
         {/* Title */}
-        <MenuToolbar.ToggleSubMenu name="type-node">
-          <MenuToolbar.Action>
+          <MenuToolbar.Action toggle="type-node">
             <FakeSelector>
               <TitleFormatToolbar node={currentNode} />
               <HiChevronUp size={12} />
             </FakeSelector>
           </MenuToolbar.Action>
-        </MenuToolbar.ToggleSubMenu>
 
         {/* Bold */}
         <MenuToolbar.Action onClick={handleSetBold} $active={isBold}>
@@ -354,9 +395,9 @@ function NodeToolbar({
         </MenuToolbar.Action>
 
         {/* Open sheet */}
-        <MenuToolbar.Action>
+        <MenuToolbar.Action onClick={sheetCallback}>
           <IconContainerLarge>
-            <OpenSheetIcon />
+            <SheetIcon mode={sheetMode} />
           </IconContainerLarge>
         </MenuToolbar.Action>
       </MenuToolbar.ActionLine>
@@ -364,7 +405,6 @@ function NodeToolbar({
       {/*
        * SUBMENUS
        */}
-
       <MenuToolbar.SubMenu name="color">
         <MenuToolbar.ActionLine>
           {ThemesDark.map((themeDark) => (
@@ -530,6 +570,16 @@ function NodeToolbar({
               </FontFamilyStyled>
             </MenuToolbar.Action>
           ))}
+        </MenuToolbar.ActionColumn>
+      </MenuToolbar.SubMenu>
+      <MenuToolbar.SubMenu name="delete-node">
+        <MenuToolbar.ActionColumn>
+          <MenuToolbar.Action $theme="danger">
+            <OptionContainer><BiTrash size={20}/> Confirm deletion</OptionContainer>
+          </MenuToolbar.Action>
+          <MenuToolbar.Action>
+          <OptionContainer><IoClose size={20}/> Cancel</OptionContainer>
+          </MenuToolbar.Action>
         </MenuToolbar.ActionColumn>
       </MenuToolbar.SubMenu>
     </MenuToolbar>

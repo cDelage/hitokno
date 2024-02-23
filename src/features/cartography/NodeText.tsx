@@ -25,6 +25,7 @@ const ContentEditableStyled = styled(ContentEditable)<ContenteEditableStyledProp
   flex-grow: 1;
   height: 100%;
   padding: 8px;
+  box-sizing: border-box;
   margin: 0px;
   overflow: hidden;
   color: ${(props) => props.color};

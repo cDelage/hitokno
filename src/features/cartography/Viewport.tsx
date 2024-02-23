@@ -1,26 +1,33 @@
 import ReactFlow, {
   Background,
   BackgroundVariant,
-  Controls,
+  EdgeTypes,
   NodeChange,
   SelectionMode,
-  useOnSelectionChange,
   useViewport,
 } from "reactflow";
 import useCartography from "./useCartography";
 import styled from "styled-components";
-import { NodeCustomsComponents, PX_UNIT_GAP } from "./CartographyConstants";
+import {
+  DEFAULT_EDGE_OPTIONS,
+  EDGE_TYPE_COMPONENT,
+  InitialEdgeCreationState,
+  NodeCustomsComponents,
+  PX_UNIT_GAP,
+} from "./CartographyConstants";
 import useNodeToolbar from "./useNodeToolbar";
 import { useEffect, useState } from "react";
 import MainToolbar from "./MainToolbar";
 import { useTabs } from "../home/useTabs";
-import { useParams } from "react-router-dom";
+import { Outlet, useParams } from "react-router-dom";
 import { useFindFileById } from "../home/useFindFileById";
 import { useUpdateCartography } from "./useUpdateCartography";
+import ConnectionEdgeCustom from "./ConnectionEdgeCustom";
 
 const ViewportContainer = styled.div`
   flex-grow: 1;
-  background-color: var(--bg-white);
+  background-color: var(--color-gray-100);
+  position: relative;
 `;
 
 function Viewport(): JSX.Element {
@@ -29,7 +36,7 @@ function Viewport(): JSX.Element {
     nodes,
     edges,
     onNodesChange,
-    setShowNodeToolbar,
+    onEdgesChange,
     panOnDragMode,
     mainToolbarActiveMenu,
     setPanOnDragMode,
@@ -38,6 +45,7 @@ function Viewport(): JSX.Element {
     getNodesForSave,
     isSyncWithDB,
     setIsSyncWithDB,
+    setEdgeCreationProps,
   } = useCartography();
   const { zoom } = useViewport();
   const { clearPositionToolbar } = useNodeToolbar();
@@ -49,20 +57,13 @@ function Viewport(): JSX.Element {
   const { getCartographyMode } = useTabs();
   const mode = getCartographyMode(fileId as string);
 
-  function handleModeChange(change: NodeChange[]) {
+  function handleNodeChange(change: NodeChange[]) {
     if (mode === "EDIT") {
       onNodesChange(change);
       setIsSyncWithDB(false);
     }
   }
 
-  useOnSelectionChange({
-    onChange: ({ nodes }) => {
-      if (nodes.length === 1) {
-        setShowNodeToolbar(nodes[0].id);
-      }
-    },
-  });
 
   useEffect(() => {
     if (fileDetail?.file) {
@@ -72,12 +73,17 @@ function Viewport(): JSX.Element {
 
   //Clear node toolbar when no nodes are selected
   useEffect(() => {
-    if (!nodes.find((node) => node.selected)) {
+    const selectedNodes = nodes.filter((node) => node.selected)
+    if (selectedNodes.length === 0 || selectedNodes.length > 1) {
       clearPositionToolbar();
     }
-  }, [nodes, clearPositionToolbar, setShowNodeToolbar]);
+  }, [nodes, clearPositionToolbar]);
 
-  //Manage panOnDragMode (scroll, zoom, etc...) by regarding MainToolbar menu selected
+  /*
+  Change when mainToolbarActiveMenu change
+  1 - Manage panOnDragMode (scroll, zoom, etc...) by regarding MainToolbar menu selected,
+  2 - Reset handles for creating edges
+  */
   useEffect(() => {
     if (mainToolbarActiveMenu === "SELECT") {
       setPanOnDragMode([1, 2]);
@@ -86,7 +92,9 @@ function Viewport(): JSX.Element {
     } else {
       setPanOnDragMode(undefined);
     }
-  }, [mainToolbarActiveMenu, setPanOnDragMode]);
+
+    setEdgeCreationProps(InitialEdgeCreationState);
+  }, [mainToolbarActiveMenu, setPanOnDragMode, setEdgeCreationProps]);
 
   //Manage change between default & edit mode
   useEffect(() => {
@@ -144,11 +152,16 @@ function Viewport(): JSX.Element {
           <MainToolbar />
         </>
       )}
+      <Outlet/>
       <ReactFlow
         nodes={nodes}
         edges={edges}
-        onNodesChange={handleModeChange}
+        onNodesChange={handleNodeChange}
+        onEdgesChange={onEdgesChange}
         nodeTypes={NodeCustomsComponents}
+        edgeTypes={EDGE_TYPE_COMPONENT as EdgeTypes}
+        defaultEdgeOptions={DEFAULT_EDGE_OPTIONS}
+        connectionLineComponent={ConnectionEdgeCustom}
         snapToGrid={true}
         snapGrid={[8, 8]}
         panOnScroll
@@ -158,25 +171,26 @@ function Viewport(): JSX.Element {
         minZoom={1}
         maxZoom={2.5}
       >
-        <Controls/>
-        {zoom > 1.5 && (
-          <>
+        <>
+          {zoom < 1.5 && (
             <Background
-              variant={"lines" as BackgroundVariant}
-              color={"#E7E5E4"}
-              gap={PX_UNIT_GAP}
-              size={1}
+              variant={"dots" as BackgroundVariant}
+              color={"#D6D3D1"}
+              gap={PX_UNIT_GAP * 4}
+              size={3}
               id="back"
             />
+          )}
+          {zoom > 1.5 && (
             <Background
-              variant={"lines" as BackgroundVariant}
-              color="#D6D3D1"
-              gap={PX_UNIT_GAP * 4}
+              variant={"dots" as BackgroundVariant}
+              color={"#D6D3D1"}
+              gap={PX_UNIT_GAP}
               size={1}
               id="top"
             />
-          </>
-        )}
+          )}
+        </>
       </ReactFlow>
     </ViewportContainer>
   );

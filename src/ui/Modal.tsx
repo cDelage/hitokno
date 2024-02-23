@@ -1,7 +1,6 @@
 import {
   MouseEvent,
   ReactElement,
-  ReactNode,
   cloneElement,
   createContext,
   useContext,
@@ -11,24 +10,12 @@ import { createPortal } from "react-dom";
 import styled from "styled-components";
 import { IoCloseOutline } from "react-icons/io5";
 import IconButton from "./IconButton";
+import { ChildrenProps } from "../types/ChildrenProps.type";
 
 type ModalContextType = {
-  openId: string | null;
+  openId: string | undefined;
   open: (id: string) => void;
   close: () => void;
-};
-
-type ModalProps = {
-  children: ReactNode;
-};
-
-type ToggleProps = {
-  children: ReactNode;
-  id: string;
-};
-
-type BodyProps = {
-  children: ReactNode;
 };
 
 const Overlay = styled.div`
@@ -69,15 +56,15 @@ const CloseButton = styled.div`
 
 const ModalContext = createContext<null | ModalContextType>(null);
 
-function Modal({ children }: ModalProps): JSX.Element {
-  const [openId, setOpenId] = useState<string | null>(null);
+function Modal({ children }: ChildrenProps): JSX.Element {
+  const [openId, setOpenId] = useState<string | undefined>(undefined);
 
   function open(id: string) {
     setOpenId(id);
   }
 
   function close() {
-    setOpenId(null);
+    setOpenId(undefined);
   }
 
   return (
@@ -87,15 +74,19 @@ function Modal({ children }: ModalProps): JSX.Element {
   );
 }
 
-function Toggle({ children, id }: ToggleProps): JSX.Element {
+function Toggle({ children, id }: ChildrenProps & { id: string }): JSX.Element {
   const { open } = useContext(ModalContext) as ModalContextType;
 
   return cloneElement(children as ReactElement, { onClick: () => open(id) });
 }
 
-function Body({ children }: BodyProps): JSX.Element | null {
+function Body({
+  children,
+  isOpen,
+}: ChildrenProps & { isOpen?: boolean }): JSX.Element | null {
   const { openId, close } = useContext(ModalContext) as ModalContextType;
-  if (!openId) return null;
+  console.log("MODAL STATE : ", isOpen)
+  if (!openId || !isOpen) return null;
 
   function handleClickOverlay(e: MouseEvent<HTMLDivElement>) {
     e.stopPropagation();

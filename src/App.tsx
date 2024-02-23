@@ -75,7 +75,7 @@ const routes: RouteObject[] = [
         element: <Cartography />,
         children: [
           {
-            path: "/cartography/:fileId/sheet/:nodeId",
+            path: "/cartography/:fileId/sheet/:sheetId",
             element: <Sheet />,
           },
         ],

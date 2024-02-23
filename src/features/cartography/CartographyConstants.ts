@@ -1,8 +1,10 @@
-import { Node } from "reactflow";
+import { MarkerType, Node, Position } from "reactflow";
 import { Border } from "../../types/Border.type";
 import {
+  CreatedHandle,
   DataNode,
   FontMenu,
+  HandleProps,
   Shadow,
   ShadowMenu,
   Shape,
@@ -13,6 +15,7 @@ import NodeCreation from "./NodeCreation";
 import NodeShape from "./NodeShape";
 import { HeadingNode } from "@lexical/rich-text";
 import { ListItemNode, ListNode } from "@lexical/list";
+import EdgeCustom from "./EdgeCustom";
 
 export const PX_UNIT_GAP = 8;
 
@@ -27,7 +30,7 @@ export const DefaultShape: ShapeDescription = {
   shape: "rect" as Shape,
   border: false,
   shadow: "none" as Shadow,
-  theme:   {
+  theme: {
     id: "bleu-light",
     fill: "#BAE6FD",
     color: "#1C1917",
@@ -70,6 +73,7 @@ export const NODE_DEFAULT: Node<DataNode> = {
   selected: false,
   data: {
     mode: "DEFAULT",
+    handles: [] as CreatedHandle[],
     shapeDescription: {
       shape: "rect" as Shape,
       border: false,
@@ -97,6 +101,7 @@ export const NODE_DEFAULT_2: Node<DataNode> = {
   selected: false,
   data: {
     mode: "DEFAULT",
+    handles: [] as CreatedHandle[],
     shapeDescription: {
       shape: "ellipse" as Shape,
       border: true,
@@ -124,6 +129,7 @@ export const NODE_CREATION: Node<DataNode> = {
   selected: false,
   data: {
     mode: "DEFAULT",
+    handles: [] as CreatedHandle[],
     shapeDescription: {
       shape: "rect" as Shape,
       border: false,
@@ -278,19 +284,92 @@ export const ThemeLight: Theme[] = [
 
 export const initialNodeConfig = {
   namespace: "NodeEditor",
-  editable : false,
+  editable: false,
   nodes: [HeadingNode, ListNode, ListItemNode],
   onError: (err: Error) => {
     console.log(err);
   },
 };
 
-export const fontFamilies : FontMenu[] = [
-  { fontName: "Inter", fontCss: "Inter, system-ui, Avenir, Helvetica, Arial, sans-serif"},
-  { fontName: "Arial", fontCss: "Arial, sans-serif"},
-  { fontName: "system-ui", fontCss: "system-ui, sans-serif"},
-  { fontName: "Courier", fontCss: "Courier new, monospace"},
-  { fontName: "Georgia", fontCss: "Georgia, serif"},
-  { fontName: "Garamond", fontCss: "Garamond, serif"},
-  { fontName: "Times New Roman", fontCss: "Times New Roman, serif"},
-]
+export const fontFamilies: FontMenu[] = [
+  {
+    fontName: "Inter",
+    fontCss: "Inter, system-ui, Avenir, Helvetica, Arial, sans-serif",
+  },
+  { fontName: "Arial", fontCss: "Arial, sans-serif" },
+  { fontName: "system-ui", fontCss: "system-ui, sans-serif" },
+  { fontName: "Courier", fontCss: "Courier new, monospace" },
+  { fontName: "Georgia", fontCss: "Georgia, serif" },
+  { fontName: "Garamond", fontCss: "Garamond, serif" },
+  { fontName: "Times New Roman", fontCss: "Times New Roman, serif" },
+];
+
+export const HandlesSourcesList: HandleProps[] = [
+  {
+    handleId: "handle-src-top",
+    position: Position.Top,
+  },
+  {
+    handleId: "handle-src-right",
+    position: Position.Right,
+  },
+  {
+    handleId: "handle-src-bottom",
+    position: Position.Bottom,
+  },
+  {
+    handleId: "handle-src-left",
+    position: Position.Left,
+  },
+];
+
+export const HandlesTargetList: HandleProps[] = [
+  {
+    handleId: "handle-target-top",
+    position: Position.Top,
+  },
+  {
+    handleId: "handle-target-right",
+    position: Position.Right,
+  },
+  {
+    handleId: "handle-target-bottom",
+    position: Position.Bottom,
+  },
+  {
+    handleId: "handle-target-left",
+    position: Position.Left,
+  },
+];
+
+export const EDGE_DEFAULT_STYLE = { strokeWidth: 1.5, stroke: "black" };
+
+export const EDGE_TYPE = {
+  smoothstep: "smoothstep",
+  custom: "custom",
+};
+
+export const EDGE_TYPE_COMPONENT = {
+  custom: EdgeCustom,
+};
+
+export const DEFAULT_EDGE_OPTIONS = {
+  type: EDGE_TYPE.custom,
+  markerEnd: {
+    type: MarkerType.ArrowClosed,
+    color: "black",
+  },
+  style: {
+    ...EDGE_DEFAULT_STYLE,
+  },
+};
+
+export const InitialEdgeCreationState = {
+  isCreateEdge: false,
+  sourceHandleId: undefined,
+  sourceNodeId: undefined,
+  sourcePosition: undefined,
+  targetHandleId: undefined,
+  targetNodeId: undefined,
+  targetPosition: undefined,
+};

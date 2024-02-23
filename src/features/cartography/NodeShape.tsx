@@ -1,5 +1,12 @@
-import { CSSProperties, useEffect } from "react";
-import { NodeProps, NodeResizer, useReactFlow, useViewport } from "reactflow";
+import { CSSProperties, useEffect, useState } from "react";
+import {
+  Handle,
+  NodeProps,
+  NodeResizer,
+  useReactFlow,
+  useUpdateNodeInternals,
+  useViewport,
+} from "reactflow";
 import styled from "styled-components";
 import { PX_UNIT_GAP } from "./CartographyConstants";
 import { PositionAbsolute } from "../../types/Position.type";
@@ -13,6 +20,7 @@ import PluginReadEditMode from "./lexicalPlugins/PluginReadEditMode";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import PluginUpdateNodeText from "./lexicalPlugins/PluginUpdateNodeText";
 import { ListPlugin } from "@lexical/react/LexicalListPlugin";
+import HandlesCreateEdge from "./HandlesCreateEdge";
 
 const NodeShapeStyled = styled.div`
   height: 100%;
@@ -34,6 +42,7 @@ const ResizerHandleStyle: CSSProperties = {
   width: "16px",
   height: "16px",
   transform: "translate(-50%,-50%) scale(1)",
+  boxShadow: "var(--shadow-md)"
 };
 
 const ResizerBorderStyle: CSSProperties = {
@@ -42,6 +51,15 @@ const ResizerBorderStyle: CSSProperties = {
   boxSizing: "border-box",
 };
 
+const StyledCreatedHandle = styled(Handle)<{$active : boolean}>`
+  visibility: ${(props) => props.$active  ? "visible" : "hidden"};
+  width: 12px;
+  height: 12px;
+  background-color: white;
+  border: #0284C7 1px solid;
+  box-shadow: var(--shadow-md);
+`
+
 function NodeShape({
   id,
   selected,
@@ -49,6 +67,7 @@ function NodeShape({
     showNodeToolbar,
     mode,
     editorState,
+    handles,
     shapeDescription: { shape, shadow, theme, border },
   },
   xPos,
@@ -56,8 +75,11 @@ function NodeShape({
 }: NodeProps<DataNode>): JSX.Element {
   const { flowToScreenPosition } = useReactFlow();
   const { setSelectedNode } = useNodeToolbar();
-  const { nodes, getNodeWidth, toggleEditMode } = useCartography();
+  const { nodes, getNodeWidth, toggleEditMode, mainToolbarActiveMenu, handlesActive } =
+    useCartography();
   const { zoom, x, y } = useViewport();
+  const [isHover, setIsHover] = useState(false);
+  const updateNodeInternals = useUpdateNodeInternals();
 
   function handleDoubleClick() {
     if (mode !== "EDIT" && selected) {
@@ -93,8 +115,15 @@ function NodeShape({
     y,
   ]);
 
+  useEffect(() => {
+    updateNodeInternals(id)
+  },[handles, updateNodeInternals, id]);
+
   return (
-    <NodeShapeStyled>
+    <NodeShapeStyled
+      onMouseEnter={() => setIsHover(true)}
+      onMouseLeave={() => setIsHover(false)}
+    >
       <ShapeDispatch
         shape={shape}
         fill={theme.fill}
@@ -102,20 +131,39 @@ function NodeShape({
         border={border ? theme.stroke : undefined}
       />
       <TopContainer onDoubleClick={handleDoubleClick}>
-        <NodeResizer
-          minWidth={PX_UNIT_GAP * 2}
-          minHeight={PX_UNIT_GAP * 2}
-          handleStyle={ResizerHandleStyle}
-          lineStyle={ResizerBorderStyle}
-          isVisible={selected}
-        />
+        {mainToolbarActiveMenu === "CREATION-EDGE" && (
+          <HandlesCreateEdge isHoverNode={isHover} nodeId={id} />
+        )}
+        {mainToolbarActiveMenu !== "CREATION-EDGE" && (
+          <NodeResizer
+            minWidth={PX_UNIT_GAP * 2}
+            minHeight={PX_UNIT_GAP * 2}
+            handleStyle={ResizerHandleStyle}
+            lineStyle={ResizerBorderStyle}
+            isVisible={selected}
+          />
+        )}
+
         <NodeText mode={mode} editorState={editorState} theme={theme}>
           <PluginReadEditMode mode={mode} />
           <PluginUpdateNodeText id={id} />
-          <NodeToolbar id={id} mode={mode} />
+          {mainToolbarActiveMenu !== "CREATION-EDGE" && (
+            <NodeToolbar id={id} mode={mode} />
+          )}
           <HistoryPlugin />
           <ListPlugin />
         </NodeText>
+        {handles.map(({ position, type, handleId }) => (
+          <StyledCreatedHandle
+            key={handleId}
+            id={handleId}
+            position={position}
+            type={type}
+            $active={handlesActive.includes(handleId)}
+            isConnectableStart={false}
+            isConnectableEnd={false}
+          />
+        ))}
       </TopContainer>
     </NodeShapeStyled>
   );

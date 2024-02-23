@@ -23,6 +23,7 @@ import { RxBorderAll, RxBorderNone, RxMove, RxGroup } from "react-icons/rx";
 import { ShadowProps } from "../../types/Cartography.type";
 import { useEffect } from "react";
 import useCartography from "./useCartography";
+import { useParams } from "react-router-dom";
 
 const ToolbarLargeIconContainer = styled.div`
   width: 72px;
@@ -64,13 +65,14 @@ function MainToolbar() {
     shapeCreationDesc,
     setShapeCreationDesc,
   } = useCartography();
-
   const {
-    theme: { id : themeId, fill, stroke },
+    theme: { id: themeId, fill, stroke },
     shape,
     shadow,
     border,
   } = shapeCreationDesc;
+
+  const {sheetId} = useParams();
 
   //Manage menu change selection
   useEffect(() => {
@@ -81,40 +83,42 @@ function MainToolbar() {
     }
   }, [mainToolbarActiveMenu, setCreateNodeMode, clearCreateNodeMode]);
 
+  const left = !sheetId ? "50%" : "35%"
+
   return (
     <MenuToolbar
       $position={{
-        left: "50%",
+        left,
+        bottom: "16px",
+        transform: "translateX(-50%)"
       }}
     >
       <MenuToolbar.ActionLine>
         {/* Move viewport */}
         <MenuToolbar.ActionColumn>
-          <MenuToolbar.ToggleSubMenu>
-            <MenuToolbar.Action
-              border={MenuBorderRight}
-              $padding="8px 16px 8px 16px"
-              $active={mainToolbarActiveMenu === undefined}
-              onClick={() => setMainToolbarActiveMenu(undefined)}
-            >
-              <ToolbarSmallIcon>
-                <RxMove size={"100%"} />
-              </ToolbarSmallIcon>
-            </MenuToolbar.Action>
-          </MenuToolbar.ToggleSubMenu>
+          <MenuToolbar.Action
+            border={MenuBorderRight}
+            $padding="8px 16px 8px 16px"
+            $active={mainToolbarActiveMenu === undefined}
+            onClick={() => setMainToolbarActiveMenu(undefined)}
+            toggle=""
+          >
+            <ToolbarSmallIcon>
+              <RxMove size={"100%"} />
+            </ToolbarSmallIcon>
+          </MenuToolbar.Action>
 
-          <MenuToolbar.ToggleSubMenu>
-            <MenuToolbar.Action
-              border={MenuBorderRight}
-              $padding="8px 16px 8px 16px"
-              $active={mainToolbarActiveMenu === "SELECT"}
-              onClick={() => setMainToolbarActiveMenu("SELECT")}
-            >
-              <ToolbarSmallIcon>
-                <RxGroup size={"100%"} />
-              </ToolbarSmallIcon>
-            </MenuToolbar.Action>
-          </MenuToolbar.ToggleSubMenu>
+          <MenuToolbar.Action
+            border={MenuBorderRight}
+            $padding="8px 16px 8px 16px"
+            $active={mainToolbarActiveMenu === "SELECT"}
+            onClick={() => setMainToolbarActiveMenu("SELECT")}
+            toggle=""
+          >
+            <ToolbarSmallIcon>
+              <RxGroup size={"100%"} />
+            </ToolbarSmallIcon>
+          </MenuToolbar.Action>
         </MenuToolbar.ActionColumn>
 
         {/* Sidebar (to list all nodes) */}
@@ -144,126 +148,119 @@ function MainToolbar() {
         <MenuToolbar.ActionColumn>
           <MenuToolbar.ActionLine>
             {/* Shapes (select rect, ellipse, triangle...) */}
-            <MenuToolbar.ToggleSubMenu name="shape">
-              <MenuToolbar.Action
-                $padding="8px 4px 8px 16px"
-                onClick={() => setMainToolbarActiveMenu("UPDATE-SHAPE")}
-                $active={mainToolbarActiveMenu === "UPDATE-SHAPE"}
-              >
-                <ToolbarSmallIcon>
-                  <ShapesIcon />
-                </ToolbarSmallIcon>
-                <HiChevronUp size={12} />
-              </MenuToolbar.Action>
-            </MenuToolbar.ToggleSubMenu>
+            <MenuToolbar.Action
+              $padding="8px 4px 8px 16px"
+              onClick={() => setMainToolbarActiveMenu("UPDATE-SHAPE")}
+              $active={mainToolbarActiveMenu === "UPDATE-SHAPE"}
+              toggle="shape"
+            >
+              <ToolbarSmallIcon>
+                <ShapesIcon />
+              </ToolbarSmallIcon>
+              <HiChevronUp size={12} />
+            </MenuToolbar.Action>
 
             {/* Color of the shape */}
-            <MenuToolbar.ToggleSubMenu name="color">
-              <MenuToolbar.Action
-                $padding="8px 4px 8px 8px"
-                onClick={() => setMainToolbarActiveMenu("UPDATE-COLOR")}
-                $active={mainToolbarActiveMenu === "UPDATE-COLOR"}
-              >
-                <ToolbarSmallIcon>
-                  <ColorNodeIcon fill={fill} />
-                </ToolbarSmallIcon>
-                <HiChevronUp size={12} />
-              </MenuToolbar.Action>
-            </MenuToolbar.ToggleSubMenu>
+            <MenuToolbar.Action
+              $padding="8px 4px 8px 8px"
+              onClick={() => setMainToolbarActiveMenu("UPDATE-COLOR")}
+              $active={mainToolbarActiveMenu === "UPDATE-COLOR"}
+              toggle="color"
+            >
+              <ToolbarSmallIcon>
+                <ColorNodeIcon fill={fill} />
+              </ToolbarSmallIcon>
+              <HiChevronUp size={12} />
+            </MenuToolbar.Action>
           </MenuToolbar.ActionLine>
 
           <MenuToolbar.ActionLine>
             {/* Border */}
-            <MenuToolbar.ToggleSubMenu name="stroke">
-              <MenuToolbar.Action
-                $padding="8px 4px 8px 16px"
-                onClick={() => setMainToolbarActiveMenu("UPDATE-BORDER")}
-                $active={mainToolbarActiveMenu === "UPDATE-BORDER"}
-              >
-                <ToolbarSmallIcon>
-                  <RxBorderAll size={"100%"} />
-                </ToolbarSmallIcon>
-                <HiChevronUp size={12} />
-              </MenuToolbar.Action>
-            </MenuToolbar.ToggleSubMenu>
+            <MenuToolbar.Action
+              $padding="8px 4px 8px 16px"
+              onClick={() => setMainToolbarActiveMenu("UPDATE-BORDER")}
+              $active={mainToolbarActiveMenu === "UPDATE-BORDER"}
+              toggle="stroke"
+            >
+              <ToolbarSmallIcon>
+                <RxBorderAll size={"100%"} />
+              </ToolbarSmallIcon>
+              <HiChevronUp size={12} />
+            </MenuToolbar.Action>
 
             {/* Shadow */}
-            <MenuToolbar.ToggleSubMenu name="shadow">
-              <MenuToolbar.Action
-                $padding="8px 4px 8px 8px"
-                onClick={() => setMainToolbarActiveMenu("UPDATE-SHADOW")}
-                $active={mainToolbarActiveMenu === "UPDATE-SHADOW"}
-              >
-                <ToolbarSmallIcon>
-                  <ShadowIcon />
-                </ToolbarSmallIcon>
-                <HiChevronUp size={12} />
-              </MenuToolbar.Action>
-            </MenuToolbar.ToggleSubMenu>
+            <MenuToolbar.Action
+              $padding="8px 4px 8px 8px"
+              onClick={() => setMainToolbarActiveMenu("UPDATE-SHADOW")}
+              $active={mainToolbarActiveMenu === "UPDATE-SHADOW"}
+              toggle="shadow"
+            >
+              <ToolbarSmallIcon>
+                <ShadowIcon />
+              </ToolbarSmallIcon>
+              <HiChevronUp size={12} />
+            </MenuToolbar.Action>
           </MenuToolbar.ActionLine>
         </MenuToolbar.ActionColumn>
 
         {/* Create new shape */}
-        <MenuToolbar.ToggleSubMenu>
-          <MenuToolbar.Action
-            onClick={() => setMainToolbarActiveMenu("CREATION-NODE")}
-            $active={mainToolbarActiveMenu === "CREATION-NODE"}
-          >
-            <ToolbarAction>
-              <ToolbarLargeIconContainer>
-                <ToolbarMediumIconContainer>
-                  <ShapeDispatch
-                    shape={shape}
-                    fill={fill}
-                    $shadow={shadow}
-                    border={border || themeId === "white-light" ? stroke : "none"}
-                  />
-                </ToolbarMediumIconContainer>
-              </ToolbarLargeIconContainer>
-              <ToolbarAction.ActionButton $hoverTransform="scale(1.2)">
-                <IoAdd size={24} />
-              </ToolbarAction.ActionButton>
-            </ToolbarAction>
-          </MenuToolbar.Action>
-        </MenuToolbar.ToggleSubMenu>
+        <MenuToolbar.Action
+          onClick={() => setMainToolbarActiveMenu("CREATION-NODE")}
+          $active={mainToolbarActiveMenu === "CREATION-NODE"}
+          toggle=""
+        >
+          <ToolbarAction>
+            <ToolbarLargeIconContainer>
+              <ToolbarMediumIconContainer>
+                <ShapeDispatch
+                  shape={shape}
+                  fill={fill}
+                  $shadow={shadow}
+                  border={border || themeId === "white-light" ? stroke : "none"}
+                />
+              </ToolbarMediumIconContainer>
+            </ToolbarLargeIconContainer>
+            <ToolbarAction.ActionButton $hoverTransform="scale(1.2)">
+              <IoAdd size={24} />
+            </ToolbarAction.ActionButton>
+          </ToolbarAction>
+        </MenuToolbar.Action>
 
         {/* Create new edge */}
-        <MenuToolbar.ToggleSubMenu>
-          <MenuToolbar.Action
-            onClick={() => setMainToolbarActiveMenu("CREATION-EDGE")}
-            $active={mainToolbarActiveMenu === "CREATION-EDGE"}
-          >
-            <ToolbarAction>
-              <ToolbarLargeIconContainer>
-                <ToolbarMediumIconContainer>
-                  <EdgeIcon />
-                </ToolbarMediumIconContainer>
-              </ToolbarLargeIconContainer>
-              <ToolbarAction.ActionButton $hoverTransform="scale(1.2)">
-                <IoAdd size={24} />
-              </ToolbarAction.ActionButton>
-            </ToolbarAction>
-          </MenuToolbar.Action>
-        </MenuToolbar.ToggleSubMenu>
+        <MenuToolbar.Action
+          onClick={() => setMainToolbarActiveMenu("CREATION-EDGE")}
+          $active={mainToolbarActiveMenu === "CREATION-EDGE"}
+          toggle=""
+        >
+          <ToolbarAction>
+            <ToolbarLargeIconContainer>
+              <ToolbarMediumIconContainer>
+                <EdgeIcon />
+              </ToolbarMediumIconContainer>
+            </ToolbarLargeIconContainer>
+            <ToolbarAction.ActionButton $hoverTransform="scale(1.2)">
+              <IoAdd size={24} />
+            </ToolbarAction.ActionButton>
+          </ToolbarAction>
+        </MenuToolbar.Action>
 
         {/* Create new group */}
-        <MenuToolbar.ToggleSubMenu>
-          <MenuToolbar.Action
-            onClick={() => setMainToolbarActiveMenu("CREATION-GROUP")}
-            $active={mainToolbarActiveMenu === "CREATION-GROUP"}
-          >
-            <ToolbarAction>
-              <ToolbarLargeIconContainer>
-                <ToolbarMediumIconContainer>
-                  <GroupIcon />
-                </ToolbarMediumIconContainer>
-              </ToolbarLargeIconContainer>
-              <ToolbarAction.ActionButton $hoverTransform="scale(1.2)">
-                <IoAdd size={24} />
-              </ToolbarAction.ActionButton>
-            </ToolbarAction>
-          </MenuToolbar.Action>
-        </MenuToolbar.ToggleSubMenu>
+        <MenuToolbar.Action
+          onClick={() => setMainToolbarActiveMenu("CREATION-GROUP")}
+          $active={mainToolbarActiveMenu === "CREATION-GROUP"}
+          toggle=""
+        >
+          <ToolbarAction>
+            <ToolbarLargeIconContainer>
+              <ToolbarMediumIconContainer>
+                <GroupIcon />
+              </ToolbarMediumIconContainer>
+            </ToolbarLargeIconContainer>
+            <ToolbarAction.ActionButton $hoverTransform="scale(1.2)">
+              <IoAdd size={24} />
+            </ToolbarAction.ActionButton>
+          </ToolbarAction>
+        </MenuToolbar.Action>
       </MenuToolbar.ActionLine>
 
       <MenuToolbar.SubMenu name="shape">

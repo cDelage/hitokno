@@ -1,4 +1,8 @@
+import { Position } from "reactflow";
+
 export type CartographyMode = "DEFAULT" | "EDIT";
+
+export type SheetToolbarMode = "CREATE" | "OPEN" | "CLOSE";
 
 export type MainToolbarMode =
   | "DEFAULT"
@@ -71,20 +75,55 @@ export type ShapeDescription = {
   theme: Theme;
 };
 
-export type NodeMode = "DEFAULT" | "EDIT"
+export type NodeMode = "DEFAULT" | "EDIT";
 
 export type DataNode = {
   mode: NodeMode;
   editorState?: string;
   showNodeToolbar?: boolean;
   shapeDescription: ShapeDescription;
+  handles: CreatedHandle[];
+  sheet?: Sheet
 };
+
+export type Sheet = {
+  sheetId: string;
+}
+
+export type SheetComplete = Sheet & {
+  body: string;
+}
 
 export type Fill = {
   fill: string;
 };
 
 export type FontMenu = {
-  fontName : string;
+  fontName: string;
   fontCss: string;
+};
+
+export type HandleSourceCreateEdge = {
+  nodeId: string;
+  handleId: string;
+};
+
+
+export type HandleProps = {
+  handleId: string;
+  position: Position;
+}
+
+export type CreatedHandle = HandleProps & {
+  type : "source" | "target",
+}
+
+export type EdgeCreationProps = {
+  isCreateEdge: boolean;
+  sourceNodeId? : string;
+  sourceHandleId? : string;
+  sourcePosition? : Position;
+  targetNodeId? : string;
+  targetHandleId? : string;
+  targetPosition? : Position;
 }
