@@ -1,6 +1,6 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
-const FakeSelector = styled.div`
+const FakeSelector = styled.div<{ fontFamily? : string}>`
   background-color: var(--bg-element);
   box-shadow: var(--shadow-md);
   padding: 4px;
@@ -9,8 +9,12 @@ const FakeSelector = styled.div`
   gap: 4px;
   align-items: center;
   justify-content: space-between;
-  width: 80px;
+  width: 140px;
   user-select: none;
+
+  ${(props) => props.fontFamily && css`
+    font-family: ${props.fontFamily};
+  `}
 `;
 
 export default FakeSelector;

@@ -83,3 +83,8 @@ export type DataNode = {
 export type Fill = {
   fill: string;
 };
+
+export type FontMenu = {
+  fontName : string;
+  fontCss: string;
+}

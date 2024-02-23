@@ -84,7 +84,6 @@ function MainToolbar() {
   return (
     <MenuToolbar
       $position={{
-        bottom: 0,
         left: "50%",
       }}
     >

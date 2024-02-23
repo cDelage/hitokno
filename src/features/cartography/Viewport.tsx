@@ -20,6 +20,7 @@ import { useUpdateCartography } from "./useUpdateCartography";
 
 const ViewportContainer = styled.div`
   flex-grow: 1;
+  background-color: var(--bg-white);
 `;
 
 function Viewport(): JSX.Element {
@@ -162,33 +163,15 @@ function Viewport(): JSX.Element {
           <>
             <Background
               variant={"lines" as BackgroundVariant}
-              color={"#BAE6FD"}
+              color={"#E7E5E4"}
               gap={PX_UNIT_GAP}
               size={1}
               id="back"
             />
             <Background
               variant={"lines" as BackgroundVariant}
-              color="#BAE6FD"
+              color="#D6D3D1"
               gap={PX_UNIT_GAP * 4}
-              size={1}
-              id="top"
-            />
-          </>
-        )}
-        {zoom < 1.5 && (
-          <>
-            <Background
-              variant={"lines" as BackgroundVariant}
-              color={"#BAE6FD"}
-              gap={PX_UNIT_GAP * 2}
-              size={1}
-              id="back"
-            />
-            <Background
-              variant={"lines" as BackgroundVariant}
-              color="#BAE6FD"
-              gap={PX_UNIT_GAP * 8}
               size={1}
               id="top"
             />

@@ -12,6 +12,7 @@ import NodeText from "./NodeText";
 import PluginReadEditMode from "./lexicalPlugins/PluginReadEditMode";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import PluginUpdateNodeText from "./lexicalPlugins/PluginUpdateNodeText";
+import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 
 const NodeShapeStyled = styled.div`
   height: 100%;
@@ -30,8 +31,8 @@ const ResizerHandleStyle: CSSProperties = {
   border: "#0284C7 1px solid",
   backgroundColor: "white",
   boxSizing: "border-box",
-  width: "8px",
-  height: "8px",
+  width: "16px",
+  height: "16px",
   transform: "translate(-50%,-50%) scale(1)",
 };
 
@@ -110,9 +111,10 @@ function NodeShape({
         />
         <NodeText mode={mode} editorState={editorState} theme={theme}>
           <PluginReadEditMode mode={mode} />
-          <PluginUpdateNodeText id={id}/>
+          <PluginUpdateNodeText id={id} />
           <NodeToolbar id={id} mode={mode} />
           <HistoryPlugin />
+          <ListPlugin />
         </NodeText>
       </TopContainer>
     </NodeShapeStyled>

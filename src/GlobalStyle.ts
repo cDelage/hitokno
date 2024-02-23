@@ -215,6 +215,53 @@ p{
   margin: 0px;
 }
 
+.htk-theme-menu, .htk-theme-node{
+  
+  h1, h2, h3, p{
+    box-sizing: border-box;
+    padding: 8px 8px;
+    margin: 0px;
+  }
+
+  ul, ol{
+    padding: 0px 4px;
+    margin: 0px 20px;
+  }
+
+  h1 {
+    font-size: 28px;
+    line-height  : 32px;
+    font-weight: 500;
+    user-select: none;
+  }
+
+  h2 {
+    font-size: 24px;
+    line-height  : 28px;
+    font-weight: 500;
+    user-select: none;
+  }
+
+  h3 {
+    font-size: 20px;
+    line-height  : 24px;
+    font-weight: 500;
+    user-select: none;
+  }
+  
+  p, ul, ol{
+    font-size: 16px;
+    line-height  : 20px;
+    font-weight: 400;
+    user-select: none;
+  }
+
+  ul {
+    list-style: disc;
+  }
+
+}
+
 `;
 
 export default GlobalStyle;

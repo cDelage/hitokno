@@ -2,6 +2,7 @@ import { Node } from "reactflow";
 import { Border } from "../../types/Border.type";
 import {
   DataNode,
+  FontMenu,
   Shadow,
   ShadowMenu,
   Shape,
@@ -10,6 +11,8 @@ import {
 } from "../../types/Cartography.type";
 import NodeCreation from "./NodeCreation";
 import NodeShape from "./NodeShape";
+import { HeadingNode } from "@lexical/rich-text";
+import { ListItemNode, ListNode } from "@lexical/list";
 
 export const PX_UNIT_GAP = 8;
 
@@ -276,7 +279,18 @@ export const ThemeLight: Theme[] = [
 export const initialNodeConfig = {
   namespace: "NodeEditor",
   editable : false,
+  nodes: [HeadingNode, ListNode, ListItemNode],
   onError: (err: Error) => {
     console.log(err);
   },
 };
+
+export const fontFamilies : FontMenu[] = [
+  { fontName: "Inter", fontCss: "Inter, system-ui, Avenir, Helvetica, Arial, sans-serif"},
+  { fontName: "Arial", fontCss: "Arial, sans-serif"},
+  { fontName: "system-ui", fontCss: "system-ui, sans-serif"},
+  { fontName: "Courier", fontCss: "Courier new, monospace"},
+  { fontName: "Georgia", fontCss: "Georgia, serif"},
+  { fontName: "Garamond", fontCss: "Garamond, serif"},
+  { fontName: "Times New Roman", fontCss: "Times New Roman, serif"},
+]

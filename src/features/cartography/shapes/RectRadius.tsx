@@ -14,7 +14,7 @@ function RectRadius({ fill, $shadow, border }: ShapeProps): JSX.Element {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <RectStyled width="100%" height="100%" rx={8} ry={8} fill={fill} $shadow={$shadow} stroke={border} strokeWidth={2}/>
+      <RectStyled width="100%" height="100%" rx={16} ry={16} fill={fill} $shadow={$shadow} stroke={border} strokeWidth={2}/>
     </ShapeContainer>
   );
 }
