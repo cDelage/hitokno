@@ -137,6 +137,7 @@ const GlobalStyle = createGlobalStyle`
   --outline-active : var(--color-primary-500);
 
   --shadow-md : 1px 1px 0 rgba(0, 0, 0, 0.25);
+  --shadow-sheet: -0px 2px 4px rgba(0, 0, 0, 0.15);
   --shadow-toggle : 2px 2px 0 rgba(0, 0, 0, 0.40);
   
   --shadow-shape-md: 0px 3px 0.5px rgba(33, 5, 32, 0.25);
@@ -161,6 +162,8 @@ const GlobalStyle = createGlobalStyle`
   background-color: var(--bg-main);
   color: var(--text-main-medium);
  }
+
+
 
  ::selection {
   background-color: var(--color-primary-200); /* Couleur de fond */
@@ -238,14 +241,14 @@ p{
   h2 {
     font-size: 24px;
     line-height  : 28px;
-    font-weight: 500;
+    font-weight: 400;
     user-select: none;
   }
 
   h3 {
     font-size: 20px;
     line-height  : 24px;
-    font-weight: 500;
+    font-weight: 400;
     user-select: none;
   }
   
@@ -260,6 +263,36 @@ p{
     list-style: disc;
   }
 
+}
+
+.sheet-enter {
+  transform: translateX(100%);
+}
+.sheet-enter-active {
+  transform: translateX(0%);
+  transition: transform 200ms;
+}
+.sheet-exit {
+  transform: translateX(0%);
+}
+.sheet-exit-active {
+  transform: translateX(100%);
+  transition: transform 200ms;
+}
+
+.main-toolbar-enter {
+  transform: translate(-50%,100%);
+}
+.main-toolbar-enter-active {
+  transform: translate(-50%, 0%);
+  transition: transform 200ms;
+}
+.main-toolbar-exit {
+  transform: translate(-50%,0%);
+}
+.main-toolbar-exit-active {
+  transform: translate(-50%, 200%);
+  transition: transform 200ms;
 }
 
 `;

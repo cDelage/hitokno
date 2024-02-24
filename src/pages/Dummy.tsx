@@ -1,7 +1,8 @@
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import Button from "../ui/Button";
 import { IoAirplane } from "react-icons/io5";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
+import { CSSTransition } from "react-transition-group";
 
 const getWidthOfText = function (text: string) {
   const element = document.createElement("div");
@@ -35,9 +36,47 @@ const InputContainer = styled.div`
   font-size: 1rem;
 `;
 
+const HelloDiv = styled.div``;
+
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+`;
+
+const fadeOut = keyframes`
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+`;
+
+const StyledComponent = styled.div`
+  // Styles par défaut
+  opacity: 1;
+  animation: ${fadeIn} 0.5s ease-in-out;
+
+  // Ajoutez une classe 'exit' pour l'animation de sortie
+  &.exit {
+    animation: ${fadeOut} 0.5s ease-in-out;
+  }
+`;
 
 function Dummy() {
   const [inpVal, setInpVal] = useState("");
+  const [isEnter, setIsEnter] = useState(false);
+
+  useEffect(() => {
+    setIsEnter(true)
+    return () => {
+      setIsEnter(false)
+    }
+  },[])
 
   return (
     <DummyStyled>
@@ -71,6 +110,29 @@ function Dummy() {
           $width={getWidthOfText(inpVal)}
         />
       </InputContainer>
+      <HelloDiv>
+        <button
+          onClick={() => {
+            setIsEnter((state) => !state);
+          }}
+        >
+          Toggle
+        </button>
+        <CSSTransition in={isEnter} timeout={200} className="myclass">
+          <p>Hello world</p>
+        </CSSTransition>
+
+        <div>
+          <CSSTransition
+            in={isEnter}
+            timeout={500}
+            classNames="fade"
+            unmountOnExit
+          >
+            <StyledComponent>TOTO</StyledComponent>
+          </CSSTransition>
+        </div>
+      </HelloDiv>
     </DummyStyled>
   );
 }

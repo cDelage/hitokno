@@ -84,6 +84,7 @@ export type DataNode = {
   shapeDescription: ShapeDescription;
   handles: CreatedHandle[];
   sheet?: Sheet
+  label: string;
 };
 
 export type Sheet = {

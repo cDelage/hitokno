@@ -63,7 +63,7 @@ type UseCartographyStore = {
   onNodesChange: (changes: NodeChange[]) => void;
   onEdgesChange: (changes: EdgeChange[]) => void;
   setShowNodeToolbar: (nodeId: string | undefined) => void;
-  getNodeWidth: (nodeId: string) => number;
+  getNodeSize: (nodeId: string) => { width: number; height: number };
   getNodeData: (nodeId: string) => DataNode;
   setNodeData: (nodeId: string, data: DataNode) => void;
   setCreateNodeMode: () => void;
@@ -85,6 +85,7 @@ type UseCartographyStore = {
     sourceHandleId: string,
     targetHandleId: string
   ) => void;
+  deleteNode: (nodeId: string) => void;
 };
 
 const useCartography = create<UseCartographyStore>((set, get) => ({
@@ -191,6 +192,7 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
     set((state) => {
       return {
         edges: state.edges.filter((edge) => edge.id !== edgeId),
+        isSyncWithDB: false,
         nodes: state.nodes.map((node) => {
           return {
             ...node,
@@ -206,6 +208,34 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
         }),
       };
     });
+  },
+  deleteNode: (nodeId: string) => {
+    const node = get().nodes.find((node) => node.id === nodeId);
+    if (node) {
+      const handles = node.data.handles.map((handle) => handle.handleId);
+      const edges = get().edges.filter((edge) => {
+        if (edge.sourceHandle && edge.targetHandle) {
+          return (
+            handles.includes(edge.sourceHandle) ||
+            handles.includes(edge.targetHandle)
+          );
+        }
+        return false;
+      });
+
+      edges.forEach((edge) => {
+        if (edge.sourceHandle && edge.targetHandle) {
+          get().deleteEdge(edge.id, edge.sourceHandle, edge.targetHandle);
+        }
+      });
+
+      set((state) => {
+        return {
+          nodes: state.nodes.filter((nde) => nde.id !== nodeId),
+          isSyncWithDB: false,
+        };
+      });
+    }
   },
   setEdgeCreationProps: (edgeCreationProps: EdgeCreationProps) => {
     set((state) => {
@@ -322,9 +352,13 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
       };
     });
   },
-  getNodeWidth: (nodeId: string): number => {
-    return get().nodes.find((node) => node.id === nodeId)?.style
-      ?.width as number;
+  getNodeSize: (nodeId: string) => {
+    return {
+      width: get().nodes.find((node) => node.id === nodeId)?.style
+        ?.width as number,
+      height: get().nodes.find((node) => node.id === nodeId)?.style
+        ?.height as number,
+    };
   },
   findNodeById: (nodeId: string) => {
     return get().nodes.find((node) => node.id === nodeId) as Node;
@@ -369,6 +403,11 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
     });
   },
   handleCreateNode: (x, y, width, height) => {
+    const countShape = get().nodes.filter(
+      (node) =>
+        node.data?.shapeDescription?.shape === get().shapeCreationDesc.shape
+    ).length;
+
     set((state) => {
       return {
         mainToolbarActiveMenu: undefined,
@@ -381,6 +420,7 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
               mode: "DEFAULT",
               handles: [] as CreatedHandle[],
               shapeDescription: state.shapeCreationDesc,
+              label: `${state.shapeCreationDesc.shape} ${countShape}`,
             },
             style: {
               width,
@@ -421,6 +461,9 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
         }),
       };
     });
+  },
+  getNodeCenterCoordinate: (nodeId: string) => {
+    console.log(nodeId);
   },
 }));
 

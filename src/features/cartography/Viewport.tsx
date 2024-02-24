@@ -19,10 +19,11 @@ import useNodeToolbar from "./useNodeToolbar";
 import { useEffect, useState } from "react";
 import MainToolbar from "./MainToolbar";
 import { useTabs } from "../home/useTabs";
-import { Outlet, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useFindFileById } from "../home/useFindFileById";
 import { useUpdateCartography } from "./useUpdateCartography";
 import ConnectionEdgeCustom from "./ConnectionEdgeCustom";
+import SheetContainer from "../sheet/SheetContainer";
 
 const ViewportContainer = styled.div`
   flex-grow: 1;
@@ -64,7 +65,6 @@ function Viewport(): JSX.Element {
     }
   }
 
-
   useEffect(() => {
     if (fileDetail?.file) {
       initCartography(fileDetail.file);
@@ -73,7 +73,7 @@ function Viewport(): JSX.Element {
 
   //Clear node toolbar when no nodes are selected
   useEffect(() => {
-    const selectedNodes = nodes.filter((node) => node.selected)
+    const selectedNodes = nodes.filter((node) => node.selected);
     if (selectedNodes.length === 0 || selectedNodes.length > 1) {
       clearPositionToolbar();
     }
@@ -152,7 +152,7 @@ function Viewport(): JSX.Element {
           <MainToolbar />
         </>
       )}
-      <Outlet/>
+      <SheetContainer/>
       <ReactFlow
         nodes={nodes}
         edges={edges}

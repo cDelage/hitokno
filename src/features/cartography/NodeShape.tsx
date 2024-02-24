@@ -1,14 +1,12 @@
-import { CSSProperties, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Handle,
   NodeProps,
-  NodeResizer,
   useReactFlow,
   useUpdateNodeInternals,
   useViewport,
 } from "reactflow";
 import styled from "styled-components";
-import { PX_UNIT_GAP } from "./CartographyConstants";
 import { PositionAbsolute } from "../../types/Position.type";
 import useNodeToolbar from "./useNodeToolbar";
 import useCartography from "./useCartography";
@@ -21,6 +19,8 @@ import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import PluginUpdateNodeText from "./lexicalPlugins/PluginUpdateNodeText";
 import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import HandlesCreateEdge from "./HandlesCreateEdge";
+import Label from "./Label";
+import Resizer from "./Resizer";
 
 const NodeShapeStyled = styled.div`
   height: 100%;
@@ -33,23 +33,6 @@ const TopContainer = styled.div`
   z-index: 1;
   flex-grow: 1;
 `;
-
-const ResizerHandleStyle: CSSProperties = {
-  borderRadius: "2px",
-  border: "#0284C7 1px solid",
-  backgroundColor: "white",
-  boxSizing: "border-box",
-  width: "16px",
-  height: "16px",
-  transform: "translate(-50%,-50%) scale(1)",
-  boxShadow: "var(--shadow-md)"
-};
-
-const ResizerBorderStyle: CSSProperties = {
-  border: "none",
-  backgroundColor: "#0284C7",
-  boxSizing: "border-box",
-};
 
 const StyledCreatedHandle = styled(Handle)<{$active : boolean}>`
   visibility: ${(props) => props.$active  ? "visible" : "hidden"};
@@ -68,6 +51,7 @@ function NodeShape({
     mode,
     editorState,
     handles,
+    label,
     shapeDescription: { shape, shadow, theme, border },
   },
   xPos,
@@ -75,7 +59,7 @@ function NodeShape({
 }: NodeProps<DataNode>): JSX.Element {
   const { flowToScreenPosition } = useReactFlow();
   const { setSelectedNode } = useNodeToolbar();
-  const { nodes, getNodeWidth, toggleEditMode, mainToolbarActiveMenu, handlesActive } =
+  const { nodes, getNodeSize, toggleEditMode, mainToolbarActiveMenu, handlesActive } =
     useCartography();
   const { zoom, x, y } = useViewport();
   const [isHover, setIsHover] = useState(false);
@@ -89,7 +73,7 @@ function NodeShape({
 
   useEffect(() => {
     if (showNodeToolbar && selected) {
-      const width = getNodeWidth(id) as number;
+      const width = getNodeSize(id).width as number;
       const pos = flowToScreenPosition({
         x: xPos,
         y: yPos,
@@ -109,7 +93,7 @@ function NodeShape({
     nodes,
     selected,
     id,
-    getNodeWidth,
+    getNodeSize,
     zoom,
     x,
     y,
@@ -123,7 +107,8 @@ function NodeShape({
     <NodeShapeStyled
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
-    >
+    > 
+      <Label label={label}/>
       <ShapeDispatch
         shape={shape}
         fill={theme.fill}
@@ -135,20 +120,14 @@ function NodeShape({
           <HandlesCreateEdge isHoverNode={isHover} nodeId={id} />
         )}
         {mainToolbarActiveMenu !== "CREATION-EDGE" && (
-          <NodeResizer
-            minWidth={PX_UNIT_GAP * 2}
-            minHeight={PX_UNIT_GAP * 2}
-            handleStyle={ResizerHandleStyle}
-            lineStyle={ResizerBorderStyle}
-            isVisible={selected}
-          />
+          <Resizer selected={selected}/>
         )}
 
         <NodeText mode={mode} editorState={editorState} theme={theme}>
           <PluginReadEditMode mode={mode} />
           <PluginUpdateNodeText id={id} />
           {mainToolbarActiveMenu !== "CREATION-EDGE" && (
-            <NodeToolbar id={id} mode={mode} />
+            <NodeToolbar id={id} mode={mode} xPos={xPos} yPos={yPos}/>
           )}
           <HistoryPlugin />
           <ListPlugin />

@@ -13,7 +13,7 @@ import IconButton from "./IconButton";
 import { ChildrenProps } from "../types/ChildrenProps.type";
 
 type ModalContextType = {
-  openId: string | undefined;
+  openId: string | null;
   open: (id: string) => void;
   close: () => void;
 };
@@ -57,14 +57,14 @@ const CloseButton = styled.div`
 const ModalContext = createContext<null | ModalContextType>(null);
 
 function Modal({ children }: ChildrenProps): JSX.Element {
-  const [openId, setOpenId] = useState<string | undefined>(undefined);
+  const [openId, setOpenId] = useState<string | null>(null);
 
   function open(id: string) {
     setOpenId(id);
   }
 
   function close() {
-    setOpenId(undefined);
+    setOpenId(null);
   }
 
   return (
@@ -82,11 +82,9 @@ function Toggle({ children, id }: ChildrenProps & { id: string }): JSX.Element {
 
 function Body({
   children,
-  isOpen,
-}: ChildrenProps & { isOpen?: boolean }): JSX.Element | null {
+}: ChildrenProps): JSX.Element | null {
   const { openId, close } = useContext(ModalContext) as ModalContextType;
-  console.log("MODAL STATE : ", isOpen)
-  if (!openId || !isOpen) return null;
+  if (!openId) return null;
 
   function handleClickOverlay(e: MouseEvent<HTMLDivElement>) {
     e.stopPropagation();

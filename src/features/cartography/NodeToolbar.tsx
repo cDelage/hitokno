@@ -48,8 +48,9 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import { $findMatchingParent } from "@lexical/utils";
 import TitleFormatToolbar from "./TitleFormatToolbar";
-import { useNavigate, useParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { IoClose } from "react-icons/io5";
+import { useReactFlow, useViewport } from "reactflow";
 
 const ShapeContainer = styled.div`
   height: 40px;
@@ -79,10 +80,10 @@ const TitleContainer = styled.div`
   width: 160px;
 `;
 
-const OptionContainer = styled.span<{color?: string}>`
+const OptionContainer = styled.span<{ color?: string }>`
   display: flex;
   gap: 4px;
-`
+`;
 
 type FontFamilyProp = {
   fontFamily: string;
@@ -92,23 +93,30 @@ const FontFamilyStyled = styled.div<FontFamilyProp>`
   padding: 0px 16px 0px 0px;
 `;
 
-
 function NodeToolbar({
   id,
   mode,
+  xPos,
+  yPos,
 }: {
   id: string;
   mode: NodeMode;
+  xPos: number;
+  yPos: number;
 }): JSX.Element | null {
   const { positionToolbar, selectedNodeId } = useNodeToolbar();
-  const { getNodeData, setNodeData, toggleEditMode } = useCartography();
+  const { getNodeData, setNodeData, toggleEditMode, deleteNode, getNodeSize } =
+    useCartography();
   const [editor] = useLexicalComposerContext();
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
   const [isUnderline, setIsUnderline] = useState(false);
   const [currentNode, setCurrentNode] = useState<undefined | string>(undefined);
-  const navigate = useNavigate();
-  const { fileId, sheetId } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const {zoom} = useViewport();
+  const sheetId = searchParams.get("sheetId");
+  const { setCenter } = useReactFlow();
+
   const [currentStyle, setCurrentStyle] = useState<undefined | string>(
     undefined
   );
@@ -234,14 +242,21 @@ function NodeToolbar({
 
   const handleOpenSheet = useCallback(
     (sheetId: string) => {
-      navigate(`/cartography/${fileId}/sheet/${sheetId}`);
+      const nodeSize = getNodeSize(id)
+      const gapXScreen = (window.innerWidth * 0.20) / zoom;
+      const newXPos = xPos + (nodeSize.width / 2) + gapXScreen
+      const newYPos = yPos + (nodeSize.height / 2)
+
+      setCenter(newXPos, newYPos, { duration: 200, zoom });
+      setSearchParams({ sheetId });
     },
-    [navigate, fileId]
+    [setSearchParams, setCenter, xPos, yPos ,zoom, getNodeSize, id]
   );
 
   const handleCloseSheet = useCallback(() => {
-    navigate(`/cartography/${fileId}`);
-  }, [navigate, fileId]);
+    searchParams.delete("sheetId");
+    setSearchParams(searchParams);
+  }, [setSearchParams, searchParams]);
 
   useEffect(() => {
     const removeListener = editor.registerUpdateListener(({ editorState }) => {
@@ -290,51 +305,56 @@ function NodeToolbar({
       : "OPEN"
     : "CREATE";
 
-  const sheetCallback =
-    sheetMode === "CREATE"
-      ? handleCreateSheet
-      : sheetId
-      ? handleCloseSheet
-      : () => handleOpenSheet(sheet?.sheetId as string);
+  function sheetCallback() {
+    if (sheetMode === "CREATE") {
+      handleCreateSheet();
+    } else if (sheetMode === "CLOSE") {
+      handleCloseSheet();
+    } else if (sheetMode === "OPEN") {
+      handleOpenSheet(sheet?.sheetId as string);
+    }
+  }
 
   return (
-    <MenuToolbar $position={{ ...positionToolbar, transform: "translate(-50%,-130%)" }}>
+    <MenuToolbar
+      $position={{ ...positionToolbar, transform: "translate(-50%,-130%)" }}
+    >
       <MenuToolbar.ActionLine>
         {/* Shapes (select rect, ellipse, triangle...) */}
-          <MenuToolbar.Action $padding="8px 4px 8px 8px" toggle="shape">
-            <ToolbarSmallIcon>
-              <ShapesIcon />
-            </ToolbarSmallIcon>
-            <HiChevronUp size={12} />
-          </MenuToolbar.Action>
+        <MenuToolbar.Action $padding="8px 4px 8px 8px" toggle="shape">
+          <ToolbarSmallIcon>
+            <ShapesIcon />
+          </ToolbarSmallIcon>
+          <HiChevronUp size={12} />
+        </MenuToolbar.Action>
 
         {/* Color of the shape */}
-          <MenuToolbar.Action $padding="8px 4px 8px 8px" toggle="color">
-            <ToolbarSmallIcon>
-              <ColorNodeIcon fill={theme.fill} />
-            </ToolbarSmallIcon>
-            <HiChevronUp size={12} />
-          </MenuToolbar.Action>
+        <MenuToolbar.Action $padding="8px 4px 8px 8px" toggle="color">
+          <ToolbarSmallIcon>
+            <ColorNodeIcon fill={theme.fill} />
+          </ToolbarSmallIcon>
+          <HiChevronUp size={12} />
+        </MenuToolbar.Action>
 
         {/* Stroke of the shape */}
-          <MenuToolbar.Action $padding="8px 4px 8px 8px" toggle="stroke">
-            <ToolbarSmallIcon>
-              <RxBorderAll size={"100%"} />
-            </ToolbarSmallIcon>
-            <HiChevronUp size={12} />
-          </MenuToolbar.Action>
+        <MenuToolbar.Action $padding="8px 4px 8px 8px" toggle="stroke">
+          <ToolbarSmallIcon>
+            <RxBorderAll size={"100%"} />
+          </ToolbarSmallIcon>
+          <HiChevronUp size={12} />
+        </MenuToolbar.Action>
 
         {/* Shadow */}
-          <MenuToolbar.Action
-            border={MenuBorderRight}
-            $padding="8px 4px 8px 8px"
-            toggle="shadow"
-          >
-            <ToolbarSmallIcon>
-              <ShadowIcon />
-            </ToolbarSmallIcon>
-            <HiChevronUp size={12} />
-          </MenuToolbar.Action>
+        <MenuToolbar.Action
+          border={MenuBorderRight}
+          $padding="8px 4px 8px 8px"
+          toggle="shadow"
+        >
+          <ToolbarSmallIcon>
+            <ShadowIcon />
+          </ToolbarSmallIcon>
+          <HiChevronUp size={12} />
+        </MenuToolbar.Action>
 
         {/* Edit */}
         <MenuToolbar.Action
@@ -349,26 +369,26 @@ function NodeToolbar({
         </MenuToolbar.Action>
 
         {/* Trash */}
-          <MenuToolbar.Action toggle="delete-node">
-            <ToolbarSmallIcon>
-              <BiTrash size={"100%"} />
-            </ToolbarSmallIcon>
-          </MenuToolbar.Action>
+        <MenuToolbar.Action toggle="delete-node">
+          <ToolbarSmallIcon>
+            <BiTrash size={"100%"} />
+          </ToolbarSmallIcon>
+        </MenuToolbar.Action>
 
         {/* Police */}
-          <MenuToolbar.Action toggle="font-family">
-            <FakeSelector fontFamily={currentPolice.fontCss}>
-              {currentPolice?.fontName} <HiChevronUp size={12} />
-            </FakeSelector>
-          </MenuToolbar.Action>
+        <MenuToolbar.Action toggle="font-family">
+          <FakeSelector fontFamily={currentPolice.fontCss}>
+            {currentPolice?.fontName} <HiChevronUp size={12} />
+          </FakeSelector>
+        </MenuToolbar.Action>
 
         {/* Title */}
-          <MenuToolbar.Action toggle="type-node">
-            <FakeSelector>
-              <TitleFormatToolbar node={currentNode} />
-              <HiChevronUp size={12} />
-            </FakeSelector>
-          </MenuToolbar.Action>
+        <MenuToolbar.Action toggle="type-node">
+          <FakeSelector>
+            <TitleFormatToolbar node={currentNode} />
+            <HiChevronUp size={12} />
+          </FakeSelector>
+        </MenuToolbar.Action>
 
         {/* Bold */}
         <MenuToolbar.Action onClick={handleSetBold} $active={isBold}>
@@ -574,11 +594,15 @@ function NodeToolbar({
       </MenuToolbar.SubMenu>
       <MenuToolbar.SubMenu name="delete-node">
         <MenuToolbar.ActionColumn>
-          <MenuToolbar.Action $theme="danger">
-            <OptionContainer><BiTrash size={20}/> Confirm deletion</OptionContainer>
+          <MenuToolbar.Action $theme="danger" onClick={() => deleteNode(id)}>
+            <OptionContainer>
+              <BiTrash size={20} /> Confirm deletion
+            </OptionContainer>
           </MenuToolbar.Action>
           <MenuToolbar.Action>
-          <OptionContainer><IoClose size={20}/> Cancel</OptionContainer>
+            <OptionContainer>
+              <IoClose size={20} /> Cancel
+            </OptionContainer>
           </MenuToolbar.Action>
         </MenuToolbar.ActionColumn>
       </MenuToolbar.SubMenu>

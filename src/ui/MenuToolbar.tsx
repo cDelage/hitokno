@@ -13,7 +13,6 @@ const MenuToolbarStyled = styled.menu<PositionObject>`
   z-index: 100;
   padding: 0px 0px;
   box-shadow: var(--shadow-md);
-  transition: 200ms ease-in all;
 
   ${(props) => {
     return { ...props.$position};
@@ -161,7 +160,7 @@ function ActionColumn({ children }: ChildrenProps): JSX.Element {
 
 type ActionProps = {
   $active?: boolean;
-  onClick?: () => void;
+  onClick?: (e: MouseEvent) => void;
   $padding?: string;
 };
 
@@ -176,8 +175,8 @@ function Action({
 }: ChildrenProps & BorderProps & ActionProps & { $theme?: string, toggle?: string}): JSX.Element {
   const {handleToggleSubMenu} = useMenuToolbarContext()
   const actionRef = useRef<HTMLDivElement>(null)
-  const handleClick = useCallback(() => {
-    onClick?.();
+  const handleClick = useCallback((e : MouseEvent) => {
+    onClick?.(e);
     if(toggle){
       handleToggleSubMenu(toggle, actionRef.current?.offsetLeft)
     }
