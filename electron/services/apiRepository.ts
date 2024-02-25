@@ -8,6 +8,7 @@ import {
   RenameFolderParams,
 } from "../../src/types/Repository.types";
 import { generateUUID } from "./generateUUID";
+import { SheetDetail } from "../../src/types/Cartography.type";
 
 const newFolder = {
   folderName: "new folder",
@@ -136,4 +137,41 @@ export async function updateCartography({ _id, nodes, edges }: File) {
   if (!result) throw new Error("Fail to update cartography");
 
   return result;
+}
+
+export async function findSheet(sheetId: string) {
+  if (sheetId === "") return undefined;
+  const folder = (await db.repository.findOne(
+    {
+      "files.nodes.data.sheet.sheetId": sheetId,
+    },
+    { files: 1 }
+  )) as CompleteFolder;
+
+  folder.files.find((file) => {
+    file.nodes.find((node) => node.data.sheet?.sheetId === sheetId);
+  });
+
+  const sheet = folder.files.reduce(
+    (acc: SheetDetail, cur: File) => {
+      cur.nodes.forEach((node) => {
+        if (node.data.sheet?.sheetId === sheetId) {
+          acc.nodeId = node.id;
+          acc.sheet = node.data.sheet;
+        }
+      });
+
+      return acc;
+    },
+    {
+      nodeId: "",
+      sheet: {
+        sheetId: "",
+      },
+    }
+  );
+
+  console.log(sheet)
+
+  return sheet;
 }

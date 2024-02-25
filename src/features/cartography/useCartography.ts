@@ -5,6 +5,7 @@ import {
   NodeChange,
   NodeSelectionChange,
   Position,
+  XYPosition,
   applyEdgeChanges,
   applyNodeChanges,
 } from "reactflow";
@@ -86,6 +87,8 @@ type UseCartographyStore = {
     targetHandleId: string
   ) => void;
   deleteNode: (nodeId: string) => void;
+  getNodeCenterCoordinate: (nodeId: string) => XYPosition;
+  findSheetData: (sheetId: string) => {nodeId : string, data : DataNode} | undefined;
 };
 
 const useCartography = create<UseCartographyStore>((set, get) => ({
@@ -382,6 +385,7 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
           if (newNode.id === nodeId) newNode.data = data;
           return newNode;
         }),
+        isSyncWithDB: false
       };
     });
   },
@@ -420,7 +424,7 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
               mode: "DEFAULT",
               handles: [] as CreatedHandle[],
               shapeDescription: state.shapeCreationDesc,
-              label: `${state.shapeCreationDesc.shape} ${countShape}`,
+              label: `${state.shapeCreationDesc.shape.toUpperCase()} ${countShape + 1}`,
             },
             style: {
               width,
@@ -463,8 +467,22 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
     });
   },
   getNodeCenterCoordinate: (nodeId: string) => {
-    console.log(nodeId);
+    const node = get().findNodeById(nodeId)
+    const centerX = node.position.x + (node.style?.width as number / 2)
+    const centerY = node.position.y + (node.style?.height as number / 2)
+    return {
+      x: centerX,
+      y: centerY
+    }
   },
+  findSheetData: (sheetId: string) => {
+    const node = get().nodes.find(node => node.data.sheet?.sheetId === sheetId)
+    if(!node?.id) return undefined
+    return {
+      nodeId: node.id,
+      data: node.data as DataNode
+    }
+  }
 }));
 
 export default useCartography;

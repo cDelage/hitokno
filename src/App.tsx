@@ -19,6 +19,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import FileDisabled from "./features/home/FileDisabled";
 import FileSelected from "./features/home/FileSelected";
 import Cartography from "./pages/Cartography";
+import { SheetDetail } from "./types/Cartography.type";
 
 /**
  * When i add it into a file .d.ts, then typescript not recognize the interface.
@@ -41,6 +42,7 @@ declare global {
       findFile: (fileId: string) => Promise<FileDetail | undefined>;
       renameFile: (params: FileRename) => Promise<Folder>;
       updateCartography: (file: File) => Promise<number>;
+      findSheet : (sheetId : string) => Promise<SheetDetail>;
     };
   }
 }

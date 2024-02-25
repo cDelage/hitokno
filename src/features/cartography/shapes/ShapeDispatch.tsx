@@ -19,7 +19,7 @@ function ShapeDispatch({
     return <Triangle fill={fill} $shadow={$shadow} border={border} />;
   if (shape === "cylinder")
     return <Cylinder fill={fill} $shadow={$shadow} border={border} />;
-  if (shape === "rect-radius")
+  if (shape === "rect-rounded")
     return <RectRadius fill={fill} $shadow={$shadow} border={border} />;
   return undefined;
 }

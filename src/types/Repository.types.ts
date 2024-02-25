@@ -1,5 +1,5 @@
 import { Edge, Node } from "reactflow";
-import { DataNode } from "./Cartography.type";
+import { DataNode, DataNodeWithSheet } from "./Cartography.type";
 
 export type FileDetail = {
   file: File;
@@ -35,6 +35,13 @@ export type File = {
   _id: string;
   fileName: string;
   nodes: Node<DataNode>[];
+  edges: Edge[];
+};
+
+export type FileWithSheet = {
+  _id: string;
+  fileName: string;
+  nodes: Node<DataNodeWithSheet>[];
   edges: Edge[];
 };
 

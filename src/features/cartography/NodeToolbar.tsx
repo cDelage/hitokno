@@ -96,16 +96,12 @@ const FontFamilyStyled = styled.div<FontFamilyProp>`
 function NodeToolbar({
   id,
   mode,
-  xPos,
-  yPos,
 }: {
   id: string;
   mode: NodeMode;
-  xPos: number;
-  yPos: number;
 }): JSX.Element | null {
   const { positionToolbar, selectedNodeId } = useNodeToolbar();
-  const { getNodeData, setNodeData, toggleEditMode, deleteNode, getNodeSize } =
+  const { getNodeData, setNodeData, toggleEditMode, deleteNode, getNodeCenterCoordinate } =
     useCartography();
   const [editor] = useLexicalComposerContext();
   const [isBold, setIsBold] = useState(false);
@@ -242,21 +238,22 @@ function NodeToolbar({
 
   const handleOpenSheet = useCallback(
     (sheetId: string) => {
-      const nodeSize = getNodeSize(id)
+      const centerNode = getNodeCenterCoordinate(id)
       const gapXScreen = (window.innerWidth * 0.20) / zoom;
-      const newXPos = xPos + (nodeSize.width / 2) + gapXScreen
-      const newYPos = yPos + (nodeSize.height / 2)
+      const newXPos = centerNode.x + gapXScreen      
 
-      setCenter(newXPos, newYPos, { duration: 200, zoom });
+      setCenter(newXPos, centerNode.y, { duration: 200, zoom });
       setSearchParams({ sheetId });
     },
-    [setSearchParams, setCenter, xPos, yPos ,zoom, getNodeSize, id]
+    [setSearchParams, setCenter, zoom, id, getNodeCenterCoordinate]
   );
 
   const handleCloseSheet = useCallback(() => {
+    const centerNode = getNodeCenterCoordinate(id);
+    setCenter(centerNode.x, centerNode.y, { duration: 200, zoom });
     searchParams.delete("sheetId");
     setSearchParams(searchParams);
-  }, [setSearchParams, searchParams]);
+  }, [setSearchParams, searchParams, setCenter, getNodeCenterCoordinate, id, zoom]);
 
   useEffect(() => {
     const removeListener = editor.registerUpdateListener(({ editorState }) => {
@@ -300,7 +297,7 @@ function NodeToolbar({
   } = data;
 
   const sheetMode: SheetToolbarMode = sheet
-    ? sheetId
+    ? sheetId === id
       ? "CLOSE"
       : "OPEN"
     : "CREATE";

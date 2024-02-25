@@ -127,7 +127,7 @@ function NodeShape({
           <PluginReadEditMode mode={mode} />
           <PluginUpdateNodeText id={id} />
           {mainToolbarActiveMenu !== "CREATION-EDGE" && (
-            <NodeToolbar id={id} mode={mode} xPos={xPos} yPos={yPos}/>
+            <NodeToolbar id={id} mode={mode}/>
           )}
           <HistoryPlugin />
           <ListPlugin />

@@ -33,7 +33,7 @@ export type PaneOnDragMode = undefined | PaneOnDragOption[];
 
 export type Shape =
   | "rect"
-  | "rect-radius"
+  | "rect-rounded"
   | "ellipse"
   | "triangle"
   | "cylinder";
@@ -87,12 +87,24 @@ export type DataNode = {
   label: string;
 };
 
+export type DataNodeWithSheet = {
+  mode: NodeMode;
+  editorState?: string;
+  showNodeToolbar?: boolean;
+  shapeDescription: ShapeDescription;
+  handles: CreatedHandle[];
+  sheet?: Sheet
+  label: string;
+};
+
 export type Sheet = {
   sheetId: string;
+  body?: string;
 }
 
-export type SheetComplete = Sheet & {
-  body: string;
+export type SheetDetail = {
+  nodeId: string;
+  sheet: Sheet;
 }
 
 export type Fill = {

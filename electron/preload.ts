@@ -31,6 +31,9 @@ const repository = {
     await ipcRenderer.invoke("rename-file", params),
   updateCartography: async (file: File) =>
     await ipcRenderer.invoke("update-cartography", file),
+  findSheet: async (sheetId: string) => {
+    await ipcRenderer.invoke("find-sheet", sheetId);
+  },
 };
 
 // --------- Expose some API to the Renderer process ---------

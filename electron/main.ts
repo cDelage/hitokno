@@ -9,6 +9,7 @@ import {
   renameFolder,
   renameFile,
   updateCartography,
+  findSheet,
 } from "./services/apiRepository";
 import {
   File,
@@ -122,6 +123,12 @@ function createWindow() {
     async (event: IpcMainInvokeEvent, file: File) =>
       await updateCartography(file)
   );
+
+  ipcMain.handle(
+    "find-sheet", async(event: IpcMainInvokeEvent, sheetId: string) => {
+      await findSheet(sheetId);
+    }
+  )
 }
 
 // Quit when all windows are closed, except on macOS. There, it's common

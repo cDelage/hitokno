@@ -55,7 +55,7 @@ export const ShadowsMenu: ShadowMenu[] = [
 
 export const ShapeMenu: Shape[] = [
   "rect",
-  "rect-radius",
+  "rect-rounded",
   "ellipse",
   "triangle",
   "cylinder",
@@ -74,6 +74,7 @@ export const NODE_DEFAULT: Node<DataNode> = {
   data: {
     mode: "DEFAULT",
     handles: [] as CreatedHandle[],
+    label:"",
     shapeDescription: {
       shape: "rect" as Shape,
       border: false,
@@ -94,33 +95,6 @@ export const NODE_DEFAULT: Node<DataNode> = {
   },
 };
 
-export const NODE_DEFAULT_2: Node<DataNode> = {
-  id: "2",
-  type: "shape",
-  position: { x: 200, y: 150 },
-  selected: false,
-  data: {
-    mode: "DEFAULT",
-    handles: [] as CreatedHandle[],
-    shapeDescription: {
-      shape: "ellipse" as Shape,
-      border: true,
-      shadow: "var(--shadow-shape-lg)" as Shadow,
-      theme: {
-        id: "purple-dark",
-        fill: "#4F46E5",
-        color: "#FFFFFF",
-        stroke: "#3730A3",
-      },
-    },
-    showNodeToolbar: false,
-  },
-  selectable: true,
-  draggable: true,
-  style: {
-    ...NODE_SIZE_DEFAULT,
-  },
-};
 
 export const NODE_CREATION: Node<DataNode> = {
   id: "node-creation",
@@ -130,6 +104,7 @@ export const NODE_CREATION: Node<DataNode> = {
   data: {
     mode: "DEFAULT",
     handles: [] as CreatedHandle[],
+    label:"",
     shapeDescription: {
       shape: "rect" as Shape,
       border: false,
