@@ -9,7 +9,7 @@ const LabelStyled = styled.div`
     line-height: 12px;
     padding: 0;
     margin: 0;
-    transform: translateY(100%);
+    transform: translateY(120%);
     color: var(--text-main-active);
 `
 

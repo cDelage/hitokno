@@ -8,7 +8,9 @@ const SheetContainerStyled = styled.div`
   top: 16px;
   right: 16px;
   bottom: 16px;
-  width: 40%;
+  display: flex;
+  flex-direction: column;
+  width: 800px;
   z-index: 500;
   box-shadow: var(--shadow-sheet);
   background-color: var(--bg-element);

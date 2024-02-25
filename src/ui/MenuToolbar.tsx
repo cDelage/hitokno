@@ -4,25 +4,37 @@ import { createPortal } from "react-dom";
 import { PositionAbsolute, PositionObject } from "../types/Position.type";
 import Row from "./Row";
 import { BorderProps } from "../types/Border.type";
-import { MouseEvent, createContext, useCallback, useContext, useRef, useState } from "react";
+import {
+  MouseEvent,
+  createContext,
+  useCallback,
+  useContext,
+  useRef,
+  useState,
+} from "react";
 
-const MenuToolbarStyled = styled.menu<PositionObject>`
+const MenuToolbarStyled = styled.menu<PositionObject & { $isDisplayBlock?: boolean }>`
   background-color: var(--bg-element);
   border-radius: 4px;
-  position: absolute;
   z-index: 100;
   padding: 0px 0px;
   box-shadow: var(--shadow-md);
+  ${(props) =>
+    !props.$isDisplayBlock &&
+    css`
+      position: absolute;
+    `}
 
   ${(props) => {
-    return { ...props.$position};
+    return { ...props.$position };
   }}
 `;
 
-const ActionStyled = styled.div<BorderProps & ActionProps & {$theme? : string}>`
+const ActionStyled = styled.div<BorderProps & ActionProps & { $theme?: string }>`
   cursor: pointer;
   flex-grow: 1;
   display: flex;
+  justify-content: center;
   align-items: center;
   ${(props) => {
     return props.border;
@@ -46,10 +58,12 @@ const ActionStyled = styled.div<BorderProps & ActionProps & {$theme? : string}>`
       : css`
           padding: 8px;
         `}
-    ${(props) => props.$theme === "danger" && css`
+    ${(props) =>
+    props.$theme === "danger" &&
+    css`
       background-color: var(--bg-button-danger);
       color: var(--text-button-danger);
-      &:hover{
+      &:hover {
         background-color: var(--bg-button-danger-hover);
       }
     `}
@@ -63,17 +77,23 @@ type SubMenuStyledProps = {
   $offsetLeft: number | undefined;
 };
 
-const SubMenuStyled = styled.menu<SubMenuStyledProps>`
+const SubMenuStyled = styled.menu<SubMenuStyledProps & { $displayBottom?: boolean}>`
   background-color: var(--bg-element);
   border-radius: 4px;
   position: absolute;
   z-index: 100;
   padding: 0px 0px;
   box-shadow: var(--shadow-md);
-  top: -12px;
-  left: ${(props) => (props.$offsetLeft ? props.$offsetLeft : 0)}px;
-  transform: translateY(-100%);
   overflow: hidden;
+  
+  ${(props) => props.$displayBottom ? css`
+    bottom: 0px;
+    transform: translateY(100%);
+  ` : css`
+    top: -12px;
+    transform: translateY(-100%);
+  `}
+  left: ${(props) => (props.$offsetLeft ? props.$offsetLeft : 0)}px;
 `;
 
 type MenuToolbarContextProps = {
@@ -103,7 +123,9 @@ function useMenuToolbarContext(): MenuToolbarContextProps {
 function MenuToolbar({
   children,
   $position,
-}: ChildrenProps & PositionObject): JSX.Element {
+  $isDisplayBlock,
+}: ChildrenProps &
+  PositionObject & { $isDisplayBlock?: boolean }): JSX.Element {
   const [activeSubMenu, setActiveSubMenu] = useState<string | undefined>(
     undefined
   );
@@ -121,8 +143,30 @@ function MenuToolbar({
     });
   }
 
-  function handleClick(e : MouseEvent){
+  function handleClick(e: MouseEvent) {
     e.stopPropagation();
+  }
+  
+  //If display block, no portal to body
+  if ($isDisplayBlock) {
+    return (
+      <MenuToolbarContext.Provider
+        value={{
+          activeSubMenu: activeSubMenu,
+          position: $position,
+          handleToggleSubMenu,
+          offsetLeft,
+        }}
+      >
+        <MenuToolbarStyled
+          $position={$position}
+          onClick={handleClick}
+          $isDisplayBlock={$isDisplayBlock}
+        >
+          <SubMenuContainer>{children}</SubMenuContainer>
+        </MenuToolbarStyled>
+      </MenuToolbarContext.Provider>
+    );
   }
 
   return createPortal(
@@ -134,7 +178,11 @@ function MenuToolbar({
         offsetLeft,
       }}
     >
-      <MenuToolbarStyled $position={$position} onClick={handleClick}>
+      <MenuToolbarStyled
+        $position={$position}
+        onClick={handleClick}
+        $isDisplayBlock={$isDisplayBlock}
+      >
         <SubMenuContainer>{children}</SubMenuContainer>
       </MenuToolbarStyled>
     </MenuToolbarContext.Provider>,
@@ -171,16 +219,21 @@ function Action({
   onClick,
   $padding,
   $theme,
-  toggle
-}: ChildrenProps & BorderProps & ActionProps & { $theme?: string, toggle?: string}): JSX.Element {
-  const {handleToggleSubMenu} = useMenuToolbarContext()
-  const actionRef = useRef<HTMLDivElement>(null)
-  const handleClick = useCallback((e : MouseEvent) => {
-    onClick?.(e);
-    if(toggle){
-      handleToggleSubMenu(toggle, actionRef.current?.offsetLeft)
-    }
-  },[onClick, handleToggleSubMenu, toggle])
+  toggle,
+}: ChildrenProps &
+  BorderProps &
+  ActionProps & { $theme?: string; toggle?: string }): JSX.Element {
+  const { handleToggleSubMenu } = useMenuToolbarContext();
+  const actionRef = useRef<HTMLDivElement>(null);
+  const handleClick = useCallback(
+    (e: MouseEvent) => {
+      onClick?.(e);
+      if (toggle) {
+        handleToggleSubMenu(toggle, actionRef.current?.offsetLeft);
+      }
+    },
+    [onClick, handleToggleSubMenu, toggle]
+  );
   return (
     <ActionStyled
       ref={actionRef}
@@ -204,10 +257,15 @@ type SubMenuProps = {
 function SubMenu({
   children,
   name,
-}: ChildrenProps & SubMenuProps): JSX.Element | null {
+  $displayBottom
+}: ChildrenProps & SubMenuProps & {$displayBottom?: boolean}): JSX.Element | null {
   const { activeSubMenu, offsetLeft } = useMenuToolbarContext();
   if (name !== activeSubMenu) return null;
-  return <SubMenuStyled $offsetLeft={offsetLeft}>{children}</SubMenuStyled>;
+  return <SubMenuStyled 
+            $offsetLeft={offsetLeft} 
+            $displayBottom={$displayBottom}>
+            {children}
+          </SubMenuStyled>;
 }
 
 MenuToolbar.Action = Action;

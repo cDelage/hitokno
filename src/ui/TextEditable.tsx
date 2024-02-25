@@ -11,6 +11,7 @@ type TextEditableProps = {
   resizable?: boolean;
   style?: CSSProperties;
   fontWeigth?: string;
+  lockSelection?: boolean;
 };
 
 type InputProps = {
@@ -69,6 +70,7 @@ function TextEditable({
   onClickOutside,
   resizable,
   fontWeigth,
+  lockSelection
 }: TextEditableProps): JSX.Element {
   const ref = useInputOutsideDoubleClick(() => {
     if (mode === "EDIT") {
@@ -83,12 +85,12 @@ function TextEditable({
   }
 
   useEffect(() => {
-    if (mode === "EDIT") {
+    if (mode === "EDIT" && !lockSelection) {
       ref.current?.select();
     } else {
       ref.current?.blur();
     }
-  }, [mode, ref]);
+  }, [mode, ref, lockSelection]);
 
   return (
     <Input

@@ -101,15 +101,20 @@ function NodeToolbar({
   mode: NodeMode;
 }): JSX.Element | null {
   const { positionToolbar, selectedNodeId } = useNodeToolbar();
-  const { getNodeData, setNodeData, toggleEditMode, deleteNode, getNodeCenterCoordinate } =
-    useCartography();
+  const {
+    getNodeData,
+    setNodeData,
+    toggleEditMode,
+    deleteNode,
+    getNodeCenterCoordinate,
+  } = useCartography();
   const [editor] = useLexicalComposerContext();
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
   const [isUnderline, setIsUnderline] = useState(false);
   const [currentNode, setCurrentNode] = useState<undefined | string>(undefined);
   const [searchParams, setSearchParams] = useSearchParams();
-  const {zoom} = useViewport();
+  const { zoom } = useViewport();
   const sheetId = searchParams.get("sheetId");
   const { setCenter } = useReactFlow();
 
@@ -238,9 +243,9 @@ function NodeToolbar({
 
   const handleOpenSheet = useCallback(
     (sheetId: string) => {
-      const centerNode = getNodeCenterCoordinate(id)
-      const gapXScreen = (window.innerWidth * 0.20) / zoom;
-      const newXPos = centerNode.x + gapXScreen      
+      const centerNode = getNodeCenterCoordinate(id);
+      const gapXScreen = (window.innerWidth - 800) / 2 / zoom;
+      const newXPos = centerNode.x + gapXScreen;
 
       setCenter(newXPos, centerNode.y, { duration: 200, zoom });
       setSearchParams({ sheetId });
@@ -253,7 +258,14 @@ function NodeToolbar({
     setCenter(centerNode.x, centerNode.y, { duration: 200, zoom });
     searchParams.delete("sheetId");
     setSearchParams(searchParams);
-  }, [setSearchParams, searchParams, setCenter, getNodeCenterCoordinate, id, zoom]);
+  }, [
+    setSearchParams,
+    searchParams,
+    setCenter,
+    getNodeCenterCoordinate,
+    id,
+    zoom,
+  ]);
 
   useEffect(() => {
     const removeListener = editor.registerUpdateListener(({ editorState }) => {
@@ -297,7 +309,7 @@ function NodeToolbar({
   } = data;
 
   const sheetMode: SheetToolbarMode = sheet
-    ? sheetId === id
+    ? sheetId === sheet.sheetId
       ? "CLOSE"
       : "OPEN"
     : "CREATE";
@@ -372,44 +384,51 @@ function NodeToolbar({
           </ToolbarSmallIcon>
         </MenuToolbar.Action>
 
-        {/* Police */}
-        <MenuToolbar.Action toggle="font-family">
-          <FakeSelector fontFamily={currentPolice.fontCss}>
-            {currentPolice?.fontName} <HiChevronUp size={12} />
-          </FakeSelector>
-        </MenuToolbar.Action>
+        {mode === "EDIT" && (
+          <>
+            {/* Police */}
+            <MenuToolbar.Action toggle="font-family">
+              <FakeSelector fontFamily={currentPolice.fontCss}>
+                {currentPolice?.fontName} <HiChevronUp size={12} />
+              </FakeSelector>
+            </MenuToolbar.Action>
 
-        {/* Title */}
-        <MenuToolbar.Action toggle="type-node">
-          <FakeSelector>
-            <TitleFormatToolbar node={currentNode} />
-            <HiChevronUp size={12} />
-          </FakeSelector>
-        </MenuToolbar.Action>
+            {/* Title */}
+            <MenuToolbar.Action toggle="type-node">
+              <FakeSelector>
+                <TitleFormatToolbar node={currentNode} />
+                <HiChevronUp size={12} />
+              </FakeSelector>
+            </MenuToolbar.Action>
 
-        {/* Bold */}
-        <MenuToolbar.Action onClick={handleSetBold} $active={isBold}>
-          <ToolbarSmallIcon>
-            <BiBold size={"100%"} />
-          </ToolbarSmallIcon>
-        </MenuToolbar.Action>
+            {/* Bold */}
+            <MenuToolbar.Action onClick={handleSetBold} $active={isBold}>
+              <ToolbarSmallIcon>
+                <BiBold size={"100%"} />
+              </ToolbarSmallIcon>
+            </MenuToolbar.Action>
 
-        {/* Italic */}
-        <MenuToolbar.Action onClick={handleSetItalic} $active={isItalic}>
-          <ToolbarSmallIcon>
-            <BiItalic size={"100%"} />
-          </ToolbarSmallIcon>
-        </MenuToolbar.Action>
+            {/* Italic */}
+            <MenuToolbar.Action onClick={handleSetItalic} $active={isItalic}>
+              <ToolbarSmallIcon>
+                <BiItalic size={"100%"} />
+              </ToolbarSmallIcon>
+            </MenuToolbar.Action>
 
-        {/* Underline */}
-        <MenuToolbar.Action onClick={handleSetUnderline} $active={isUnderline}>
-          <ToolbarSmallIcon>
-            <BiUnderline
-              size={"100%"}
-              style={{ transform: "translateY(1px)" }}
-            />
-          </ToolbarSmallIcon>
-        </MenuToolbar.Action>
+            {/* Underline */}
+            <MenuToolbar.Action
+              onClick={handleSetUnderline}
+              $active={isUnderline}
+            >
+              <ToolbarSmallIcon>
+                <BiUnderline
+                  size={"100%"}
+                  style={{ transform: "translateY(1px) scale(1.2)" }}
+                />
+              </ToolbarSmallIcon>
+            </MenuToolbar.Action>
+          </>
+        )}
 
         {/* Open sheet */}
         <MenuToolbar.Action onClick={sheetCallback}>

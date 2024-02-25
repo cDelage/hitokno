@@ -21,6 +21,7 @@ import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import HandlesCreateEdge from "./HandlesCreateEdge";
 import Label from "./Label";
 import Resizer from "./Resizer";
+import SheetSignifiantButton from "./SheetSignifiantButton";
 
 const NodeShapeStyled = styled.div`
   height: 100%;
@@ -34,14 +35,15 @@ const TopContainer = styled.div`
   flex-grow: 1;
 `;
 
-const StyledCreatedHandle = styled(Handle)<{$active : boolean}>`
-  visibility: ${(props) => props.$active  ? "visible" : "hidden"};
+
+const StyledCreatedHandle = styled(Handle)<{ $active: boolean }>`
+  visibility: ${(props) => (props.$active ? "visible" : "hidden")};
   width: 12px;
   height: 12px;
   background-color: white;
-  border: #0284C7 1px solid;
+  border: #0284c7 1px solid;
   box-shadow: var(--shadow-md);
-`
+`;
 
 function NodeShape({
   id,
@@ -52,6 +54,7 @@ function NodeShape({
     editorState,
     handles,
     label,
+    sheet,
     shapeDescription: { shape, shadow, theme, border },
   },
   xPos,
@@ -59,8 +62,13 @@ function NodeShape({
 }: NodeProps<DataNode>): JSX.Element {
   const { flowToScreenPosition } = useReactFlow();
   const { setSelectedNode } = useNodeToolbar();
-  const { nodes, getNodeSize, toggleEditMode, mainToolbarActiveMenu, handlesActive } =
-    useCartography();
+  const {
+    nodes,
+    getNodeSize,
+    toggleEditMode,
+    mainToolbarActiveMenu,
+    handlesActive,
+  } = useCartography();
   const { zoom, x, y } = useViewport();
   const [isHover, setIsHover] = useState(false);
   const updateNodeInternals = useUpdateNodeInternals();
@@ -70,6 +78,7 @@ function NodeShape({
       toggleEditMode(id);
     }
   }
+  
 
   useEffect(() => {
     if (showNodeToolbar && selected) {
@@ -100,15 +109,18 @@ function NodeShape({
   ]);
 
   useEffect(() => {
-    updateNodeInternals(id)
-  },[handles, updateNodeInternals, id]);
+    updateNodeInternals(id);
+  }, [handles, updateNodeInternals, id]);
 
   return (
     <NodeShapeStyled
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
-    > 
-      <Label label={label}/>
+    >
+      {sheet?.sheetId && (
+        <SheetSignifiantButton nodeSheetId={sheet.sheetId} nodeId={id} $activeColor={theme.stroke} $defaultColor={theme.color}/>
+      )}
+      <Label label={label} />
       <ShapeDispatch
         shape={shape}
         fill={theme.fill}
@@ -120,14 +132,14 @@ function NodeShape({
           <HandlesCreateEdge isHoverNode={isHover} nodeId={id} />
         )}
         {mainToolbarActiveMenu !== "CREATION-EDGE" && (
-          <Resizer selected={selected}/>
+          <Resizer selected={selected} />
         )}
 
         <NodeText mode={mode} editorState={editorState} theme={theme}>
           <PluginReadEditMode mode={mode} />
           <PluginUpdateNodeText id={id} />
           {mainToolbarActiveMenu !== "CREATION-EDGE" && (
-            <NodeToolbar id={id} mode={mode}/>
+            <NodeToolbar id={id} mode={mode} />
           )}
           <HistoryPlugin />
           <ListPlugin />
