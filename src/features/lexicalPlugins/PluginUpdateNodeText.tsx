@@ -1,5 +1,5 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import useCartography from "../useCartography";
+import useCartography from "../cartography/useCartography";
 import { useEffect } from "react";
 
 function PluginUpdateNodeText({ id }: { id: string }) {

@@ -171,7 +171,6 @@ export async function findSheet(sheetId: string) {
     }
   );
 
-  console.log(sheet)
 
   return sheet;
 }

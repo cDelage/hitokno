@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Handle,
   NodeProps,
@@ -14,9 +14,9 @@ import ShapeDispatch from "./shapes/ShapeDispatch";
 import { DataNode } from "../../types/Cartography.type";
 import NodeToolbar from "./NodeToolbar";
 import NodeText from "./NodeText";
-import PluginReadEditMode from "./lexicalPlugins/PluginReadEditMode";
+import PluginReadEditMode from "../lexicalPlugins/PluginReadEditMode";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
-import PluginUpdateNodeText from "./lexicalPlugins/PluginUpdateNodeText";
+import PluginUpdateNodeText from "../lexicalPlugins/PluginUpdateNodeText";
 import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import HandlesCreateEdge from "./HandlesCreateEdge";
 import Label from "./Label";
@@ -34,7 +34,6 @@ const TopContainer = styled.div`
   z-index: 1;
   flex-grow: 1;
 `;
-
 
 const StyledCreatedHandle = styled(Handle)<{ $active: boolean }>`
   visibility: ${(props) => (props.$active ? "visible" : "hidden")};
@@ -73,12 +72,11 @@ function NodeShape({
   const [isHover, setIsHover] = useState(false);
   const updateNodeInternals = useUpdateNodeInternals();
 
-  function handleDoubleClick() {
+  const handleDoubleClick = useCallback(() => {
     if (mode !== "EDIT" && selected) {
       toggleEditMode(id);
     }
-  }
-  
+  }, [toggleEditMode, mode, selected, id]);
 
   useEffect(() => {
     if (showNodeToolbar && selected) {
@@ -118,7 +116,7 @@ function NodeShape({
       onMouseLeave={() => setIsHover(false)}
     >
       {sheet?.sheetId && (
-        <SheetSignifiantButton nodeSheetId={sheet.sheetId} nodeId={id} $activeColor={theme.stroke} $defaultColor={theme.color}/>
+        <SheetSignifiantButton nodeSheetId={sheet.sheetId} nodeId={id} />
       )}
       <Label label={label} />
       <ShapeDispatch

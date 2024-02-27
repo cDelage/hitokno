@@ -27,7 +27,7 @@ function SheetContainer(): JSX.Element {
       unmountOnExit
       mountOnEnter
     >
-      <SheetContainerStyled>
+      <SheetContainerStyled id="sheet-container">
         <Sheet />
       </SheetContainerStyled>
     </CSSTransition>

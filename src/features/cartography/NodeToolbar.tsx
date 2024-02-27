@@ -85,12 +85,9 @@ const OptionContainer = styled.span<{ color?: string }>`
   gap: 4px;
 `;
 
-type FontFamilyProp = {
-  fontFamily: string;
-};
-const FontFamilyStyled = styled.div<FontFamilyProp>`
+const FontFamilyStyled = styled.div<{fontFamily : string}>`
   font-family: ${(props) => props.fontFamily};
-  padding: 0px 16px 0px 0px;
+  width: 100px;
 `;
 
 function NodeToolbar({
@@ -612,7 +609,7 @@ function NodeToolbar({
         <MenuToolbar.ActionColumn>
           <MenuToolbar.Action $theme="danger" onClick={() => deleteNode(id)}>
             <OptionContainer>
-              <BiTrash size={20} /> Confirm deletion
+              <BiTrash size={20} /> Delete
             </OptionContainer>
           </MenuToolbar.Action>
           <MenuToolbar.Action>

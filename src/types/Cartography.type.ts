@@ -61,6 +61,18 @@ export type Theme = {
   stroke: string;
 };
 
+export type ThemeHighlight = {
+  id: string;
+  fill: string;
+  color: string;
+};
+
+export type ThemeText = {
+  id: string;
+  color: string;
+}
+
+
 export type ShapeProps = {
   shape?: Shape | undefined;
   fill: string;

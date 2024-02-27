@@ -2,11 +2,11 @@ import { useEffect, useRef, MutableRefObject } from "react";
 
 type OutsideClickHandler = () => void;
 
-export function useInputOutsideDoubleClick(
+export function useDivClickOutside(
   handler: OutsideClickHandler,
   listenCapturing = true
-): MutableRefObject< HTMLInputElement | null> {
-  const ref = useRef< HTMLInputElement | null>(null);
+): MutableRefObject< HTMLDivElement | null> {
+  const ref = useRef< HTMLDivElement | null>(null);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {

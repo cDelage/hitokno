@@ -1,6 +1,6 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import useLexicalEditable from "@lexical/react/useLexicalEditable";
-import { NodeMode } from "../../../types/Cartography.type";
+import { NodeMode } from "../../types/Cartography.type";
 import { useEffect } from "react";
 
 function PluginReadEditMode({ mode }: { mode: NodeMode }) {

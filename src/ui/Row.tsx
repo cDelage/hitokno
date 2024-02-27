@@ -6,6 +6,7 @@ type RowProps = {
   $alignItems?: string;
   $justifyContent?: string;
   $flexGrow?: number;
+  $overflow?: string;
 };
 
 const Row = styled.div<RowProps>`
@@ -29,6 +30,12 @@ const Row = styled.div<RowProps>`
     props.$flexGrow &&
     css`
       flex-grow: ${props.$flexGrow};
+    `}
+  
+  ${(props) =>
+    props.$overflow &&
+    css`
+      flex-grow: ${props.$overflow};
     `}
 `;
 

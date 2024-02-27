@@ -4,18 +4,24 @@ import TextEditable from "../../ui/TextEditable";
 import { ChangeEvent } from "react";
 import styled from "styled-components";
 import SheetToolbar from "./SheetToolbar";
-import Row from "../../ui/Row";
-import PluginUpdateSheet from "./PluginUpdateSheet";
+import PluginUpdateSheet from "../lexicalPlugins/PluginUpdateSheet";
 import SheetText from "./SheetText";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { ListPlugin } from "@lexical/react/LexicalListPlugin";
+import PluginSwitchSheet from "../lexicalPlugins/PluginSwitchSheet";
 
 const NodeLabel = styled.div`
-  font-size: 2rem;
-  font-weight: 500;
+  font-size: 44px;
+  font-weight:600;
   display: flex;
-  padding: 20px 16px 0px 16px;
+  padding: 20px 24px 16px 24px;
 `;
+
+const RowStyled = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+`
 
 function Sheet() {
   const [searchParams] = useSearchParams();
@@ -32,7 +38,7 @@ function Sheet() {
   }
 
   return (
-    <Row $flexDirection="column" $gap={20} $flexGrow={1}>
+    <RowStyled id="sheet-row">
       <NodeLabel>
         <TextEditable
           value={data.label}
@@ -42,13 +48,14 @@ function Sheet() {
         />
       </NodeLabel>
 
-      <SheetText body={data.sheet?.body}>
+      <SheetText>
         <SheetToolbar nodeId={nodeId} />
         <PluginUpdateSheet nodeId={nodeId} data={data} />
         <HistoryPlugin />
         <ListPlugin />
+        <PluginSwitchSheet body={data.sheet?.body}/>
       </SheetText>
-    </Row>
+    </RowStyled>
   );
 }
 

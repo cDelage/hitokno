@@ -12,8 +12,9 @@ import {
   useRef,
   useState,
 } from "react";
+import { useDivClickOutside } from "../hooks/useDivClickOutside";
 
-const MenuToolbarStyled = styled.menu<PositionObject & { $isDisplayBlock?: boolean }>`
+const MenuToolbarStyled = styled.menu<  PositionObject & { $isDisplayBlock?: boolean }>`
   background-color: var(--bg-element);
   border-radius: 4px;
   z-index: 100;
@@ -30,12 +31,12 @@ const MenuToolbarStyled = styled.menu<PositionObject & { $isDisplayBlock?: boole
   }}
 `;
 
-const ActionStyled = styled.div<BorderProps & ActionProps & { $theme?: string }>`
+const ActionStyled = styled.div<  BorderProps & ActionProps & { $theme?: string, $justifyCenter? : boolean }>`
   cursor: pointer;
   flex-grow: 1;
   display: flex;
-  justify-content: center;
   align-items: center;
+  user-select: none;
   ${(props) => {
     return props.border;
   }}
@@ -67,6 +68,44 @@ const ActionStyled = styled.div<BorderProps & ActionProps & { $theme?: string }>
         background-color: var(--bg-button-danger-hover);
       }
     `}
+  
+  ${(props) => props.$justifyCenter && css`
+      justify-content: center;
+  `}
+`;
+
+const SubMenuStyled = styled.menu<  SubMenuStyledProps & { $displayBottom?: boolean; $alignRight?: boolean }>`
+  background-color: var(--bg-element);
+  border-radius: 4px;
+  position: absolute;
+  z-index: 100;
+  padding: 0px 0px;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+
+  ${(props) =>
+    props.$displayBottom
+      ? css`
+          bottom: -4px;
+          ${props.$alignRight
+            ? css`
+                transform: translate(-100%, 100%);
+              `
+            : css`
+                transform: translateY(100%);
+              `}
+        `
+      : css`
+          top: -12px;
+          ${props.$alignRight
+            ? css`
+                transform: translate(-100%, -100%);
+              `
+            : css`
+                transform: translateY(-100%);
+              `}
+        `}
+  left: ${(props) => (props.$offsetLeft ? props.$offsetLeft : 0)}px;
 `;
 
 const SubMenuContainer = styled.div`
@@ -76,25 +115,6 @@ const SubMenuContainer = styled.div`
 type SubMenuStyledProps = {
   $offsetLeft: number | undefined;
 };
-
-const SubMenuStyled = styled.menu<SubMenuStyledProps & { $displayBottom?: boolean}>`
-  background-color: var(--bg-element);
-  border-radius: 4px;
-  position: absolute;
-  z-index: 100;
-  padding: 0px 0px;
-  box-shadow: var(--shadow-md);
-  overflow: hidden;
-  
-  ${(props) => props.$displayBottom ? css`
-    bottom: 0px;
-    transform: translateY(100%);
-  ` : css`
-    top: -12px;
-    transform: translateY(-100%);
-  `}
-  left: ${(props) => (props.$offsetLeft ? props.$offsetLeft : 0)}px;
-`;
 
 type MenuToolbarContextProps = {
   activeSubMenu: string | undefined;
@@ -146,7 +166,7 @@ function MenuToolbar({
   function handleClick(e: MouseEvent) {
     e.stopPropagation();
   }
-  
+
   //If display block, no portal to body
   if ($isDisplayBlock) {
     return (
@@ -220,19 +240,28 @@ function Action({
   $padding,
   $theme,
   toggle,
+  $isAlignRight,
+  $justifyCenter
 }: ChildrenProps &
   BorderProps &
-  ActionProps & { $theme?: string; toggle?: string }): JSX.Element {
+  ActionProps & {
+    $theme?: string;
+    toggle?: string;
+    $isAlignRight?: boolean;
+    $justifyCenter?: boolean;
+  }): JSX.Element {
   const { handleToggleSubMenu } = useMenuToolbarContext();
   const actionRef = useRef<HTMLDivElement>(null);
   const handleClick = useCallback(
     (e: MouseEvent) => {
       onClick?.(e);
       if (toggle) {
-        handleToggleSubMenu(toggle, actionRef.current?.offsetLeft);
+        const offsetWidth = $isAlignRight ? actionRef.current ? actionRef.current.offsetWidth : 0 : 0 ;
+        const offsetLeft = actionRef.current ? actionRef.current.offsetLeft : 0;
+        handleToggleSubMenu(toggle, offsetLeft + offsetWidth);
       }
     },
-    [onClick, handleToggleSubMenu, toggle]
+    [onClick, handleToggleSubMenu, toggle, $isAlignRight]
   );
   return (
     <ActionStyled
@@ -242,6 +271,7 @@ function Action({
       onClick={handleClick}
       $padding={$padding}
       $theme={$theme}
+      $justifyCenter={$justifyCenter}
     >
       <Row $flexDirection="row" $gap={2} $alignItems="center">
         {children}
@@ -257,15 +287,33 @@ type SubMenuProps = {
 function SubMenu({
   children,
   name,
-  $displayBottom
-}: ChildrenProps & SubMenuProps & {$displayBottom?: boolean}): JSX.Element | null {
-  const { activeSubMenu, offsetLeft } = useMenuToolbarContext();
+  $displayBottom,
+  $alignRight,
+}: ChildrenProps &
+  SubMenuProps & {
+    $displayBottom?: boolean;
+    $alignRight?: boolean;
+  }): JSX.Element | null {
+  const { activeSubMenu, offsetLeft, handleToggleSubMenu } =
+    useMenuToolbarContext();
+
+  const toggleSubmenu = useCallback(() => {
+    handleToggleSubMenu(name, undefined);
+  }, [handleToggleSubMenu, name]);
+
+  const subMenuRef = useDivClickOutside(toggleSubmenu, false);
+
   if (name !== activeSubMenu) return null;
-  return <SubMenuStyled 
-            $offsetLeft={offsetLeft} 
-            $displayBottom={$displayBottom}>
-            {children}
-          </SubMenuStyled>;
+  return (
+    <SubMenuStyled
+      ref={subMenuRef}
+      $offsetLeft={offsetLeft}
+      $displayBottom={$displayBottom}
+      $alignRight={$alignRight}
+    >
+      {children}
+    </SubMenuStyled>
+  );
 }
 
 MenuToolbar.Action = Action;

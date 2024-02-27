@@ -10,11 +10,16 @@ import {
   Shape,
   ShapeDescription,
   Theme,
+  ThemeHighlight,
+  ThemeText,
 } from "../../types/Cartography.type";
 import NodeCreation from "./NodeCreation";
 import NodeShape from "./NodeShape";
-import { HeadingNode } from "@lexical/rich-text";
+import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { ListItemNode, ListNode } from "@lexical/list";
+import { LinkNode } from '@lexical/link';
+import { HorizontalRuleNode } from '@lexical/react/LexicalHorizontalRuleNode';
+import { CodeNode, CodeHighlightNode } from '@lexical/code';
 import EdgeCustom from "./EdgeCustom";
 
 export const PX_UNIT_GAP = 8;
@@ -74,7 +79,7 @@ export const NODE_DEFAULT: Node<DataNode> = {
   data: {
     mode: "DEFAULT",
     handles: [] as CreatedHandle[],
-    label:"",
+    label: "",
     shapeDescription: {
       shape: "rect" as Shape,
       border: false,
@@ -95,7 +100,6 @@ export const NODE_DEFAULT: Node<DataNode> = {
   },
 };
 
-
 export const NODE_CREATION: Node<DataNode> = {
   id: "node-creation",
   type: "creation",
@@ -104,7 +108,7 @@ export const NODE_CREATION: Node<DataNode> = {
   data: {
     mode: "DEFAULT",
     handles: [] as CreatedHandle[],
-    label:"",
+    label: "",
     shapeDescription: {
       shape: "rect" as Shape,
       border: false,
@@ -260,7 +264,7 @@ export const ThemeLight: Theme[] = [
 export const initialNodeConfig = {
   namespace: "NodeEditor",
   editable: false,
-  nodes: [HeadingNode, ListNode, ListItemNode],
+  nodes: [HeadingNode, ListNode, ListItemNode, QuoteNode, CodeNode, HorizontalRuleNode, LinkNode, CodeHighlightNode],
   onError: (err: Error) => {
     console.log(err);
   },
@@ -272,11 +276,9 @@ export const fontFamilies: FontMenu[] = [
     fontCss: "Inter, system-ui, Avenir, Helvetica, Arial, sans-serif",
   },
   { fontName: "Arial", fontCss: "Arial, sans-serif" },
-  { fontName: "system-ui", fontCss: "system-ui, sans-serif" },
   { fontName: "Courier", fontCss: "Courier new, monospace" },
   { fontName: "Georgia", fontCss: "Georgia, serif" },
   { fontName: "Garamond", fontCss: "Garamond, serif" },
-  { fontName: "Times New Roman", fontCss: "Times New Roman, serif" },
 ];
 
 export const HandlesSourcesList: HandleProps[] = [
@@ -348,3 +350,115 @@ export const InitialEdgeCreationState = {
   targetNodeId: undefined,
   targetPosition: undefined,
 };
+
+export const ThemeHighlightFirstLine: ThemeHighlight[] = [
+  {
+    id: "green-light",
+    fill: "#BBF7D0",
+    color: "#1C1917",
+  },
+  {
+    id: "yellow-light",
+    fill: "#FEF08A",
+    color: "#1C1917",
+  },
+  {
+    id: "orange-light",
+    fill: "#FED7AA",
+    color: "#1C1917",
+  },
+  {
+    id: "rose-light",
+    fill: "#FECDD3",
+    color: "#1C1917",
+  },
+  {
+    id: "red-light",
+    fill: "#FECACA",
+    color: "#1C1917",
+  },
+];
+
+export const ThemeHighlightSecondLine: ThemeHighlight[] = [
+  {
+    id: "gray-light",
+    fill: "#E7E5E4",
+    color: "#1C1917",
+  },
+  {
+    id: "bleu-light",
+    fill: "#BAE6FD",
+    color: "#1C1917",
+  },
+  {
+    id: "purple-light",
+    fill: "#C7D2FE",
+    color: "#1C1917",
+  },
+
+  {
+    id: "violet-light",
+    fill: "#DDD6FE",
+    color: "#1C1917",
+  },
+];
+
+export const TextThemesFirstLine: ThemeText[] = [
+  {
+    id: "black",
+    color: "#000000",
+  },
+  {
+    id: "gray",
+    color: "#57534E",
+  },
+  {
+    id: "blue",
+    color: "#0284C7",
+  },
+  {
+    id: "purple",
+    color: "#4F46E5",
+  },
+  {
+    id: "violet",
+    color: "#7C3AED",
+  },
+];
+export const TextThemesSecondLine: ThemeText[] = [
+  { id: "green", color: "#16A34A" },
+  {
+    id: "yellow",
+    color: "#CA8A04",
+  },
+  {
+    id: "orange",
+    color: "#EA580C",
+  },
+  {
+    id: "rose",
+    color: "#E11D48",
+  },
+  {
+    id: "red",
+    color: "#DC2626",
+  },
+];
+
+
+export const NodeTheme = {
+  text: {
+    italic: "node-italic",
+    underline: "node-underline",
+  },
+};
+
+export const SheetTheme = {
+  text: {
+    italic: "sheet-italic",
+    underline: "sheet-underline",
+  },
+  code: 'sheet-code',
+};
+
+

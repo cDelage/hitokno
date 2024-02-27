@@ -4,16 +4,10 @@ import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 import styled, { css } from "styled-components";
 import { ChildrenProps } from "../../types/ChildrenProps.type";
-import { initialNodeConfig } from "./CartographyConstants";
+import { NodeTheme, initialNodeConfig } from "./CartographyConstants";
 import { Theme } from "../../types/Cartography.type";
 
-const lexicalTheme = {
-  text: {
-    bold: "PlaygroundEditorTheme__textBold",
-    italic: "PlaygroundEditorTheme__textItalic",
-    underline: "htk-underline",
-  },
-};
+
 
 type ContenteEditableStyledProps = {
   color: string;
@@ -34,9 +28,13 @@ const ContentEditableStyled = styled(ContentEditable)<ContenteEditableStyledProp
     outline: none;
   }
 
-  .htk-underline {
+  .node-underline {
     text-decoration: underline;
     text-underline-offset: 2px;
+  }
+
+  .node-italic {
+    font-style: italic;
   }
 
   .edit-mode {
@@ -63,7 +61,7 @@ function NodeText({
 }: ChildrenProps & { mode: string; editorState?: string; theme: Theme }) {
   return (
     <LexicalComposer
-      initialConfig={{ ...initialNodeConfig, theme: lexicalTheme, editorState }}
+      initialConfig={{ ...initialNodeConfig, theme: NodeTheme, editorState }}
     >
       <RichTextPlugin
         contentEditable={

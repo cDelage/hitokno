@@ -9,8 +9,7 @@ const FakeSelector = styled.div<{ fontFamily? : string}>`
   gap: 4px;
   align-items: center;
   justify-content: space-between;
-  width: 140px;
-  user-select: none;
+  width: 100px;
 
   ${(props) => props.fontFamily && css`
     font-family: ${props.fontFamily};

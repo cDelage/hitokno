@@ -7,34 +7,35 @@ import { useSearchParams } from "react-router-dom";
 
 const SheetButton = styled.div<{
   $isActive: boolean;
-  $activeColor: string;
-  $defaultColor: string;
 }>`
   position: absolute;
   z-index: 200;
-  top: 4px;
-  right: 4px;
+  top: 8px;
+  right: 0px;
   cursor: pointer;
+  color: white;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  background-color: rgba(12, 6, 15, 0.5);
+  backdrop-filter: blur(2px); 
+  
   ${(props) =>
     props.$isActive
-      ? css`
-          color: ${props.$activeColor};
+    ? css`
+          padding: 4px 16px 4px 2px;
+          background-color: rgba(12, 6, 15, 0.8); 
         `
       : css`
-          color: ${props.$defaultColor};
+          padding: 4px 8px 4px 2px;
         `}
 `;
 
 function SheetSignifiantButton({
   nodeSheetId,
   nodeId,
-  $activeColor,
-  $defaultColor,
 }: {
   nodeSheetId: string;
   nodeId: string;
-  $defaultColor: string;
-  $activeColor: string;
 }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const { zoom } = useViewport();
@@ -73,12 +74,7 @@ function SheetSignifiantButton({
   );
 
   return (
-    <SheetButton
-      onClick={handleOpenSheet}
-      $isActive={active}
-      $activeColor={$activeColor}
-      $defaultColor={$defaultColor}
-    >
+    <SheetButton onClick={handleOpenSheet} $isActive={active}>
       <BiDetail size={`20px`} />
     </SheetButton>
   );
