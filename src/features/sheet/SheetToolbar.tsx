@@ -4,7 +4,6 @@ import {
   BiAlignMiddle,
   BiAlignRight,
   BiBold,
-  BiCode,
   BiItalic,
   BiUnderline,
 } from "react-icons/bi";
@@ -47,9 +46,6 @@ import {
 import ColorNodeIcon from "../../ui/icons/ColorNodeIcon";
 import { FontMenu } from "../../types/Cartography.type";
 import NoHighlightIcon from "../../ui/NoHighlightIcon";
-import {
-  $createCodeNode,
-} from '@lexical/code';
 
 const IconContainerLarge = styled.div`
   height: 28px;
@@ -145,6 +141,17 @@ function SheetToolbar({ nodeId }: { nodeId: string }) {
     [editor]
   );
 
+  const handleSetAlignement = useCallback((alignement : "center" | "end" | "justify" | "left" | "right") => {
+    editor.update(() => {
+      const selection = $getSelection();
+        if (selection !== null) {
+          $patchStyleText(selection, {
+            "text-align": alignement,
+          });
+        }
+    })
+  },[editor])
+
   const applyStyleText = useCallback(
     (styles: Record<string, string>) => {
       editor.update(() => {
@@ -171,25 +178,6 @@ function SheetToolbar({ nodeId }: { nodeId: string }) {
     },
     [applyStyleText]
   );
-
-  const formatCode = () => {
-      editor.update(() => {
-        let selection = $getSelection();
-
-        if (selection !== null) {
-          if (selection.isCollapsed()) {
-            $setBlocksType(selection, () => $createCodeNode());
-          } else {
-            const textContent = selection.getTextContent();
-            const codeNode = $createCodeNode();
-            selection.insertNodes([codeNode]);
-            selection = $getSelection();
-            if ($isRangeSelection(selection))
-              selection.insertRawText(textContent);
-          }
-        }
-      });
-  };
 
   useEffect(() => {
     const removeListener = editor.registerUpdateListener(({ editorState }) => {
@@ -324,11 +312,6 @@ function SheetToolbar({ nodeId }: { nodeId: string }) {
           </ToolbarSmallIcon>
           <HiChevronDown size={12} />
         </MenuToolbar.Action>
-        <MenuToolbar.Action border={MenuBorderRight} $justifyCenter={true} onClick={formatCode}>
-          <ToolbarSmallIcon>
-            <BiCode size="100%" />
-          </ToolbarSmallIcon>
-        </MenuToolbar.Action>
       </MenuToolbar.ActionLine>
 
       <MenuToolbar.SubMenu name="type-node" $displayBottom={true}>
@@ -410,22 +393,22 @@ function SheetToolbar({ nodeId }: { nodeId: string }) {
         $alignRight={true}
       >
         <MenuToolbar.ActionLine>
-          <MenuToolbar.Action>
+          <MenuToolbar.Action onClick={() => handleSetAlignement("left")}>
             <ToolbarSmallIcon>
               <BiAlignLeft size={"100%"} />
             </ToolbarSmallIcon>
           </MenuToolbar.Action>
-          <MenuToolbar.Action>
+          <MenuToolbar.Action onClick={() => handleSetAlignement("right")}>
             <ToolbarSmallIcon>
               <BiAlignRight size={"100%"} />
             </ToolbarSmallIcon>
           </MenuToolbar.Action>
-          <MenuToolbar.Action>
+          <MenuToolbar.Action  onClick={() => handleSetAlignement("center")}>
             <ToolbarSmallIcon>
               <BiAlignMiddle size={"100%"} />
             </ToolbarSmallIcon>
           </MenuToolbar.Action>
-          <MenuToolbar.Action>
+          <MenuToolbar.Action  onClick={() => handleSetAlignement("justify")}>
             <ToolbarSmallIcon>
               <BiAlignJustify size={"100%"} />
             </ToolbarSmallIcon>

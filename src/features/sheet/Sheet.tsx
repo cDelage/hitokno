@@ -9,10 +9,13 @@ import SheetText from "./SheetText";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import PluginSwitchSheet from "../lexicalPlugins/PluginSwitchSheet";
+import PluginImage from "../lexicalPlugins/PluginImage/PluginImage";
+import PluginDragDropPaste from "../lexicalPlugins/PluginDragDropPaste";
+import {TabIndentationPlugin} from "@lexical/react/LexicalTabIndentationPlugin"
 
 const NodeLabel = styled.div`
   font-size: 44px;
-  font-weight:600;
+  font-weight: 600;
   display: flex;
   padding: 20px 24px 16px 24px;
 `;
@@ -21,7 +24,7 @@ const RowStyled = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
-`
+`;
 
 function Sheet() {
   const [searchParams] = useSearchParams();
@@ -53,7 +56,10 @@ function Sheet() {
         <PluginUpdateSheet nodeId={nodeId} data={data} />
         <HistoryPlugin />
         <ListPlugin />
-        <PluginSwitchSheet body={data.sheet?.body}/>
+        <PluginSwitchSheet body={data.sheet?.body} />
+        <PluginImage />
+        <PluginDragDropPaste />
+        <TabIndentationPlugin />
       </SheetText>
     </RowStyled>
   );

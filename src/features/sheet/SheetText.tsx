@@ -17,7 +17,8 @@ const ContentEditableStyled = styled(ContentEditable)`
   padding: 16px 16px;
   box-sizing: border-box;
   margin: 0px;
-  background-color: var(--color-gray-50);
+  user-select: all;
+  color: var(--color-gray-900);
 
   &:focus {
     outline: none;
@@ -50,42 +51,36 @@ const ContentEditableStyled = styled(ContentEditable)`
     font-size: 44px;
     line-height: 52px;
     font-weight: 600;
-    user-select: none;
   }
 
   h2 {
     font-size: 36px;
     line-height: 40px;
     font-weight: 400;
-    user-select: none;
   }
 
   h3 {
     font-size: 28px;
     line-height: 28px;
     font-weight: 500;
-    user-select: none;
   }
 
   h4 {
     font-size: 24px;
     line-height: 24px;
     font-weight: 400;
-    user-select: none;
   }
 
   h5 {
     font-size: 20px;
     line-height: 20px;
     font-weight: 400;
-    user-select: none;
   }
 
   h6 {
     font-size: 16px;
     line-height: 16px;
     font-weight: 400;
-    user-select: none;
   }
 
   p,
@@ -94,7 +89,6 @@ const ContentEditableStyled = styled(ContentEditable)`
     font-size: 22px;
     line-height: 36px;
     font-weight: 400;
-    user-select: none;
   }
 
   ul {

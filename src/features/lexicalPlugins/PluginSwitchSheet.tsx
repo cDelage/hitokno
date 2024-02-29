@@ -10,7 +10,7 @@ function PluginSwitchSheet({ body }: { body?: string }) {
   const [currentSheet, setCurrentSheet] = useState("");
 
   useEffect(() => {
-    if (sheetId && currentSheet !== sheetId && body) {
+    if (sheetId && currentSheet !== sheetId && body && editor.isEditable()) {
       setCurrentSheet(sheetId);
       const newState : EditorState = editor.parseEditorState(body);
       editor.setEditorState(newState)

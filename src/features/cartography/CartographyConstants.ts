@@ -21,6 +21,7 @@ import { LinkNode } from '@lexical/link';
 import { HorizontalRuleNode } from '@lexical/react/LexicalHorizontalRuleNode';
 import { CodeNode, CodeHighlightNode } from '@lexical/code';
 import EdgeCustom from "./EdgeCustom";
+import { ImageNode } from "../lexicalPlugins/PluginImage/ImageNode";
 
 export const PX_UNIT_GAP = 8;
 
@@ -264,7 +265,7 @@ export const ThemeLight: Theme[] = [
 export const initialNodeConfig = {
   namespace: "NodeEditor",
   editable: false,
-  nodes: [HeadingNode, ListNode, ListItemNode, QuoteNode, CodeNode, HorizontalRuleNode, LinkNode, CodeHighlightNode],
+  nodes: [HeadingNode, ListNode, ListItemNode, QuoteNode, CodeNode, HorizontalRuleNode, LinkNode, CodeHighlightNode, ImageNode],
   onError: (err: Error) => {
     console.log(err);
   },

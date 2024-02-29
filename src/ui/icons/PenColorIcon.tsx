@@ -9,7 +9,7 @@ function PenColorIcon({ fill }: { fill: string }) {
       xmlns="http://www.w3.org/2000/svg"
     >
       <g filter="url(#filter0_d_633_366)">
-        <g clip-path="url(#clip0_633_366)">
+        <g clipPath="url(#clip0_633_366)">
           <rect x="1" width="20" height="20" rx="2" fill="#FAFAF9" />
           <path d="M19 16H3V18H19V16Z" fill={fill} />
           <path
@@ -26,9 +26,9 @@ function PenColorIcon({ fill }: { fill: string }) {
           width="22"
           height="22"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feColorMatrix
             in="SourceAlpha"
             type="matrix"
