@@ -42,6 +42,7 @@ declare global {
       findFile: (fileId: string) => Promise<FileDetail | undefined>;
       renameFile: (params: FileRename) => Promise<Folder>;
       updateCartography: (file: File) => Promise<number>;
+      updateDeck: (file: File) => Promise<number>;
       findSheet : (sheetId : string) => Promise<SheetDetail>;
     };
   }

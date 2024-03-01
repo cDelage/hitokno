@@ -10,6 +10,7 @@ import {
   renameFile,
   updateCartography,
   findSheet,
+  updateDeck,
 } from "./services/apiRepository";
 import {
   File,
@@ -122,6 +123,12 @@ function createWindow() {
     "update-cartography",
     async (event: IpcMainInvokeEvent, file: File) =>
       await updateCartography(file)
+  );
+ 
+  ipcMain.handle(
+    "update-deck",
+    async (event: IpcMainInvokeEvent, file: File) =>
+      await updateDeck(file)
   );
 
   ipcMain.handle(

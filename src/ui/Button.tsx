@@ -11,7 +11,7 @@ const Button = styled.button<ButtonProps>`
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 12px 16px;
+    padding: 8px 16px;
     font-size: 1rem;
     border-radius: 4px;
     border: none;
@@ -62,7 +62,7 @@ const Button = styled.button<ButtonProps>`
     }
 
     ${(props) => props.$icon && css`
-        padding: 12px 16px 12px 12px;
+        padding: 8px 12px 8px 8px;
     `}
 
     &:disabled{

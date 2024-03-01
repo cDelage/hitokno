@@ -19,6 +19,7 @@ const newFile = {
   fileName: "new file",
   nodes: [],
   edges: [],
+  deck: [],
 };
 
 export async function createFolder(): Promise<Folder | null> {
@@ -170,7 +171,31 @@ export async function findSheet(sheetId: string) {
       },
     }
   );
-
-
   return sheet;
+}
+
+export async function updateDeck({ _id, deck }: File) {
+  const folder = (await db.repository.findOne({
+    "files._id": _id,
+  })) as CompleteFolder;
+
+  const files = folder.files.map((file) => {
+    if (file._id === _id) {
+      return {
+        ...file,
+        deck,
+      };
+    } else {
+      return { ...file };
+    }
+  });
+
+  const result = await db.repository.updateOne(
+    { "files._id": _id },
+    { $set: { files: files } }
+  );
+
+  if (!result) throw new Error("Fail to update cartography");
+
+  return result;
 }

@@ -99,16 +99,6 @@ export type DataNode = {
   label: string;
 };
 
-export type DataNodeWithSheet = {
-  mode: NodeMode;
-  editorState?: string;
-  showNodeToolbar?: boolean;
-  shapeDescription: ShapeDescription;
-  handles: CreatedHandle[];
-  sheet?: Sheet
-  label: string;
-};
-
 export type Sheet = {
   sheetId: string;
   body?: string;
@@ -151,4 +141,23 @@ export type EdgeCreationProps = {
   targetNodeId? : string;
   targetHandleId? : string;
   targetPosition? : Position;
+}
+
+export type FlashCardState = "DEFAULT" | "ANSWER-DISPLAYED" | "EDIT"
+
+export type FlashCardProps = {
+  cardId: string;
+  level: number;
+  body: string;
+  answer: string;
+  deckLabel : string;
+  state: FlashCardState;
+  selected: boolean;
+}
+
+export type FlashCard = {
+  cardId: string;
+  level: number;
+  body: string;
+  answer: string;
 }

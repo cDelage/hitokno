@@ -21,7 +21,7 @@ import EdgeIcon from "../../ui/icons/EdgeIcon";
 import GroupIcon from "../../ui/icons/GroupIcon";
 import { RxBorderAll, RxBorderNone, RxMove, RxGroup } from "react-icons/rx";
 import { ShadowProps } from "../../types/Cartography.type";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import useCartography from "./useCartography";
 import { useSearchParams } from "react-router-dom";
 import { CSSTransition } from "react-transition-group";
@@ -73,8 +73,14 @@ function MainToolbar() {
     border,
   } = shapeCreationDesc;
 
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const sheetId = searchParams.get("sheetId");
+
+  const handleOpenDeck = useCallback(() => {
+    searchParams.delete("sheetId")
+    searchParams.append("deckOpen", "true");
+    setSearchParams(searchParams)
+  },[searchParams, setSearchParams])
 
   //Manage menu change selection
   useEffect(() => {
@@ -140,7 +146,7 @@ function MainToolbar() {
           </MenuToolbar.Action>
 
           {/* Deck (to create and edit flashcards) */}
-          <MenuToolbar.Action border={MenuBorderRight}>
+          <MenuToolbar.Action border={MenuBorderRight} onClick={handleOpenDeck}>
             <ToolbarAction>
               <ToolbarLargeIconContainer>
                 <DeckIcon />

@@ -121,12 +121,6 @@ const ContentEditableStyled = styled(ContentEditable)`
   }
 `;
 
-const PlaceHolder = styled.div`
-  position: absolute;
-  top: 180px;
-  left: 16px;
-`;
-
 function SheetText({ children }: ChildrenProps) {
   return (
     <LexicalComposer
@@ -139,7 +133,7 @@ function SheetText({ children }: ChildrenProps) {
       {children}
       <RichTextPlugin
         contentEditable={<ContentEditableStyled id="body-editable" />}
-        placeholder={<PlaceHolder>Type some text...</PlaceHolder>}
+        placeholder={<></>}
         ErrorBoundary={LexicalErrorBoundary}
       />
       <MarkdownShortcutPlugin transformers={TRANSFORMERS} />

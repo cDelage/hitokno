@@ -14,7 +14,9 @@ import {
 } from "react";
 import { useDivClickOutside } from "../hooks/useDivClickOutside";
 
-const MenuToolbarStyled = styled.menu<  PositionObject & { $isDisplayBlock?: boolean }>`
+const MenuToolbarStyled = styled.menu<
+  PositionObject & { $isDisplayBlock?: boolean }
+>`
   background-color: var(--bg-element);
   border-radius: 4px;
   z-index: 100;
@@ -31,12 +33,13 @@ const MenuToolbarStyled = styled.menu<  PositionObject & { $isDisplayBlock?: boo
   }}
 `;
 
-const ActionStyled = styled.div<  BorderProps & ActionProps & { $theme?: string, $justifyCenter? : boolean }>`
+const ActionStyled = styled.div<BorderProps & ActionProps & { $theme?: string; $justifyCenter?: boolean }>`
   cursor: pointer;
   flex-grow: 1;
   display: flex;
   align-items: center;
   user-select: none;
+  z-index: 1000;
   ${(props) => {
     return props.border;
   }}
@@ -69,12 +72,14 @@ const ActionStyled = styled.div<  BorderProps & ActionProps & { $theme?: string,
       }
     `}
   
-  ${(props) => props.$justifyCenter && css`
+  ${(props) =>
+    props.$justifyCenter &&
+    css`
       justify-content: center;
-  `}
+    `}
 `;
 
-const SubMenuStyled = styled.menu<  SubMenuStyledProps & { $displayBottom?: boolean; $alignRight?: boolean }>`
+const SubMenuStyled = styled.menu<SubMenuStyledProps & { $displayBottom?: boolean; $alignRight?: boolean }>`
   background-color: var(--bg-element);
   border-radius: 4px;
   position: absolute;
@@ -144,8 +149,12 @@ function MenuToolbar({
   children,
   $position,
   $isDisplayBlock,
+  underRelative,
 }: ChildrenProps &
-  PositionObject & { $isDisplayBlock?: boolean }): JSX.Element {
+  PositionObject & {
+    $isDisplayBlock?: boolean;
+    underRelative?: boolean;
+  }): JSX.Element {
   const [activeSubMenu, setActiveSubMenu] = useState<string | undefined>(
     undefined
   );
@@ -169,6 +178,28 @@ function MenuToolbar({
 
   //If display block, no portal to body
   if ($isDisplayBlock) {
+    return (
+      <MenuToolbarContext.Provider
+        value={{
+          activeSubMenu: activeSubMenu,
+          position: $position,
+          handleToggleSubMenu,
+          offsetLeft,
+        }}
+      >
+        <MenuToolbarStyled
+          $position={$position}
+          onClick={handleClick}
+          $isDisplayBlock={$isDisplayBlock}
+        >
+          <SubMenuContainer>{children}</SubMenuContainer>
+        </MenuToolbarStyled>
+      </MenuToolbarContext.Provider>
+    );
+  }
+
+  //When underRelative, not create portal to body but absolute
+  if (underRelative) {
     return (
       <MenuToolbarContext.Provider
         value={{
@@ -241,7 +272,7 @@ function Action({
   $theme,
   toggle,
   $isAlignRight,
-  $justifyCenter
+  $justifyCenter,
 }: ChildrenProps &
   BorderProps &
   ActionProps & {
@@ -256,7 +287,11 @@ function Action({
     (e: MouseEvent) => {
       onClick?.(e);
       if (toggle) {
-        const offsetWidth = $isAlignRight ? actionRef.current ? actionRef.current.offsetWidth : 0 : 0 ;
+        const offsetWidth = $isAlignRight
+          ? actionRef.current
+            ? actionRef.current.offsetWidth
+            : 0
+          : 0;
         const offsetLeft = actionRef.current ? actionRef.current.offsetLeft : 0;
         handleToggleSubMenu(toggle, offsetLeft + offsetWidth);
       }

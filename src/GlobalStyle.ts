@@ -280,6 +280,23 @@ p{
   transition: transform 200ms;
 }
 
+
+.deck-enter {
+  transform: translateY(100%);
+}
+.deck-enter-active {
+  transform: translateY(0%);
+  transition: transform 200ms;
+}
+.deck-exit {
+  transform: translateY(0%);
+}
+.deck-exit-active {
+  transform: translateY(100%);
+  transition: transform 200ms;
+}
+
+
 .main-toolbar-enter {
   transform: translate(-50%,100%);
 }
@@ -292,6 +309,21 @@ p{
 }
 .main-toolbar-exit-active {
   transform: translate(-50%, 200%);
+  transition: transform 200ms;
+}
+
+.hideanswer-enter {
+  transform: translateY(150%);
+}
+.hideanswer-enter-active {
+  transform: translateY(0%);
+  transition: transform 200ms;
+}
+.hideanswer-exit {
+  transform: translateY(0%);
+}
+.hideanswer-exit-active {
+  transform: translateY(150%);
   transition: transform 200ms;
 }
 

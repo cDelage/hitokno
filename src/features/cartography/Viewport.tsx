@@ -24,6 +24,7 @@ import { useFindFileById } from "../home/useFindFileById";
 import { useUpdateCartography } from "./useUpdateCartography";
 import ConnectionEdgeCustom from "./ConnectionEdgeCustom";
 import SheetContainer from "../sheet/SheetContainer";
+import DeckContainer from "../deck/DeckContainer";
 
 const ViewportContainer = styled.div`
   flex-grow: 1;
@@ -153,6 +154,7 @@ function Viewport(): JSX.Element {
         </>
       )}
       <SheetContainer/>
+      
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -192,6 +194,7 @@ function Viewport(): JSX.Element {
           )}
         </>
       </ReactFlow>
+      <DeckContainer/>
     </ViewportContainer>
   );
 }
