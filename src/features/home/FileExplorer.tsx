@@ -64,7 +64,7 @@ function FileExplorer({
   }
 
   function handleDoubleClick() {
-    openTab(_id,"EDIT");
+    openTab(_id,"EDIT","FILE");
     navigate(`/cartography/${_id}`);
   }
 

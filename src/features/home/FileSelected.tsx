@@ -36,7 +36,6 @@ function FileSelected(): JSX.Element {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const { renameFile } = useRenameFile();
-
   const { openTab } = useTabs();
 
   const paramsMode = searchParams.get("mode");
@@ -65,14 +64,14 @@ function FileSelected(): JSX.Element {
 
   function handleDisplayFile() {
     if (fileDetail?.file._id) {
-      openTab(fileDetail.file._id, "DEFAULT");
+      openTab(fileDetail.file._id, "DEFAULT","FILE");
       navigate(`/cartography/${fileDetail.file._id}`);
     }
   }
 
   function handleEditFile(){
     if (fileDetail?.file._id) {
-      openTab(fileDetail.file._id, "EDIT");
+      openTab(fileDetail.file._id, "EDIT","FILE");
       navigate(`/cartography/${fileDetail.file._id}`);
     }
   }

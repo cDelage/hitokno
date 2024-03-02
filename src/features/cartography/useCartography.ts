@@ -424,7 +424,7 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
               mode: "DEFAULT",
               handles: [] as CreatedHandle[],
               shapeDescription: state.shapeCreationDesc,
-              label: `${state.shapeCreationDesc.shape.toUpperCase()} ${countShape + 1}`,
+              label: `${state.shapeCreationDesc.shape.toUpperCase()} ${countShape}`,
             },
             style: {
               width,

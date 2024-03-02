@@ -1,5 +1,5 @@
 import styled, { css } from "styled-components";
-import { FlashCardProps } from "../../types/Cartography.type";
+import { FlashCardProps } from "../../types/Flashcard.type";
 import LevelLine from "./LevelLine";
 import {
   ChangeEvent,

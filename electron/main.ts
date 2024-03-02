@@ -18,6 +18,14 @@ import {
   Folder,
   RenameFolderParams,
 } from "../src/types/Repository.types";
+import { CreateTestProps, TestType } from "../src/types/Test.type";
+import {
+  createTest,
+  deleteTest,
+  findTestById,
+  findTests,
+  updateTest,
+} from "./services/apiTest";
 
 // The built directory structure
 //
@@ -97,9 +105,8 @@ function createWindow() {
 
   ipcMain.handle(
     "remove-folder",
-    async (event: IpcMainInvokeEvent, folderId: string) => {
-      await removeFolder(folderId);
-    }
+    async (event: IpcMainInvokeEvent, folderId: string) =>
+      await removeFolder(folderId)
   );
 
   ipcMain.handle(
@@ -124,18 +131,37 @@ function createWindow() {
     async (event: IpcMainInvokeEvent, file: File) =>
       await updateCartography(file)
   );
- 
+
   ipcMain.handle(
     "update-deck",
-    async (event: IpcMainInvokeEvent, file: File) =>
-      await updateDeck(file)
+    async (event: IpcMainInvokeEvent, file: File) => await updateDeck(file)
   );
 
   ipcMain.handle(
-    "find-sheet", async(event: IpcMainInvokeEvent, sheetId: string) => {
-      await findSheet(sheetId);
-    }
-  )
+    "create-test",
+    async (event: IpcMainInvokeEvent, params: CreateTestProps) =>
+      await createTest(params)
+  );
+
+  ipcMain.handle("find-tests", async () => await findTests());
+
+  ipcMain.handle(
+    "find-test-by-id",
+    async (event: IpcMainInvokeEvent, { _id }: { _id: string }) =>
+      await findTestById({ _id })
+  );
+
+  ipcMain.handle(
+    "update-test",
+    async (event: IpcMainInvokeEvent, { test }: { test: TestType }) =>
+      await updateTest({ test })
+  );
+
+  ipcMain.handle(
+    "delete-test",
+    async (event: IpcMainInvokeEvent, { _id }: { _id: string }) =>
+      await deleteTest({ _id })
+  );
 }
 
 // Quit when all windows are closed, except on macOS. There, it's common

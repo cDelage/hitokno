@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { FlashCardProps } from "../../types/Cartography.type";
+import { FlashCardProps } from "../../types/Flashcard.type";
 import Star from "../../ui/icons/Star";
 import { useCallback, useMemo, useState } from "react";
 

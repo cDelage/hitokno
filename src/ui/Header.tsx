@@ -9,6 +9,7 @@ const HeaderStyled = styled.header`
   background-color: var(--bg-layout);
   width: 100%;
   height: 40px;
+  min-height: 40px;
   -webkit-app-region: drag;
 `;
 

@@ -23,4 +23,5 @@ const dbFactory = (fileName : string) => {
 
 export const db = {
   repository: dbFactory('repository.db'),
+  tests: dbFactory('tests.db')
 };

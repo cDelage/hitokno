@@ -2,7 +2,7 @@ import styled from "styled-components";
 import MenuToolbar from "../../ui/MenuToolbar";
 import { BiPen, BiTrash } from "react-icons/bi";
 import { IoClose } from "react-icons/io5";
-import { FlashCardProps } from "../../types/Cartography.type";
+import { FlashCardProps } from "../../types/Flashcard.type";
 import { useCallback } from "react";
 import useDeckStore from "./useDeckStore";
 

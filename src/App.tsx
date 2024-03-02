@@ -20,6 +20,8 @@ import FileDisabled from "./features/home/FileDisabled";
 import FileSelected from "./features/home/FileSelected";
 import Cartography from "./pages/Cartography";
 import { SheetDetail } from "./types/Cartography.type";
+import Test from "./pages/Test";
+import { CreateTestProps, TestType } from "./types/Test.type";
 
 /**
  * When i add it into a file .d.ts, then typescript not recognize the interface.
@@ -43,11 +45,17 @@ declare global {
       renameFile: (params: FileRename) => Promise<Folder>;
       updateCartography: (file: File) => Promise<number>;
       updateDeck: (file: File) => Promise<number>;
-      findSheet : (sheetId : string) => Promise<SheetDetail>;
+      findSheet: (sheetId: string) => Promise<SheetDetail>;
+    };
+    tests: {
+      createTest: (params: CreateTestProps) => Promise<TestType>;
+      findTests: () => Promise<TestType[]>;
+      findTestById: ({ _id }: { _id: string }) => Promise<TestType>;
+      updateTest: ({ test }: { test: TestType }) => Promise<number>;
+      deleteTest: ({ _id }: { _id: string }) => Promise<number>;
     };
   }
 }
-
 
 const routes: RouteObject[] = [
   {
@@ -76,6 +84,10 @@ const routes: RouteObject[] = [
       {
         path: "/cartography/:fileId",
         element: <Cartography />,
+      },
+      {
+        path: "/test/:testId",
+        element: <Test />,
       },
       {
         path: "/fake",

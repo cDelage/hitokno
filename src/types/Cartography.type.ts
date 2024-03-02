@@ -142,22 +142,3 @@ export type EdgeCreationProps = {
   targetHandleId? : string;
   targetPosition? : Position;
 }
-
-export type FlashCardState = "DEFAULT" | "ANSWER-DISPLAYED" | "EDIT"
-
-export type FlashCardProps = {
-  cardId: string;
-  level: number;
-  body: string;
-  answer: string;
-  deckLabel : string;
-  state: FlashCardState;
-  selected: boolean;
-}
-
-export type FlashCard = {
-  cardId: string;
-  level: number;
-  body: string;
-  answer: string;
-}

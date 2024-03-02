@@ -4,7 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import styled from "styled-components";
 
 const DeckHeaderStyled = styled.div`
-  height: 28px;
+  height: 20px;
   display: flex;
   padding: 8px 16px;
   align-items: center;

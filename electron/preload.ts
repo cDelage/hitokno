@@ -5,6 +5,7 @@ import {
   Folder,
   RenameFolderParams,
 } from "../src/types/Repository.types";
+import { CreateTestProps, TestType } from "../src/types/Test.type";
 
 const windowManagement = {
   maximize: () => ipcRenderer.send("maximize"),
@@ -33,15 +34,24 @@ const repository = {
     await ipcRenderer.invoke("update-cartography", file),
   updateDeck: async (file: File) =>
     await ipcRenderer.invoke("update-deck", file),
-  findSheet: async (sheetId: string) => {
-    await ipcRenderer.invoke("find-sheet", sheetId);
-  },
+};
+
+const tests = {
+  createTest: async (params: CreateTestProps) =>
+    await ipcRenderer.invoke("create-test", params),
+  findTests: async () => await ipcRenderer.invoke("find-tests"),
+  findTestById: async ({ _id }: { _id: string }) =>
+    await ipcRenderer.invoke("find-test-by-id", { _id }),
+  updateTest: async ({ test }: { test: TestType }) =>
+    await ipcRenderer.invoke("update-test", { test }),
+  deleteTest: async({ _id }: { _id: string }) => await ipcRenderer.invoke("delete-test", _id)
 };
 
 // --------- Expose some API to the Renderer process ---------
 contextBridge.exposeInMainWorld("ipcRenderer", withPrototype(ipcRenderer));
 contextBridge.exposeInMainWorld("windowManagement", windowManagement);
 contextBridge.exposeInMainWorld("repository", repository);
+contextBridge.exposeInMainWorld("tests", tests);
 
 // `exposeInMainWorld` can't detect attributes and methods of `prototype`, manually patching it.
 function withPrototype(obj: Record<string, any>) {

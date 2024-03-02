@@ -9,7 +9,7 @@ const SheetButton = styled.div<{
   $isActive: boolean;
 }>`
   position: absolute;
-  z-index: 200;
+  z-index: 1000;
   top: 8px;
   right: 0px;
   cursor: pointer;

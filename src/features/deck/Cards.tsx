@@ -3,7 +3,7 @@ import FlashCard from "./FlashCard";
 import useDeckStore from "./useDeckStore";
 import FlashcardToolbar from "./FlashcardToolbar";
 import { useCallback } from "react";
-import { FlashCardProps } from "../../types/Cartography.type";
+import { FlashCardProps } from "../../types/Flashcard.type";
 
 const CardsStyled = styled.div`
   display: grid;

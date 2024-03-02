@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { FlashCardProps, FlashCard } from "../../types/Cartography.type";
+import { FlashCardProps, FlashCard } from "../../types/Flashcard.type";
 import { v4 as uuidv4 } from "uuid";
 
 type DeckStore = {

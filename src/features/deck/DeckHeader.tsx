@@ -5,6 +5,8 @@ import Button from "../../ui/Button";
 import { IoAdd, IoPlay } from "react-icons/io5";
 import useDeckStore from "./useDeckStore";
 import { MouseEvent, useCallback } from "react";
+import useCreateTest from "../tests/useCreateTest";
+import { useParams } from "react-router-dom";
 
 const DeckHeaderStyled = styled.div`
   display: flex;
@@ -28,13 +30,24 @@ const CountFlashcards = styled.div`
 function DeckHeader() {
   const { deck, fileName, createFlashcard, selectCard } = useDeckStore();
   const count = deck.length;
+  const { createTest } = useCreateTest();
+  const { fileId } = useParams();
 
-  const handleCreateNewFlashCard = useCallback((e : MouseEvent) => {
-    e.stopPropagation();
-    const id = createFlashcard();
-    console.log(id)
-    selectCard(id);
-  }, [createFlashcard, selectCard]);
+  const handleCreateNewFlashCard = useCallback(
+    (e: MouseEvent) => {
+      e.stopPropagation();
+      const id = createFlashcard();
+      console.log(id);
+      selectCard(id);
+    },
+    [createFlashcard, selectCard]
+  );
+
+  const handleCreateTest = useCallback(() => {
+    if (fileId) {
+      createTest([fileId]);
+    }
+  }, [createTest, fileId]);
 
   return (
     <DeckHeaderStyled>
@@ -53,7 +66,7 @@ function DeckHeader() {
             >
               <IoAdd size={16} /> New flash-card
             </Button>
-            <Button type="primary" $icon={true}>
+            <Button type="primary" $icon={true} onClick={handleCreateTest}>
               <IoPlay size={16} /> Play test
             </Button>
           </Row>
