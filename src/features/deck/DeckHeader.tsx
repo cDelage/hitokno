@@ -45,7 +45,14 @@ function DeckHeader() {
 
   const handleCreateTest = useCallback(() => {
     if (fileId) {
-      createTest([fileId]);
+      createTest([
+        {
+          fileId,
+          level0: true,
+          level1: true,
+          level2: true,
+        },
+      ]);
     }
   }, [createTest, fileId]);
 

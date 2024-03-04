@@ -6,7 +6,7 @@ import { useTabs } from "../features/home/useTabs";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { HeaderTab } from "../types/Tabs.types";
-import { CloseButton, TabStyled } from "./TabStyled";
+import { CloseButton, TabStyled, TextContainer } from "./TabStyled";
 
 const IconContainer = styled.div`
   height: 20px;
@@ -65,7 +65,7 @@ function TabFile({ tab: { tabId } }: { tab: HeaderTab }): JSX.Element | null {
         )}
       </IconContainer>
 
-      {fileDetail.file.fileName}
+      <TextContainer>{fileDetail.file.fileName}</TextContainer>
       <CloseButton $isDisplay={isHover} onClick={handleCloseTab}>
         <IoClose size={20} />
       </CloseButton>

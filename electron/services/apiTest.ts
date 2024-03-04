@@ -1,15 +1,16 @@
 import { db } from "../database";
-import { CreateTestProps, TestType } from "../../src/types/Test.type";
+import { CreateTestProps, SortMode, TestType } from "../../src/types/Test.type";
 import { format } from "date-fns";
 
 export async function createTest({ decks }: CreateTestProps) {
-  const testName = `Test-${format(new Date(), "yyyy-MM-dd HH:mm")}`;
+  const testName = `Test ${format(new Date(), "yyyy-MM-dd HH:mm")}`;
 
   const result = await db.tests.insert({
     testName,
     decks,
     status: "DRAFT",
     cards: [],
+    sortMode: "ORDERED" as SortMode
   });
 
   console.log(result)

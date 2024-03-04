@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { HeaderTab } from "../types/Tabs.types";
 import useFindTestById from "../features/tests/useFindTestById";
-import { CloseButton, TabStyled } from "./TabStyled";
+import { CloseButton, TabStyled, TextContainer } from "./TabStyled";
 import { IoClose, IoPlay, IoPlayOutline } from "react-icons/io5";
 import { useCallback, useState } from "react";
 import { useTabs } from "../features/home/useTabs";
@@ -13,6 +13,8 @@ const IconContainer = styled.div`
   width: 20px;
 `;
 
+
+
 function TabTest({ tab: { tabId } }: { tab: HeaderTab }) {
   const { testData, isLoadingTest } = useFindTestById(tabId);
   const [isHover, setIsHover] = useState<boolean>(false);
@@ -20,6 +22,7 @@ function TabTest({ tab: { tabId } }: { tab: HeaderTab }) {
   const navigate = useNavigate();
   const tabActive: boolean = location.pathname.startsWith(`/test/${tabId}`);
   const queryClient = useQueryClient();
+
 
   const handleCloseTab = useCallback(
     (e: MouseEvent) => {
@@ -54,12 +57,12 @@ function TabTest({ tab: { tabId } }: { tab: HeaderTab }) {
     >
       <IconContainer>
         {tabActive ? (
-          <IoPlay size={"100%"} />
+          <IoPlay size={20} />
         ) : (
-          <IoPlayOutline size={"100%"} />
+          <IoPlayOutline size={20} />
         )}
-      </IconContainer>{" "}
-      {testData.testName}
+      </IconContainer>
+      <TextContainer>{testData.testName}</TextContainer>
       <CloseButton $isDisplay={isHover} onClick={handleCloseTab}>
         <IoClose size={20} />
       </CloseButton>

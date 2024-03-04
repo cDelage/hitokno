@@ -2,19 +2,28 @@ import styled from "styled-components";
 import { FileShort } from "../../types/Repository.types";
 import Row from "../../ui/Row";
 import { IoChevronForwardOutline } from "react-icons/io5";
-import { useMemo, useState } from "react";
+import { ChangeEvent, MouseEvent, useCallback, useMemo, useState } from "react";
+import ConfigLevelEntry from "./ConfigLevelEntry";
+import useTestStore from "./useTestStore";
 
 const DeckEntryContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    border-bottom: 1px solid var(--color-gray-300);
-`
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--color-gray-300);
+  user-select: none;
+  overflow: hidden;
+  background-color: var(--bg-element);
+`;
 
 const DeckEntryStyled = styled.div`
   display: flex;
   justify-content: space-between;
-  padding: 8px 0px;
+  padding: 8px 16px;
   cursor: pointer;
+  &:hover {
+    background-color: var(--color-gray-100);
+  }
 `;
 
 const CardsCount = styled.div`
@@ -23,6 +32,44 @@ const CardsCount = styled.div`
 
 function ConfigDeckEntry({ file }: { file: FileShort }) {
   const [isExpand, setIsExpand] = useState(false);
+  const { getDeckTestConfig, updateTest, test } = useTestStore();
+  const deckTestConfig = getDeckTestConfig(file._id);
+
+  const disabled = useMemo(
+    () => (test ? test.status !== "DRAFT" : true),
+    [test]
+  );
+
+  const isChecked = useMemo(
+    () => deckTestConfig !== undefined,
+    [deckTestConfig]
+  );
+
+  const handleCheckbox = useCallback(
+    (e: ChangeEvent) => {
+      e.stopPropagation();
+      if (deckTestConfig === undefined && test) {
+        updateTest({
+          ...test,
+          decks: [
+            ...test.decks,
+            {
+              fileId: file._id,
+              level0: true,
+              level1: true,
+              level2: true,
+            },
+          ],
+        });
+      } else if (deckTestConfig !== undefined && test) {
+        updateTest({
+          ...test,
+          decks: test.decks.filter((deck) => deck.fileId !== file._id),
+        });
+      }
+    },
+    [updateTest, test, file._id, deckTestConfig]
+  );
 
   const chevronStyle = useMemo(() => {
     return {
@@ -31,19 +78,90 @@ function ConfigDeckEntry({ file }: { file: FileShort }) {
     };
   }, [isExpand]);
 
+  const getIsSublineChecked = useCallback(
+    (level: number): boolean => {
+      if (!deckTestConfig) return false;
+      if (level === 0) return deckTestConfig.level0;
+      if (level === 1) return deckTestConfig.level1;
+      if (level === 2) return deckTestConfig.level2;
+      return false;
+    },
+    [deckTestConfig]
+  );
+
+  const handleChangeSubline = useCallback((level: number) => {
+    if (test) {
+      updateTest({
+        ...test,
+        decks: test.decks.map((deck) => {
+          if (deck.fileId !== file._id) {
+            return deck;
+          } else {
+            return {
+              ...deck,
+              level0: level === 0 ? !deck.level0 : deck.level0,
+              level1: level === 1 ? !deck.level1 : deck.level1,
+              level2: level === 2 ? !deck.level2 : deck.level2,
+            };
+          }
+        }),
+      });
+    }
+  }, [file._id, test, updateTest]);
+
+  const handleStopPropagation = useCallback(
+    (e: MouseEvent<HTMLInputElement>) => {
+      e.stopPropagation();
+    },
+    []
+  );
+
   return (
-    <DeckEntryStyled
-      onClick={() => {
-        setIsExpand((x) => !x);
-      }}
-    >
-      <Row $flexDirection="row" $gap={8} $alignItems="center">
-        <input type="checkbox" />
-        <IoChevronForwardOutline style={chevronStyle} size={16}/>
-        {file.fileName}
-      </Row>
-      <CardsCount>{file.deck.length} Cards</CardsCount>
-    </DeckEntryStyled>
+    <DeckEntryContainer>
+      <DeckEntryStyled
+        onClick={() => {
+          setIsExpand((x) => !x);
+        }}
+      >
+        <Row $flexDirection="row" $gap={8} $alignItems="center">
+          <input
+            type="checkbox"
+            checked={isChecked}
+            onClick={handleStopPropagation}
+            onChange={handleCheckbox}
+            disabled={disabled}
+          />
+          <IoChevronForwardOutline style={chevronStyle} size={16} />
+          {file.fileName}
+        </Row>
+        <CardsCount>{file.deck.length} Cards</CardsCount>
+      </DeckEntryStyled>
+      {isExpand && (
+        <>
+          <ConfigLevelEntry
+            deck={file.deck}
+            level={0}
+            isChecked={getIsSublineChecked(0)}
+            disabled={disabled || !isChecked}
+            changeEvent={handleChangeSubline}
+            />
+          <ConfigLevelEntry
+            deck={file.deck}
+            level={1}
+            isChecked={getIsSublineChecked(1)}
+            disabled={disabled || !isChecked}
+            changeEvent={handleChangeSubline}
+            />
+          <ConfigLevelEntry
+            deck={file.deck}
+            level={2}
+            isChecked={getIsSublineChecked(2)}
+            disabled={disabled || !isChecked}
+            changeEvent={handleChangeSubline}
+          />
+        </>
+      )}
+    </DeckEntryContainer>
   );
 }
 

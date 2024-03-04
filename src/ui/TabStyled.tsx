@@ -14,6 +14,8 @@ export const TabStyled = styled.div<TabStyledProps>`
   background: none;
   border: none;
   box-sizing: border-box;
+  max-width: 200px;
+  
   color: var(--text-layout);
   font-size: 1rem;
   cursor: pointer;
@@ -48,3 +50,10 @@ export const CloseButton = styled.button<CloseButtonProps>`
     color: var(--text-main-dark);
   }
 `;
+
+export const TextContainer = styled.span`
+width: auto;
+overflow: hidden;
+text-overflow: ellipsis;
+white-space: nowrap;
+`

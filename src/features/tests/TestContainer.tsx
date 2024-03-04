@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import TestConfig from "./TestConfig";
+import ConfigTest from "./ConfigTest";
 import TestBody from "./TestBody";
 import useFindTestById from "./useFindTestById";
 import { useParams } from "react-router-dom";
@@ -18,7 +18,14 @@ const TestContainerStyled = styled.div`
 function TestContainer() {
   const { testId } = useParams();
   const { testData, isLoadingTest } = useFindTestById(testId as string);
-  const { test, setTest, isSyncWithDb, setIsSyncWithDb } = useTestStore();
+  const {
+    test,
+    setTest,
+    isSyncWithDb,
+    setIsSyncWithDb,
+    skipTimeout,
+    setSkipTimeout,
+  } = useTestStore();
   const { updateTest, isUpdatingTest } = useUpdateTest();
   const [isTimedOut, setIsTimedOut] = useState(false);
 
@@ -31,7 +38,7 @@ function TestContainer() {
   useEffect(() => {
     if (
       test?._id &&
-      !isTimedOut &&
+      (!isTimedOut || skipTimeout) &&
       !isUpdatingTest &&
       !isLoadingTest &&
       !isSyncWithDb
@@ -42,6 +49,9 @@ function TestContainer() {
       setTimeout(() => {
         setIsTimedOut(false);
       }, 3000);
+      if (skipTimeout) {
+        setSkipTimeout(false);
+      }
     }
   }, [
     test,
@@ -52,11 +62,13 @@ function TestContainer() {
     isLoadingTest,
     isSyncWithDb,
     setIsSyncWithDb,
+    skipTimeout,
+    setSkipTimeout,
   ]);
 
   return (
     <TestContainerStyled>
-      <TestConfig />
+      <ConfigTest />
       <TestBody />
     </TestContainerStyled>
   );
