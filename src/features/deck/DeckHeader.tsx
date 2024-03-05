@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import DeckIcon from "../../ui/icons/DeckIcon";
-import Row from "../../ui/Row";
+import Row, { Column } from "../../ui/Row";
 import Button from "../../ui/Button";
 import { IoAdd, IoPlay } from "react-icons/io5";
 import useDeckStore from "./useDeckStore";
@@ -37,7 +37,6 @@ function DeckHeader() {
     (e: MouseEvent) => {
       e.stopPropagation();
       const id = createFlashcard();
-      console.log(id);
       selectCard(id);
     },
     [createFlashcard, selectCard]
@@ -61,11 +60,11 @@ function DeckHeader() {
       <DeckIconContainer>
         <DeckIcon />
       </DeckIconContainer>
-      <Row $flexDirection="column" $gap={8} $justifyContent="space-between">
+      <Column $gap={8} $style={{justifyContent: "space-between"}}>
         <Title>Deck - {fileName}</Title>
-        <Row $flexDirection="row" $gap={16} $alignItems="center">
+        <Row $gap={16}  $style={{alignItems: "center"}}>
           <CountFlashcards>{count} flashcards</CountFlashcards>
-          <Row $flexDirection="row" $gap={8} $alignItems="center">
+          <Row  $gap={8} $style={{alignItems: "center"}}>
             <Button
               type="primary"
               $icon={true}
@@ -78,7 +77,7 @@ function DeckHeader() {
             </Button>
           </Row>
         </Row>
-      </Row>
+      </Column>
     </DeckHeaderStyled>
   );
 }

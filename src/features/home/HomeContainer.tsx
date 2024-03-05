@@ -4,11 +4,12 @@ import FilePreviewContainer from "./FilePreviewContainer";
 import { device } from "../../Medias";
 
 const HomeStyled = styled.div`
+  width: 100%;
+  flex-grow: 1;
   box-sizing: border-box;
-  height: 100%;
-  padding: 20px;
   display: flex;
   flex-direction: column;
+  padding: 20px;
   gap: 16px;
 
   @media ${device.lg} {

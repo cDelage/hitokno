@@ -11,6 +11,7 @@ const AppLayoutStyled = styled.div`
 
 const MainStyled = styled.main`
   flex-grow: 1;
+  display: flex;
 `;
 
 function AppLayout(): JSX.Element {

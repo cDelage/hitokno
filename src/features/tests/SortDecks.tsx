@@ -1,12 +1,12 @@
 import { DragEvent, useCallback, useState } from "react";
 import { FileShort } from "../../types/Repository.types";
-import ConfigSortEntry from "./ConfigSortEntry";
-import Row from "../../ui/Row";
+import DeckSortable from "./DeckSortable";
+import { Column } from "../../ui/Row";
 import moveElement from "../../utils/MoveElement";
 import { DeckTestConfig } from "../../types/Test.type";
 import useTestStore from "./useTestStore";
 
-function ConfigSortList({ selectedFiles }: { selectedFiles: FileShort[] }) {
+function SortDecks({ selectedFiles }: { selectedFiles: FileShort[] }) {
   const [currentDragged, setCurrentDragged] = useState<number | undefined>(
     undefined
   );
@@ -33,7 +33,7 @@ function ConfigSortList({ selectedFiles }: { selectedFiles: FileShort[] }) {
         updateTest({
           ...test,
           decks: newDecks,
-        });
+        }, true);
         setCurrentDragged(index);
       }
     },
@@ -46,9 +46,9 @@ function ConfigSortList({ selectedFiles }: { selectedFiles: FileShort[] }) {
 
   return (
     <>
-      <Row $flexDirection="column" $gap={0}>
+      <Column>
         {selectedFiles.map((file, index) => (
-          <ConfigSortEntry
+          <DeckSortable
             file={file}
             index={index}
             key={file._id}
@@ -57,9 +57,9 @@ function ConfigSortList({ selectedFiles }: { selectedFiles: FileShort[] }) {
             drop={handleDrop}
           />
         ))}
-      </Row>
+      </Column>
     </>
   );
 }
 
-export default ConfigSortList;
+export default SortDecks;

@@ -12,6 +12,7 @@ const Button = styled.button<ButtonProps>`
     justify-content: center;
     gap: 8px;
     padding: 8px 16px;
+    height: fit-content;
     font-size: 1rem;
     border-radius: 4px;
     border: none;

@@ -1,0 +1,1 @@
+export type TagTheme = "gray" | "positive" | "medium" | "negative"

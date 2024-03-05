@@ -19,7 +19,7 @@ const DeckEntryContainer = styled.div`
 const DeckEntryStyled = styled.div`
   display: flex;
   justify-content: space-between;
-  padding: 8px 16px;
+  padding: 12px 12px;
   cursor: pointer;
   &:hover {
     background-color: var(--color-gray-100);
@@ -123,7 +123,7 @@ function ConfigDeckEntry({ file }: { file: FileShort }) {
           setIsExpand((x) => !x);
         }}
       >
-        <Row $flexDirection="row" $gap={8} $alignItems="center">
+        <Row $gap={8} $style={{alignItems: "center"}}>
           <input
             type="checkbox"
             checked={isChecked}

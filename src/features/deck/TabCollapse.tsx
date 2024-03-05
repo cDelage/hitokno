@@ -6,15 +6,13 @@ import styled from "styled-components";
 const DeckHeaderStyled = styled.div`
   height: 20px;
   display: flex;
-  padding: 8px 16px;
+  padding: 4px 16px;
   align-items: center;
-  box-shadow: var(--shadow-md);
-  background-color: var(--color-gray-50);
-  font-weight: 500;
+  background-color: var(--color-gray-100);
   cursor: pointer;
   justify-content: space-between;
   &:hover {
-    background-color: var(--color-gray-100);
+    background-color: var(--color-gray-200);
   }
 `;
 

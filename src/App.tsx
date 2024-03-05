@@ -15,7 +15,6 @@ import {
   RenameFolderParams,
 } from "./types/Repository.types";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import FileDisabled from "./features/home/FileDisabled";
 import FileSelected from "./features/home/FileSelected";
 import Cartography from "./pages/Cartography";
@@ -110,7 +109,7 @@ const queryClient = new QueryClient({
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ReactQueryDevtools initialIsOpen={false} />
+      {/**<ReactQueryDevtools initialIsOpen={false} />*/}
       <GlobalStyle />
       <RouterProvider router={router} />
     </QueryClientProvider>

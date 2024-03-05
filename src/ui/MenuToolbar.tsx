@@ -2,7 +2,7 @@ import styled, { css } from "styled-components";
 import { ChildrenProps } from "../types/ChildrenProps.type";
 import { createPortal } from "react-dom";
 import { PositionAbsolute, PositionObject } from "../types/Position.type";
-import Row from "./Row";
+import Row, { Column } from "./Row";
 import { BorderProps } from "../types/Border.type";
 import {
   MouseEvent,
@@ -243,7 +243,7 @@ function MenuToolbar({
 
 function ActionLine({ children }: ChildrenProps): JSX.Element {
   return (
-    <Row $flexDirection="row" $alignItems="stretch" $gap={0} $flexGrow={1}>
+    <Row $style={{alignItems: "stretch", flexGrow: 1}}>
       {children}
     </Row>
   );
@@ -251,9 +251,9 @@ function ActionLine({ children }: ChildrenProps): JSX.Element {
 
 function ActionColumn({ children }: ChildrenProps): JSX.Element {
   return (
-    <Row $flexDirection="column" $alignItems="stretch" $gap={0}>
+    <Column $style={{alignItems: "stretch"}}>
       {children}
-    </Row>
+    </Column>
   );
 }
 
@@ -308,7 +308,7 @@ function Action({
       $theme={$theme}
       $justifyCenter={$justifyCenter}
     >
-      <Row $flexDirection="row" $gap={2} $alignItems="center">
+      <Row $gap={2} $style={{alignItems: "center"}}>
         {children}
       </Row>
     </ActionStyled>

@@ -16,7 +16,7 @@ const DeckContainerStyled = styled.div`
   right: 16px;
   z-index: 1100;
   height: 95%;
-  background-color: var(--color-gray-50);
+  background-color: var(--bg-element);
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
   overflow: hidden;

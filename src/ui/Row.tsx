@@ -1,49 +1,37 @@
-import styled, { css } from "styled-components";
+import styled, { CSSProp } from "styled-components";
 
 type RowProps = {
-  $flexDirection: "row" | "column";
-  $gap: number;
-  $alignItems?: string;
-  $justifyContent?: string;
-  $flexGrow?: number;
-  $overflow?: string;
-  $padding? : string;
+  $flexDirection?: "row" | "column";
+  $gap?: number;
+  $style?: CSSProp;
+  $hover?: CSSProp;
 };
 
 const Row = styled.div<RowProps>`
   display: flex;
-  flex-direction: ${(props) => props.$flexDirection};
-  gap: ${(props) => props.$gap}px;
+  flex-direction: ${(props) =>
+    props.$flexDirection ? props.$flexDirection : "row"};
+  gap: ${(props) => (props.$gap ? props.$gap : 0)}px;
   min-width: 0;
-  ${(props) =>
-    props.$alignItems &&
-    css`
-      align-items: ${props.$alignItems};
-    `}
 
-  ${(props) =>
-    props.$justifyContent &&
-    css`
-      justify-content: ${props.$justifyContent};
-    `}
-  
-  ${(props) =>
-    props.$flexGrow &&
-    css`
-      flex-grow: ${props.$flexGrow};
-    `}
-  
-  ${(props) =>
-    props.$overflow &&
-    css`
-      flex-grow: ${props.$overflow};
-    `}
+  ${(props) => props.$style}
 
-  ${(props) =>
-    props.$padding &&
-    css`
-      padding: ${props.$padding};
-    `}
+  &:hover {
+    ${(props) => props.$hover}
+  }
+`;
+
+export const Column = styled.div<RowProps>`
+  display: flex;
+  flex-direction: column;
+  gap: ${(props) => (props.$gap ? props.$gap : 0)}px;
+  min-width: 0;
+
+  ${(props) => props.$style}
+
+  &:hover {
+    ${(props) => props.$hover}
+  }
 `;
 
 export default Row;

@@ -1,76 +1,39 @@
 import styled from "styled-components";
-import ConfigTest from "./ConfigTest";
+import HeaderTest from "./HeaderTest";
+import TestDatabaseSync from "./TestDatabaseSync";
+import TestProgress from "./TestProgress";
+import SettingsTestSidePannel from "./SettingsTestSidePannel";
 import TestBody from "./TestBody";
-import useFindTestById from "./useFindTestById";
-import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import useTestStore from "./useTestStore";
-import useUpdateTest from "./useUpdateTest";
 
 const TestContainerStyled = styled.div`
-  height: 100%;
+  flex-grow: 1;
   display: flex;
-  box-sizing: border-box;
-  padding: 16px;
-  gap: 16px;
+  flex-direction: column;
+  position: relative;
+`;
+
+const TestHeaderContainer = styled.div`
+  padding: 32px;
+  gap: 32px;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-element);
+  box-shadow: var(--shadow-md);
 `;
 
 function TestContainer() {
-  const { testId } = useParams();
-  const { testData, isLoadingTest } = useFindTestById(testId as string);
-  const {
-    test,
-    setTest,
-    isSyncWithDb,
-    setIsSyncWithDb,
-    skipTimeout,
-    setSkipTimeout,
-  } = useTestStore();
-  const { updateTest, isUpdatingTest } = useUpdateTest();
-  const [isTimedOut, setIsTimedOut] = useState(false);
-
-  useEffect(() => {
-    if (!isLoadingTest && testData?._id) {
-      setTest(testData);
-    }
-  }, [testData, setTest, isLoadingTest]);
-
-  useEffect(() => {
-    if (
-      test?._id &&
-      (!isTimedOut || skipTimeout) &&
-      !isUpdatingTest &&
-      !isLoadingTest &&
-      !isSyncWithDb
-    ) {
-      updateTest({ test });
-      setIsSyncWithDb(true);
-      setIsTimedOut(true);
-      setTimeout(() => {
-        setIsTimedOut(false);
-      }, 3000);
-      if (skipTimeout) {
-        setSkipTimeout(false);
-      }
-    }
-  }, [
-    test,
-    isTimedOut,
-    setIsTimedOut,
-    isUpdatingTest,
-    updateTest,
-    isLoadingTest,
-    isSyncWithDb,
-    setIsSyncWithDb,
-    skipTimeout,
-    setSkipTimeout,
-  ]);
-
   return (
-    <TestContainerStyled>
-      <ConfigTest />
-      <TestBody />
-    </TestContainerStyled>
+    <>
+      <TestDatabaseSync />
+      <TestContainerStyled>
+        <SettingsTestSidePannel />
+        <TestHeaderContainer>
+          <HeaderTest />
+          <TestProgress />
+        </TestHeaderContainer>
+        <TestBody/>
+      </TestContainerStyled>
+    </>
   );
 }
 

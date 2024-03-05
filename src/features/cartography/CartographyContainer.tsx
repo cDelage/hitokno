@@ -4,7 +4,7 @@ import "reactflow/dist/style.css";
 import Viewport from "./Viewport";
 
 const CartographyContainerStyled = styled.div`
-  height: 100%;
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
 `;

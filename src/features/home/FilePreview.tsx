@@ -1,4 +1,4 @@
-import Row from "../../ui/Row";
+import Row, { Column } from "../../ui/Row";
 import { ChildrenProps } from "../../types/ChildrenProps.type";
 import styled from "styled-components";
 import Button from "../../ui/Button";
@@ -17,9 +17,9 @@ const ViewportContainer = styled.div`
 
 function FilePreview({ children }: ChildrenProps): JSX.Element {
   return (
-    <Row $flexDirection="column" $gap={20}>
+    <Column $gap={20}>
       {children}
-    </Row>
+    </Column>
   );
 }
 
@@ -31,10 +31,7 @@ function Title({ children }: ChildrenProps): JSX.Element {
 
   return (
     <Row
-      $flexDirection="row"
-      $gap={0}
-      $alignItems="center"
-      $justifyContent="space-between"
+      $style={{alignItems: "center", justifyContent: "space-between"}}
     >
       <h1>{children}</h1>
       {closable && (
@@ -52,17 +49,15 @@ type ViewportProps = ChildrenProps & {
 
 function Viewport({ children, title }: ViewportProps) {
   return (
-    <Row $flexDirection="column" $gap={8}>
+    <Column $gap={8}>
       <ViewportContainer>{children}</ViewportContainer>
       <Row
-        $flexDirection="row"
         $gap={4}
-        $alignItems="center"
-        $justifyContent="center"
+        $style={{alignItems: "center", justifyContent: "center"}}
       >
         {title}
       </Row>
-    </Row>
+    </Column>
   );
 }
 
@@ -80,7 +75,7 @@ function Actions({
   executeATest,
 }: ActionProps): JSX.Element {
   return (
-    <Row $flexDirection="column" $gap={8}>
+    <Column $gap={8}>
       <Button type="primary" disabled={disabled} onClick={displayFile}>
         Display file
       </Button>
@@ -90,7 +85,7 @@ function Actions({
       <Button type="primary" disabled={disabled} onClick={executeATest}>
         Execute a test
       </Button>
-    </Row>
+    </Column>
   );
 }
 

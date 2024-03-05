@@ -51,7 +51,7 @@ function ConfigLevelEntry({
   return (
     <ConfigLevelStarLineStyled>
       <input type="checkbox" checked={isChecked} onChange={() => changeEvent(level)} disabled={disabled}/>
-      <Row $flexDirection="row" $gap={4}>
+      <Row $gap={4}>
         <StarContainer>
           <Star fill={fill(0)} />
           <Star fill={fill(1)} />

@@ -1,6 +1,12 @@
 import { FlashCardProps } from "./Flashcard.type";
+import { TagTheme } from "./TagTheme.type";
 
 export type TestStatus = "DRAFT" | "IN PROGRESS" | "COMPLETE";
+
+export type TestStatusTheme = {
+  status: TestStatus,
+  theme: TagTheme
+}
 
 export type CardTestResult = "MASTERED" | "HESITATED" | "FAILED" | undefined;
 
@@ -25,6 +31,7 @@ export type TestType = {
   status: TestStatus;
   cards: FlashCardTestProps[];
   sortMode : SortMode;
+  deckOrderedRandomCardOrder : boolean;
 };
 
 export type CreateTestProps = {

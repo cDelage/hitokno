@@ -13,8 +13,6 @@ export async function createTest({ decks }: CreateTestProps) {
     sortMode: "ORDERED" as SortMode
   });
 
-  console.log(result)
-
   return result;
 }
 

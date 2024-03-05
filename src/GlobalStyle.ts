@@ -163,8 +163,6 @@ const GlobalStyle = createGlobalStyle`
   color: var(--text-main-medium);
  }
 
-
-
  ::selection {
   background-color: var(--color-primary-200); /* Couleur de fond */
   color: var(--text-main-dark); /* Couleur du texte */
