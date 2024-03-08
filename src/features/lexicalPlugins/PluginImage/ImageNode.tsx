@@ -104,7 +104,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
   }
 
   updateDOM(
-    prevNode: ImageNode,
+    _prevNode: ImageNode,
     dom: HTMLElement,
     config: EditorConfig
   ): false {

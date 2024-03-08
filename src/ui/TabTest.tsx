@@ -5,7 +5,7 @@ import { CloseButton, TabStyled, TextContainer } from "./TabStyled";
 import { IoClose, IoPlay, IoPlayOutline } from "react-icons/io5";
 import { useCallback, useState } from "react";
 import { useTabs } from "../features/home/useTabs";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 
 const IconContainer = styled.div`
@@ -20,6 +20,8 @@ function TabTest({ tab: { tabId } }: { tab: HeaderTab }) {
   const [isHover, setIsHover] = useState<boolean>(false);
   const { closeTab } = useTabs();
   const navigate = useNavigate();
+  const location = useLocation();
+
   const tabActive: boolean = location.pathname.startsWith(`/test/${tabId}`);
   const queryClient = useQueryClient();
 

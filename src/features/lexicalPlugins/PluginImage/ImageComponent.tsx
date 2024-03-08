@@ -114,7 +114,7 @@ function ImageComponent({ image }: { image: ImageProps }) {
   }, false);
 
   const handleResize = useCallback(
-    (e: React.SyntheticEvent, { size }: ResizeCallbackData) => {
+    (_e: React.SyntheticEvent, { size }: ResizeCallbackData) => {
       editor.update(() => {
         if (key) {
           const node = $getNodeByKey(key) as ImageNode;

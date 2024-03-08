@@ -20,6 +20,7 @@
     "@types/react-toggle": "^4.0.5",
     "@types/uuid": "^9.0.8",
     "date-fns": "^3.3.1",
+    "electron-router-dom": "^1.0.5",
     "lexical": "^0.13.1",
     "nedb": "^1.8.0",
     "nedb-promises": "^6.2.3",

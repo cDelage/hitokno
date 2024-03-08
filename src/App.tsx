@@ -1,12 +1,6 @@
-import {
-  RouteObject,
-  RouterProvider,
-  createBrowserRouter,
-} from "react-router-dom";
 import GlobalStyle from "./GlobalStyle";
 import AppLayout from "./ui/AppLayout";
 import Home from "./pages/Home";
-import Dummy from "./pages/Dummy";
 import {
   File,
   FileDetail,
@@ -20,9 +14,14 @@ import FileSelected from "./features/home/FileSelected";
 import Cartography from "./pages/Cartography";
 import { SheetDetail } from "./types/Cartography.type";
 import Test from "./pages/Test";
-import { CreateTestProps, SearchByCriteriaResult, TestType } from "./types/Test.type";
+import {
+  CreateTestProps,
+  SearchByCriteriaResult,
+  TestType,
+} from "./types/Test.type";
 import { SearchCriterias } from "./types/SearchCriteria.type";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { Router, Route } from "electron-router-dom";
 
 /**
  * When i add it into a file .d.ts, then typescript not recognize the interface.
@@ -54,52 +53,14 @@ declare global {
       findTestById: ({ _id }: { _id: string }) => Promise<TestType>;
       updateTest: ({ test }: { test: TestType }) => Promise<number>;
       deleteTest: ({ _id }: { _id: string }) => Promise<number>;
-      findTestByCriterias: (criterias: SearchCriterias) => Promise<SearchByCriteriaResult>
+      findTestByCriterias: (
+        criterias: SearchCriterias
+      ) => Promise<SearchByCriteriaResult>;
     };
   }
 }
 
-const routes: RouteObject[] = [
-  {
-    element: <AppLayout />,
-    path: "/",
-    children: [
-      {
-        path: "/explorer",
-        element: <Home />,
-        children: [
-          {
-            path: "/explorer",
-            element: <FileDisabled />,
-            index: true,
-          },
-          {
-            path: "/explorer/file/:fileId",
-            element: <FileSelected />,
-          },
-          {
-            path: "/explorer/folder/:folderId",
-            element: <FileDisabled />,
-          },
-        ],
-      },
-      {
-        path: "/cartography/:fileId",
-        element: <Cartography />,
-      },
-      {
-        path: "/test/:testId",
-        element: <Test />,
-      },
-      {
-        path: "/fake",
-        element: <Dummy />,
-      },
-    ],
-  },
-];
 
-const router = createBrowserRouter(routes);
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -114,7 +75,48 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ReactQueryDevtools initialIsOpen={false} />
       <GlobalStyle />
-      <RouterProvider router={router} />
+      <Router
+        main={
+          <Route
+            element={<AppLayout />}
+            path={"/"}
+            children={
+              <>
+                <Route
+                  path="/explorer"
+                  element={<Home />}
+                  children={
+                    <>
+                      <Route
+                        path="/explorer"
+                        element={<FileDisabled />}
+                        index={true}
+                      />
+                      <Route
+                        path="/explorer/file/:fileId"
+                        element={<FileSelected />}
+                        index={true}
+                      />
+                      <Route
+                        path="/explorer/folder/:folderId"
+                        element={<FileDisabled />}
+                      />
+                    </>
+                  }
+                />
+                <Route
+                  path="/cartography/:fileId"
+                  element={<Cartography/>}
+                />
+                <Route
+                  path="/test/:testId"
+                  element={<Test/>}
+                />
+              </>
+            }
+          />
+        }
+      />
     </QueryClientProvider>
   );
 }

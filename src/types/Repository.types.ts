@@ -1,5 +1,6 @@
 import { Edge, Node } from "reactflow";
-import { DataNode, FlashCard } from "./Cartography.type";
+import { DataNode } from "./Cartography.type";
+import { FlashCard } from "./Flashcard.type";
 
 export type FileDetail = {
   file: File;

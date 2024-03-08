@@ -7,7 +7,6 @@ import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
 import TestArray from "../tests/TestArray";
 import { SearchCriterias } from "../../types/SearchCriteria.type";
 import useFindTestsByCriterias from "../tests/useFindTestByCriterias";
-import { useQueryClient } from "@tanstack/react-query";
 import Pagination from "../../ui/Pagination";
 import TabCollapse from "../deck/TabCollapse";
 import InputSearchBar from "../../ui/InputSearchBar";
@@ -47,8 +46,7 @@ function TestHistoryHomeModal() {
     criteria: "",
   });
 
-  const { testsByCriteria } = useFindTestsByCriterias(searchCriterias);
-  const queryClient = useQueryClient();
+  const { testsByCriteria, refetchTests } = useFindTestsByCriterias(searchCriterias);
   const countPages = useMemo(
     () =>
       testsByCriteria
@@ -86,8 +84,10 @@ function TestHistoryHomeModal() {
   );
 
   useEffect(() => {
-    queryClient.invalidateQueries({ queryKey: ["testsCriterias"] });
-  }, [queryClient, testHistory]);
+    if(testHistory){
+      refetchTests
+    }
+  }, [testHistory, refetchTests]);
 
   return (
     <CSSTransition

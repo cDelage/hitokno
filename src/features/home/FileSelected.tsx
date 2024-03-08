@@ -5,7 +5,7 @@ import useFindFile from "./useFindFile";
 import TextEditable from "../../ui/TextEditable";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { TextEditMode } from "../../types/TextEditMode.type";
-import { ChangeEvent } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { useRenameFile } from "./useRenameFile";
 import { useTabs } from "./useTabs";
 
@@ -31,12 +31,13 @@ const FileName = styled.span<FileNameProps>`
     `}
 `;
 
-function FileSelected(): JSX.Element {
+function FileSelected(): JSX.Element | null {
   const { isLoadingFile, fileDetail } = useFindFile();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const { renameFile } = useRenameFile();
   const { openTab } = useTabs();
+  const [isMounted, setIsMounted] = useState(false);
 
   const paramsMode = searchParams.get("mode");
   const mode = paramsMode ? paramsMode : "DEFAULT";
@@ -64,17 +65,27 @@ function FileSelected(): JSX.Element {
 
   function handleDisplayFile() {
     if (fileDetail?.file._id) {
-      openTab(fileDetail.file._id, "DEFAULT","FILE");
+      openTab(fileDetail.file._id, "DEFAULT", "FILE");
       navigate(`/cartography/${fileDetail.file._id}`);
     }
   }
 
-  function handleEditFile(){
+  function handleEditFile() {
     if (fileDetail?.file._id) {
-      openTab(fileDetail.file._id, "EDIT","FILE");
+      openTab(fileDetail.file._id, "EDIT", "FILE");
       navigate(`/cartography/${fileDetail.file._id}`);
     }
   }
+
+  useEffect(() => {
+    setIsMounted(true);
+
+    return () => {
+      setIsMounted(false);
+    };
+  }, [setIsMounted]);
+
+  if (!fileDetail || !isMounted) return null;
 
   return (
     <FileSelectedStyled>
@@ -112,7 +123,10 @@ function FileSelected(): JSX.Element {
             </>
           }
         >
-          <h1>PREVIEW {fileDetail?.file.fileName}</h1>
+            <FilePreview.CartographyPreview
+              nodes={fileDetail.file.nodes}
+              edges={fileDetail.file.edges}
+            />
         </FilePreview.Viewport>
         <FilePreview.Actions
           disabled={isLoadingFile}

@@ -12,13 +12,11 @@ import shuffleArray from "../../utils/ShuffleArray";
 type TestStore = {
   test: TestType | undefined;
   isSyncWithDb: boolean;
-  skipTimeout: boolean;
   tempFlashCards: FlashCardTestProps[];
   setTest: (test: TestType | undefined) => void;
   updateTest: (test: TestType, skipTimeout?: boolean) => void;
   setIsSyncWithDb: (isSync: boolean) => void;
   getDeckTestConfig: (fileId: string) => DeckTestConfig | undefined;
-  setSkipTimeout: (skipTimeout: boolean) => void;
   getCardListFromRepository: (repository: Folder[]) => FlashCardTestProps[];
   setTempFlashCards: (tempFlashCards: FlashCardTestProps[]) => void;
   getProgress: () => { currentCard: number; countCards: number };
@@ -72,13 +70,10 @@ const useTestStore = create<TestStore>((set, get) => ({
       test,
     });
   },
-  updateTest: (test: TestType, skipTimeout?: boolean) => {
-    set((state) => {
-      return {
-        test,
-        isSyncWithDb: false,
-        skipTimeout: skipTimeout ? skipTimeout : state.skipTimeout,
-      };
+  updateTest: (test: TestType) => {
+    set({
+      test,
+      isSyncWithDb: false,
     });
   },
   setIsSyncWithDb: (isSyncWithDb: boolean) => {
@@ -88,9 +83,6 @@ const useTestStore = create<TestStore>((set, get) => ({
   },
   getDeckTestConfig: (fileId: string) => {
     return get().test?.decks.find((deck) => deck.fileId === fileId);
-  },
-  setSkipTimeout: (skipTimeout: boolean) => {
-    set({ skipTimeout });
   },
   getCardListFromRepository: (repository: Folder[]) => {
     let cards: FlashCardTestProps[] = [];
@@ -165,7 +157,6 @@ const useTestStore = create<TestStore>((set, get) => ({
           status: "IN PROGRESS",
         },
         isSyncWithDb: false,
-        skipTimeout: true,
       });
     }
   },
@@ -175,11 +166,7 @@ const useTestStore = create<TestStore>((set, get) => ({
       const card = test.cards.find((card) => !card.isComplete);
 
       if (!card) {
-        set({
-          test: { ...test, status: "COMPLETE" },
-          isSyncWithDb: false,
-          skipTimeout: true,
-        });
+        get().updateTest({ ...test, status: "COMPLETE" });
       }
 
       return card;
@@ -196,7 +183,6 @@ const useTestStore = create<TestStore>((set, get) => ({
           cards: test.cards.map((c) => (c.cardId === card.cardId ? card : c)),
         },
         isSyncWithDb: false,
-        skipTimeout: true,
       });
     }
   },

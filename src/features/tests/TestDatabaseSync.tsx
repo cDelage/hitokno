@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import useTestStore from "./useTestStore";
 import useUpdateTest from "./useUpdateTest";
 import useFindTestById from "./useFindTestById";
@@ -13,13 +13,10 @@ function TestDatabaseSync() {
     setTest,
     isSyncWithDb,
     setIsSyncWithDb,
-    skipTimeout,
-    setSkipTimeout,
     getCardListFromRepository,
     setTempFlashCards,
   } = useTestStore();
-  const { updateTestDatabase, isUpdatingTest } = useUpdateTest();
-  const [isTimedOut, setIsTimedOut] = useState(false);
+  const { updateTestDatabase } = useUpdateTest();
   const { repository } = useFindRepository();
 
   useEffect(() => {
@@ -29,34 +26,16 @@ function TestDatabaseSync() {
   }, [testData, setTest, isLoadingTest]);
 
   useEffect(() => {
-    if (
-      test?._id &&
-      (!isTimedOut || skipTimeout) &&
-      !isUpdatingTest &&
-      !isLoadingTest &&
-      !isSyncWithDb
-    ) {
+    if (test?._id && !isSyncWithDb) {
+      console.log("Update effective")
+      console.log(test)
       updateTestDatabase({ test });
-      setIsSyncWithDb(true);
-      setIsTimedOut(true);
-      setTimeout(() => {
-        setIsTimedOut(false);
-      }, 3000);
-      if (skipTimeout) {
-        setSkipTimeout(false);
-      }
+      setIsSyncWithDb(true)
     }
   }, [
     test,
-    isTimedOut,
-    setIsTimedOut,
-    isUpdatingTest,
     updateTestDatabase,
-    isLoadingTest,
-    isSyncWithDb,
-    setIsSyncWithDb,
-    skipTimeout,
-    setSkipTimeout,
+    isSyncWithDb, setIsSyncWithDb
   ]);
 
   //When draft, synchronize temp flash cards
@@ -72,6 +51,12 @@ function TestDatabaseSync() {
     getCardListFromRepository,
     setTempFlashCards,
   ]);
+
+  useEffect(() => {
+    if(test?.status){
+      setIsSyncWithDb(false)
+    }
+  }, [test?.status, setIsSyncWithDb])
 
   return null;
 }

@@ -9,7 +9,6 @@ import {
   renameFolder,
   renameFile,
   updateCartography,
-  findSheet,
   updateDeck,
 } from "./services/apiRepository";
 import {
@@ -28,6 +27,7 @@ import {
   updateTest,
 } from "./services/apiTest";
 import { SearchCriterias } from "../src/types/SearchCriteria.type";
+import { createFileRoute, createURLRoute } from "electron-router-dom";
 
 // The built directory structure
 //
@@ -39,6 +39,7 @@ import { SearchCriterias } from "../src/types/SearchCriteria.type";
 // │ │ └── preload.js
 // │
 process.env.DIST = path.join(__dirname, "../dist");
+console.log(process.env.DIST)
 process.env.VITE_PUBLIC = app.isPackaged
   ? process.env.DIST
   : path.join(process.env.DIST, "../public");
@@ -63,10 +64,13 @@ function createWindow() {
   });
 
   if (VITE_DEV_SERVER_URL) {
-    win.loadURL(VITE_DEV_SERVER_URL);
+    win.loadURL(createURLRoute(
+      VITE_DEV_SERVER_URL,
+      'main'
+    ))
   } else {
     // win.loadFile('dist/index.html')
-    win.loadFile(path.join(process.env.DIST, "index.html"));
+    win.loadFile(...createFileRoute(path.join(process.env.DIST, 'index.html'), 'main'))
   }
 
   ipcMain.on("maximize", () => {
@@ -101,47 +105,47 @@ function createWindow() {
 
   ipcMain.handle(
     "create-file",
-    async (event: IpcMainInvokeEvent, folderId: string): Promise<File | null> =>
+    async (_event: IpcMainInvokeEvent, folderId: string): Promise<File | null> =>
       await createFile(folderId)
   );
 
   ipcMain.handle(
     "remove-folder",
-    async (event: IpcMainInvokeEvent, folderId: string) =>
+    async (_event: IpcMainInvokeEvent, folderId: string) =>
       await removeFolder(folderId)
   );
 
   ipcMain.handle(
     "rename-folder",
-    async (event: IpcMainInvokeEvent, params: RenameFolderParams) =>
+    async (_event: IpcMainInvokeEvent, params: RenameFolderParams) =>
       await renameFolder(params)
   );
 
   ipcMain.handle(
     "find-file",
-    async (event: IpcMainInvokeEvent, fileId: string) => await findFile(fileId)
+    async (_event: IpcMainInvokeEvent, fileId: string) => await findFile(fileId)
   );
 
   ipcMain.handle(
     "rename-file",
-    async (event: IpcMainInvokeEvent, params: FileRename) =>
+    async (_event: IpcMainInvokeEvent, params: FileRename) =>
       await renameFile(params)
   );
 
   ipcMain.handle(
     "update-cartography",
-    async (event: IpcMainInvokeEvent, file: File) =>
+    async (_event: IpcMainInvokeEvent, file: File) =>
       await updateCartography(file)
   );
 
   ipcMain.handle(
     "update-deck",
-    async (event: IpcMainInvokeEvent, file: File) => await updateDeck(file)
+    async (_event: IpcMainInvokeEvent, file: File) => await updateDeck(file)
   );
 
   ipcMain.handle(
     "create-test",
-    async (event: IpcMainInvokeEvent, params: CreateTestProps) =>
+    async (_event: IpcMainInvokeEvent, params: CreateTestProps) =>
       await createTest(params)
   );
 
@@ -149,25 +153,25 @@ function createWindow() {
 
   ipcMain.handle(
     "find-test-by-id",
-    async (event: IpcMainInvokeEvent, { _id }: { _id: string }) =>
+    async (_event: IpcMainInvokeEvent, { _id }: { _id: string }) =>
       await findTestById({ _id })
   );
 
   ipcMain.handle(
     "update-test",
-    async (event: IpcMainInvokeEvent, { test }: { test: TestType }) =>
+    async (_event: IpcMainInvokeEvent, { test }: { test: TestType }) =>
       await updateTest({ test })
   );
 
   ipcMain.handle(
     "delete-test",
-    async (event: IpcMainInvokeEvent, { _id }: { _id: string }) =>
+    async (_event: IpcMainInvokeEvent, { _id }: { _id: string }) =>
       await deleteTest({ _id })
   );
 
   ipcMain.handle(
     "find-tests-by-criterias",
-    async (event: IpcMainInvokeEvent, criterias: SearchCriterias) =>
+    async (_event: IpcMainInvokeEvent, criterias: SearchCriterias) =>
       await findTestByCriteria(criterias)
   );
 }
