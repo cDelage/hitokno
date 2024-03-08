@@ -3,6 +3,9 @@ import styled from "styled-components";
 import EditToggle from "../../ui/EditToggle";
 import { useFindFileById } from "../home/useFindFileById";
 import { useTabs } from "../home/useTabs";
+import useCartography from "./useCartography";
+import useDeckStore from "../deck/useDeckStore";
+import { IoCheckmarkCircle } from "react-icons/io5";
 
 const CartographyHeaderStyled = styled.div`
   display: flex;
@@ -31,7 +34,8 @@ function CartographyHeader() {
   const { fileId } = useParams();
   const {getCartographyMode, toggleCartographyMode} = useTabs();
   const { fileDetail, isFileLoading } = useFindFileById(fileId as string);
-
+  const {isSyncWithDB: cartographySync} = useCartography();
+  const {isSyncWithDb: deckSync} = useDeckStore();
   
   if (!fileDetail || isFileLoading || !fileId)
   return <CartographyHeaderStyled></CartographyHeaderStyled>;
@@ -50,7 +54,7 @@ function CartographyHeader() {
         </ToggleContainer>
         Edit
       </CartographyBlock>
-      <CartographyBlock>{folderName} / {fileName}</CartographyBlock>
+      <CartographyBlock>{folderName} / {fileName} {(cartographySync && deckSync) ?  <IoCheckmarkCircle color="var(--color-positive-600)" size={16}/> : "*"}</CartographyBlock>
       <CartographyBlock></CartographyBlock>
     </CartographyHeaderStyled>
   );

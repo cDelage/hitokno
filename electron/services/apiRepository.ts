@@ -113,6 +113,19 @@ export async function renameFile({ fileId, filename }: FileRename) {
   return folder;
 }
 
+export async function RemoveFile({ _id }: { _id: string }) {
+  const folder = (await db.repository.findOne({
+    "files._id": _id,
+  })) as CompleteFolder;
+
+  const updatedFiles = folder.files.filter(file => file._id !== _id);
+
+  return await db.repository.updateOne(
+    { "files._id": _id },
+    { $set: { files: updatedFiles } }
+  );
+}
+
 export async function updateCartography({ _id, nodes, edges }: File) {
   const folder = (await db.repository.findOne({
     "files._id": _id,

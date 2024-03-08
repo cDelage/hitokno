@@ -3,12 +3,17 @@ import { ChildrenProps } from "../../types/ChildrenProps.type";
 import styled from "styled-components";
 import Button from "../../ui/Button";
 import { ReactNode } from "react";
-import { IoClose } from "react-icons/io5";
+import { IoClose, IoEye, IoPlay } from "react-icons/io5";
 import IconButton from "../../ui/IconButton";
 import { useLocation, useNavigate } from "react-router-dom";
 import ReactFlow, { Edge, EdgeTypes, Node } from "reactflow";
 import NodeShapeLight from "./NodeShapeLight";
 import EdgeCustomLight from "./EdgeCustomLight";
+import { BiPen } from "react-icons/bi";
+
+const NodesTypesList = { shape: NodeShapeLight };
+
+const EdgeTypesList: EdgeTypes = { custom: EdgeCustomLight } as EdgeTypes;
 
 const ViewportContainer = styled.div`
   height: 268px;
@@ -62,19 +67,17 @@ function CartographyPreview({
   nodes: Node[];
   edges: Edge[];
 }) {
-
   return (
     <ReactFlow
       nodes={nodes}
       edges={edges}
-      nodeTypes={{shape: NodeShapeLight}}
-      edgeTypes={{custom : EdgeCustomLight} as EdgeTypes}
+      nodeTypes={NodesTypesList}
+      edgeTypes={EdgeTypesList}
       snapToGrid={true}
       panOnDrag={[]}
       snapGrid={[8, 8]}
       minZoom={0.3}
       maxZoom={0.3}
-      
       fitView
     ></ReactFlow>
   );
@@ -85,6 +88,8 @@ type ActionProps = {
   displayFile?: () => void;
   editFile?: () => void;
   executeATest?: () => void;
+  disableExecuteATest?: boolean;
+  children?: ReactNode;
 };
 
 function Actions({
@@ -92,18 +97,25 @@ function Actions({
   displayFile,
   editFile,
   executeATest,
+  disableExecuteATest,
+  children,
 }: ActionProps): JSX.Element {
   return (
     <Column $gap={8}>
       <Button type="primary" disabled={disabled} onClick={displayFile}>
-        Display file
+        <IoEye /> Display file
       </Button>
       <Button type="primary" disabled={disabled} onClick={editFile}>
-        Edit file
+        <BiPen size={20} /> Edit file
       </Button>
-      <Button type="primary" disabled={disabled} onClick={executeATest}>
-        Execute a test
+      <Button
+        type="primary"
+        disabled={disabled || disableExecuteATest}
+        onClick={executeATest}
+      >
+        <IoPlay size={20} /> Execute a test
       </Button>
+      {children}
     </Column>
   );
 }

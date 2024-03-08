@@ -35,6 +35,8 @@ const repository = {
     await ipcRenderer.invoke("update-cartography", file),
   updateDeck: async (file: File) =>
     await ipcRenderer.invoke("update-deck", file),
+  removeFile: async (params: { _id: string }) =>
+    await ipcRenderer.invoke("remove-file", params),
 };
 
 const tests = {
@@ -46,7 +48,7 @@ const tests = {
   updateTest: async ({ test }: { test: TestType }) =>
     await ipcRenderer.invoke("update-test", { test }),
   deleteTest: async ({ _id }: { _id: string }) =>
-    await ipcRenderer.invoke("delete-test", _id),
+    await ipcRenderer.invoke("delete-test", { _id }),
   findTestByCriterias: async (criterias: SearchCriterias) =>
     await ipcRenderer.invoke("find-tests-by-criterias", criterias),
 };

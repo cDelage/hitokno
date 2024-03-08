@@ -7,7 +7,7 @@ import {
   IoTrash,
 } from "react-icons/io5";
 import { CSSTransition } from "react-transition-group";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { ChangeEvent, useCallback, useMemo } from "react";
 import { Label } from "../../ui/Label";
 import InputText from "../../ui/InputText";
@@ -19,6 +19,8 @@ import SettingsDeckEntry from "./SettingsDeckEntry";
 import SortDecks from "./SortDecks";
 import { SortMode } from "../../types/Test.type";
 import Button from "../../ui/Button";
+import useDeleteTest from "./useDeleteTest";
+import { useTabs } from "../home/useTabs";
 
 const ModalBackground = styled.div`
   position: absolute;
@@ -103,9 +105,12 @@ const Title = styled.h1`
 
 function SettingsTestSidePannel() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { test, updateTest } = useTestStore();
+  const { test, updateTest, startTest } = useTestStore();
   const queryClient = useQueryClient();
   const { repository } = useFindRepository();
+  const { deleteTest } = useDeleteTest();
+  const { closeTab } = useTabs();
+  const navigate = useNavigate();
 
   const disabled = useMemo(
     () => (test ? test.status !== "DRAFT" : true),
@@ -127,10 +132,34 @@ function SettingsTestSidePannel() {
 
   const settings = searchParams.get("settings");
 
+  const handleDeleteTest = useCallback(() => {
+    if (test) {
+      deleteTest(
+        { _id: test._id },
+        {
+          onSuccess: () => {
+            closeTab(test._id);
+            navigate(`/explorer/`);
+            queryClient.removeQueries({
+              queryKey: ["testsCriterias"],
+              exact: false,
+            });
+          },
+        }
+      );
+    }
+  }, [deleteTest, closeTab, test, navigate, queryClient]);
+
+  
   const handleCloseSetting = useCallback(() => {
     searchParams.delete("settings");
     setSearchParams(searchParams);
   }, [searchParams, setSearchParams]);
+  
+  const handleStartTest = useCallback(() => {
+    startTest();
+    handleCloseSetting();
+  }, [startTest, handleCloseSetting]);
 
   const updateTestName = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -299,11 +328,11 @@ function SettingsTestSidePannel() {
               </Column>
             </Column>
             <Row $style={ButtonRowArray}>
-              <Button type="secondary" $icon={true}>
+              <Button type="secondary" $icon={true} onClick={handleDeleteTest}>
                 <IoTrash /> Delete test
               </Button>
               {!disabled && (
-                <Button type="primary" $icon={true}>
+                <Button type="primary" $icon={true} onClick={handleStartTest}>
                   <IoPlay /> Start test
                 </Button>
               )}

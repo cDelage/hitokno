@@ -46,6 +46,7 @@ declare global {
       updateCartography: (file: File) => Promise<number>;
       updateDeck: (file: File) => Promise<number>;
       findSheet: (sheetId: string) => Promise<SheetDetail>;
+      removeFile: (params : {_id: string}) => Promise<number>;
     };
     tests: {
       createTest: (params: CreateTestProps) => Promise<TestType>;
@@ -59,8 +60,6 @@ declare global {
     };
   }
 }
-
-
 
 const queryClient = new QueryClient({
   defaultOptions: {

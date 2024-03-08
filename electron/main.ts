@@ -10,6 +10,7 @@ import {
   renameFile,
   updateCartography,
   updateDeck,
+  RemoveFile,
 } from "./services/apiRepository";
 import {
   File,
@@ -39,7 +40,6 @@ import { createFileRoute, createURLRoute } from "electron-router-dom";
 // │ │ └── preload.js
 // │
 process.env.DIST = path.join(__dirname, "../dist");
-console.log(process.env.DIST)
 process.env.VITE_PUBLIC = app.isPackaged
   ? process.env.DIST
   : path.join(process.env.DIST, "../public");
@@ -130,6 +130,12 @@ function createWindow() {
     "rename-file",
     async (_event: IpcMainInvokeEvent, params: FileRename) =>
       await renameFile(params)
+  );
+
+  ipcMain.handle(
+    "remove-file",
+    async (_event: IpcMainInvokeEvent, params: {_id : string}) =>
+      await RemoveFile(params)
   );
 
   ipcMain.handle(
