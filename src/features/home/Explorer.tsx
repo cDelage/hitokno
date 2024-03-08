@@ -11,10 +11,10 @@ import { useFindRepository } from "./useFindRepository";
 const ExplorerStyled = styled.div`
   box-sizing: border-box;
   height: 100%;
-  padding: 16px;
+  padding: 8px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 12px;
 
   @media ${device.lg} {
     flex: 3;
@@ -24,6 +24,7 @@ const ExplorerStyled = styled.div`
 const ExplorerHeader = styled.div`
   display: flex;
   justify-content: space-between;
+  padding: 8px;
 `;
 
 const TitleContainer = styled.h1`
@@ -33,6 +34,8 @@ const TitleContainer = styled.h1`
 const ExplorerMain = styled.div`
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
+  padding: 8px;
   gap: 8px;
 `;
 

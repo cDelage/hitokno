@@ -10,6 +10,7 @@ const CartographyHeaderStyled = styled.div`
   background-color: var(--bg-white);
   align-items: center;
   height: 40px;
+  min-height: 40px;
   padding: 0px 8px;
   box-shadow: var(--shadow-md);
   z-index: 10;

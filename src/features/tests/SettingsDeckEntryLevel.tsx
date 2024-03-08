@@ -4,7 +4,7 @@ import { useCallback, useMemo } from "react";
 import Row from "../../ui/Row";
 import { FlashCard } from "../../types/Flashcard.type";
 
-const ConfigLevelStarLineStyled = styled.div`
+const SettingsDeckEntryLevelStyled = styled.div`
   display: flex;
   gap: 16px;
   align-items: center;
@@ -20,7 +20,7 @@ const StarContainer = styled.div`
   gap: 4px;
 `;
 
-function ConfigLevelEntry({
+function SettingsDeckEntryLevel({
   level,
   deck,
   isChecked,
@@ -49,7 +49,7 @@ function ConfigLevelEntry({
   }, [deck, level]);
 
   return (
-    <ConfigLevelStarLineStyled>
+    <SettingsDeckEntryLevelStyled>
       <input type="checkbox" checked={isChecked} onChange={() => changeEvent(level)} disabled={disabled}/>
       <Row $gap={4}>
         <StarContainer>
@@ -60,8 +60,8 @@ function ConfigLevelEntry({
         <span>:</span> 
         <span>{getCount} Cards</span>
       </Row>
-    </ConfigLevelStarLineStyled>
+    </SettingsDeckEntryLevelStyled>
   );
 }
 
-export default ConfigLevelEntry;
+export default SettingsDeckEntryLevel;

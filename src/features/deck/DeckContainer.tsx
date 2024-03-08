@@ -4,7 +4,7 @@ import { CSSTransition } from "react-transition-group";
 import { useSearchParams } from "react-router-dom";
 import DeckHeader from "./DeckHeader";
 import useFindFile from "../home/useFindFile";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import useDeckStore from "./useDeckStore";
 import { useUpdateDeck } from "./useUpdateDeck";
 import Cards from "./Cards";
@@ -26,13 +26,18 @@ const DeckContainerStyled = styled.div`
 `;
 
 function DeckContainer() {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const open = searchParams.get("deckOpen");
   const { fileDetail, isLoadingFile } = useFindFile();
   const { loadDeck, deck, isSyncWithDb, getDeckToSave, setIsSyncWithDb } =
     useDeckStore();
   const { updateDeck } = useUpdateDeck();
   const [isTimedOut, setIsTimedOut] = useState(false);
+
+  const handleCollapse = useCallback(() => {
+    searchParams.delete("deckOpen");
+    setSearchParams(searchParams);
+  }, [searchParams, setSearchParams]);
 
   useEffect(() => {
     if (fileDetail) {
@@ -77,7 +82,7 @@ function DeckContainer() {
       mountOnEnter
     >
       <DeckContainerStyled>
-        <TabCollapse />
+        <TabCollapse onClick={handleCollapse}/>
         {!isLoadingFile && <DeckHeader />}
         <Cards />
       </DeckContainerStyled>

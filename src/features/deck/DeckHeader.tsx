@@ -47,13 +47,14 @@ function DeckHeader() {
       createTest([
         {
           fileId,
+          fileName,
           level0: true,
           level1: true,
           level2: true,
         },
       ]);
     }
-  }, [createTest, fileId]);
+  }, [createTest, fileId, fileName]);
 
   return (
     <DeckHeaderStyled>

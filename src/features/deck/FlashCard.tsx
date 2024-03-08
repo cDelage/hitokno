@@ -95,6 +95,7 @@ function FlashCard({
   eventSelectedClickOutside,
   onUpdate,
   onSelectedSpaceEvent,
+  spaceEvent
 }: {
   card: FlashCardProps;
   onClick?: () => void;
@@ -102,6 +103,7 @@ function FlashCard({
   eventSelectedClickOutside?: () => void;
   onUpdate?: (card: FlashCardProps) => void;
   onSelectedSpaceEvent?: () => void;
+  spaceEvent?: () => void;
 }) {
   const { deckLabel, selected, level, state } = card;
 
@@ -162,6 +164,22 @@ function FlashCard({
     },
     [onSelectedSpaceEvent]
   );
+  
+  const handleEventSpace = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.key === " ") {
+        spaceEvent?.();
+      }
+    },
+    [spaceEvent]
+  );
+
+    useEffect(() => {
+      document.addEventListener("keydown", handleEventSpace);
+      return () => {
+        document.removeEventListener("keydown", handleEventSpace);
+      }
+    })
 
   useEffect(() => {
     if (selected) {

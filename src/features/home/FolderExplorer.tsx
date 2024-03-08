@@ -23,6 +23,7 @@ type FolderStyledProps = {
 
 const FolderStyled = styled.div<FolderStyledProps>`
   height: 36px;
+  min-height: 36px;
   background-color: var(--bg-element);
   display: flex;
   align-items: center;

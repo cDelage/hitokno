@@ -3,7 +3,7 @@ import { FileShort } from "../../types/Repository.types";
 import Row from "../../ui/Row";
 import { IoChevronForwardOutline } from "react-icons/io5";
 import { ChangeEvent, MouseEvent, useCallback, useMemo, useState } from "react";
-import ConfigLevelEntry from "./ConfigLevelEntry";
+import SettingsDeckEntryLevel from "./SettingsDeckEntryLevel";
 import useTestStore from "./useTestStore";
 
 const DeckEntryContainer = styled.div`
@@ -30,15 +30,12 @@ const CardsCount = styled.div`
   color: var(--text-main-medium);
 `;
 
-function ConfigDeckEntry({ file }: { file: FileShort }) {
+function SettingsDeckEntry({ file, disabled }: { file: FileShort, disabled: boolean }) {
   const [isExpand, setIsExpand] = useState(false);
   const { getDeckTestConfig, updateTest, test } = useTestStore();
   const deckTestConfig = getDeckTestConfig(file._id);
 
-  const disabled = useMemo(
-    () => (test ? test.status !== "DRAFT" : true),
-    [test]
-  );
+  
 
   const isChecked = useMemo(
     () => deckTestConfig !== undefined,
@@ -55,6 +52,7 @@ function ConfigDeckEntry({ file }: { file: FileShort }) {
             ...test.decks,
             {
               fileId: file._id,
+              fileName: file.fileName,
               level0: true,
               level1: true,
               level2: true,
@@ -68,7 +66,7 @@ function ConfigDeckEntry({ file }: { file: FileShort }) {
         });
       }
     },
-    [updateTest, test, file._id, deckTestConfig]
+    [updateTest, test, file._id, file.fileName, deckTestConfig]
   );
 
   const chevronStyle = useMemo(() => {
@@ -138,21 +136,21 @@ function ConfigDeckEntry({ file }: { file: FileShort }) {
       </DeckEntryStyled>
       {isExpand && (
         <>
-          <ConfigLevelEntry
+          <SettingsDeckEntryLevel
             deck={file.deck}
             level={0}
             isChecked={getIsSublineChecked(0)}
             disabled={disabled || !isChecked}
             changeEvent={handleChangeSubline}
             />
-          <ConfigLevelEntry
+          <SettingsDeckEntryLevel
             deck={file.deck}
             level={1}
             isChecked={getIsSublineChecked(1)}
             disabled={disabled || !isChecked}
             changeEvent={handleChangeSubline}
             />
-          <ConfigLevelEntry
+          <SettingsDeckEntryLevel
             deck={file.deck}
             level={2}
             isChecked={getIsSublineChecked(2)}
@@ -165,4 +163,4 @@ function ConfigDeckEntry({ file }: { file: FileShort }) {
   );
 }
 
-export default ConfigDeckEntry;
+export default SettingsDeckEntry;

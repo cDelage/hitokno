@@ -4,12 +4,14 @@ import TestDatabaseSync from "./TestDatabaseSync";
 import TestProgress from "./TestProgress";
 import SettingsTestSidePannel from "./SettingsTestSidePannel";
 import TestBody from "./TestBody";
+import useTestStore from "./useTestStore";
 
 const TestContainerStyled = styled.div`
   flex-grow: 1;
   display: flex;
   flex-direction: column;
   position: relative;
+  overflow: hidden;
 `;
 
 const TestHeaderContainer = styled.div`
@@ -22,10 +24,11 @@ const TestHeaderContainer = styled.div`
 `;
 
 function TestContainer() {
+  const {test} = useTestStore()
+  
   return (
-    <>
+      <TestContainerStyled key={test?._id}>
       <TestDatabaseSync />
-      <TestContainerStyled>
         <SettingsTestSidePannel />
         <TestHeaderContainer>
           <HeaderTest />
@@ -33,7 +36,6 @@ function TestContainer() {
         </TestHeaderContainer>
         <TestBody/>
       </TestContainerStyled>
-    </>
   );
 }
 

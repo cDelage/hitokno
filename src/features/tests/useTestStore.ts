@@ -1,5 +1,7 @@
 import { create } from "zustand";
 import {
+  CardTestResult,
+  CountResult,
   DeckTestConfig,
   FlashCardTestProps,
   TestType,
@@ -19,7 +21,12 @@ type TestStore = {
   setSkipTimeout: (skipTimeout: boolean) => void;
   getCardListFromRepository: (repository: Folder[]) => FlashCardTestProps[];
   setTempFlashCards: (tempFlashCards: FlashCardTestProps[]) => void;
-  getProgress: () => {currentCard: number, countCards: number};
+  getProgress: () => { currentCard: number; countCards: number };
+  startTest: () => void;
+  getCurrentCard: () => FlashCardTestProps | undefined;
+  updateCurrentCard: (card: FlashCardTestProps) => void;
+  getCardsByResult: (result: CardTestResult) => FlashCardTestProps[];
+  getCountCardsByResult: () => CountResult;
 };
 
 const filterLevelCardsSelection = (level: number, deck: DeckTestConfig) => {
@@ -89,21 +96,33 @@ const useTestStore = create<TestStore>((set, get) => ({
     let cards: FlashCardTestProps[] = [];
     const test = get().test;
     if (test) {
-      const deckUsed = test.decks.map((deck) => deck.fileId);
-      repository.forEach((folder) => {
-        folder.files.forEach((file) => {
-          if (deckUsed.includes(file._id)) {
-            const deckConfig = test.decks.find(
-              (deck) => deck.fileId === file._id
-            ) as DeckTestConfig;
-            let fileCards = getCardsSelectedForFile(file, deckConfig);
+      test.decks
+        .map((deck) => {
+          const folder = repository.find(
+            (folder) =>
+              folder.files.find((file) => file._id === deck.fileId) !==
+              undefined
+          );
+          if (folder) {
+            return {
+              deck: deck,
+              file: folder.files.find((file) => file._id === deck.fileId),
+            };
+          }
+        })
+        .forEach((fileAndDeck) => {
+          if (fileAndDeck && fileAndDeck.file && fileAndDeck.deck) {
+            let fileCards = getCardsSelectedForFile(
+              fileAndDeck.file,
+              fileAndDeck?.deck
+            );
             if (test.deckOrderedRandomCardOrder) {
               fileCards = shuffleArray<FlashCardTestProps>(cards);
             }
             cards.push(...fileCards);
           }
         });
-      });
+
       if (test.sortMode === "RANDOM-CARDS") {
         cards = shuffleArray<FlashCardTestProps>(cards);
       }
@@ -118,23 +137,85 @@ const useTestStore = create<TestStore>((set, get) => ({
   },
   getProgress: () => {
     const test = get().test;
-    if(test){
-      if(test.status === "DRAFT"){
+    if (test) {
+      if (test.status === "DRAFT") {
         return {
           countCards: get().tempFlashCards.length,
-          currentCard: 0
-        }
+          currentCard: 0,
+        };
       }
       return {
         countCards: test.cards.length,
-        currentCard: test.cards.filter(card => card.isComplete).length + 1
-      }
+        currentCard: test.cards.filter((card) => card.isComplete).length,
+      };
     }
     return {
       countCards: 0,
-      currentCard: 0
+      currentCard: 0,
+    };
+  },
+  startTest: () => {
+    const test = get().test;
+    const tempFlashCards = get().tempFlashCards;
+    if (test && test.status === "DRAFT" && tempFlashCards.length != 0) {
+      set({
+        test: {
+          ...test,
+          cards: tempFlashCards,
+          status: "IN PROGRESS",
+        },
+        isSyncWithDb: false,
+        skipTimeout: true,
+      });
     }
-  }
+  },
+  getCurrentCard: () => {
+    const test = get().test;
+    if (test && test.status === "IN PROGRESS") {
+      const card = test.cards.find((card) => !card.isComplete);
+
+      if (!card) {
+        set({
+          test: { ...test, status: "COMPLETE" },
+          isSyncWithDb: false,
+          skipTimeout: true,
+        });
+      }
+
+      return card;
+    }
+
+    return undefined;
+  },
+  updateCurrentCard: (card: FlashCardTestProps) => {
+    const test = get().test;
+    if (test) {
+      set({
+        test: {
+          ...test,
+          cards: test.cards.map((c) => (c.cardId === card.cardId ? card : c)),
+        },
+        isSyncWithDb: false,
+        skipTimeout: true,
+      });
+    }
+  },
+  getCardsByResult: (result: CardTestResult) => {
+    const test = get().test;
+
+    if (test) {
+      return test.cards.filter((card) => card.result === result);
+    }
+
+    return [];
+  },
+  getCountCardsByResult: () => {
+    return {
+      failed: get().getCardsByResult("FAILED").length,
+      hesitated: get().getCardsByResult("HESITATED").length,
+      mastered: get().getCardsByResult("MASTERED").length,
+    };
+  },
 }));
 
 export default useTestStore;

@@ -73,7 +73,6 @@ function TestDatabaseSync() {
     setTempFlashCards,
   ]);
 
-
   return null;
 }
 

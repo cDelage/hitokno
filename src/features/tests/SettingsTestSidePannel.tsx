@@ -15,7 +15,7 @@ import useTestStore from "./useTestStore";
 import { useQueryClient } from "@tanstack/react-query";
 import { useFindRepository } from "../home/useFindRepository";
 import { FileShort } from "../../types/Repository.types";
-import ConfigDeckEntry from "./ConfigDeckEntry";
+import SettingsDeckEntry from "./SettingsDeckEntry";
 import SortDecks from "./SortDecks";
 import { SortMode } from "../../types/Test.type";
 import Button from "../../ui/Button";
@@ -26,6 +26,7 @@ const ModalBackground = styled.div`
   top: 0px;
   bottom: 0px;
   right: 0px;
+  z-index: 100;
   width: 700px;
   box-shadow: var(--shadow-md);
   border-top-left-radius: 8px;
@@ -94,6 +95,8 @@ const ButtonRowArray: CSSProp = {
   gap: "8px",
 };
 
+const CenteredElement: CSSProp = { alignItems: "center", gap: "16px" };
+
 const Title = styled.h1`
   color: var(--text-main-dark);
 `;
@@ -103,6 +106,11 @@ function SettingsTestSidePannel() {
   const { test, updateTest } = useTestStore();
   const queryClient = useQueryClient();
   const { repository } = useFindRepository();
+
+  const disabled = useMemo(
+    () => (test ? test.status !== "DRAFT" : true),
+    [test]
+  );
 
   const files = useMemo<FileShort[]>(() => {
     if (repository) {
@@ -201,10 +209,10 @@ function SettingsTestSidePannel() {
           </Column>
           <Column $style={RightColumnStyle}>
             <Title>
-              <IoSettingsOutline /> Test settings
+              <IoSettingsOutline size={24} /> Test settings
             </Title>
             <Column $style={AllOptionsStyled}>
-              <Row $style={{ alignItems: "center", gap: "16px" }}>
+              <Row $style={CenteredElement}>
                 <Label>Title</Label>
                 <InputText
                   type="text"
@@ -218,7 +226,11 @@ function SettingsTestSidePannel() {
                 <OptionsList>
                   <OptionsContainer>
                     {files.map((file) => (
-                      <ConfigDeckEntry file={file} key={file._id} />
+                      <SettingsDeckEntry
+                        file={file}
+                        key={file._id}
+                        disabled={disabled}
+                      />
                     ))}
                   </OptionsContainer>
                 </OptionsList>
@@ -230,6 +242,7 @@ function SettingsTestSidePannel() {
                     type="radio"
                     checked={sortMode === "RANDOM-CARDS"}
                     onChange={() => handleChangeRadioButton("RANDOM-CARDS")}
+                    disabled={disabled}
                   />
                   Random cards sort
                 </Row>
@@ -238,6 +251,7 @@ function SettingsTestSidePannel() {
                     type="radio"
                     checked={sortMode === "RANDOM-DECKS"}
                     onChange={() => handleChangeRadioButton("RANDOM-DECKS")}
+                    disabled={disabled}
                   />
                   Random decks sort
                 </Row>
@@ -247,6 +261,7 @@ function SettingsTestSidePannel() {
                       type="checkbox"
                       checked={deckOrderedRandomCardOrder}
                       onChange={handleToggleCardsShuffle}
+                      disabled={disabled}
                     />
                     Shuffled cards inside sorted decks
                   </Row>
@@ -256,6 +271,7 @@ function SettingsTestSidePannel() {
                     type="radio"
                     checked={sortMode === "ORDERED"}
                     onChange={() => handleChangeRadioButton("ORDERED")}
+                    disabled={disabled}
                   />
                   Sort by deck
                 </Row>
@@ -266,12 +282,16 @@ function SettingsTestSidePannel() {
                         type="checkbox"
                         checked={deckOrderedRandomCardOrder}
                         onChange={handleToggleCardsShuffle}
+                        disabled={disabled}
                       />
                       Shuffled cards inside sorted decks
                     </Row>
                     <OptionsList>
                       <OptionsContainer>
-                        <SortDecks selectedFiles={selectedFiles} />
+                        <SortDecks
+                          selectedFiles={selectedFiles}
+                          disabled={disabled}
+                        />
                       </OptionsContainer>
                     </OptionsList>
                   </>
@@ -282,9 +302,11 @@ function SettingsTestSidePannel() {
               <Button type="secondary" $icon={true}>
                 <IoTrash /> Delete test
               </Button>
-              <Button type="primary" $icon={true}>
-                <IoPlay /> Start test
-              </Button>
+              {!disabled && (
+                <Button type="primary" $icon={true}>
+                  <IoPlay /> Start test
+                </Button>
+              )}
             </Row>
           </Column>
         </Row>

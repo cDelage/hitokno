@@ -69,7 +69,7 @@ const Button = styled.button<ButtonProps>`
     &:disabled{
         background-color: var(--bg-button-disabled);
         color: var(--text-button-disabled);
-        cursor: auto;
+        cursor: not-allowed;
     }
 `
 

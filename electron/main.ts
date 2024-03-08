@@ -22,10 +22,12 @@ import { CreateTestProps, TestType } from "../src/types/Test.type";
 import {
   createTest,
   deleteTest,
+  findTestByCriteria,
   findTestById,
   findTests,
   updateTest,
 } from "./services/apiTest";
+import { SearchCriterias } from "../src/types/SearchCriteria.type";
 
 // The built directory structure
 //
@@ -161,6 +163,12 @@ function createWindow() {
     "delete-test",
     async (event: IpcMainInvokeEvent, { _id }: { _id: string }) =>
       await deleteTest({ _id })
+  );
+
+  ipcMain.handle(
+    "find-tests-by-criterias",
+    async (event: IpcMainInvokeEvent, criterias: SearchCriterias) =>
+      await findTestByCriteria(criterias)
   );
 }
 

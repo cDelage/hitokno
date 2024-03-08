@@ -1,10 +1,9 @@
-import { useCallback } from "react";
 import { HiChevronDown } from "react-icons/hi2";
-import { useSearchParams } from "react-router-dom";
 import styled from "styled-components";
 
 const DeckHeaderStyled = styled.div`
   height: 20px;
+  min-height: 20px;
   display: flex;
   padding: 4px 16px;
   align-items: center;
@@ -16,16 +15,10 @@ const DeckHeaderStyled = styled.div`
   }
 `;
 
-function TabCollapse() {
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  const handleClick = useCallback(() => {
-    searchParams.delete("deckOpen");
-    setSearchParams(searchParams);
-  }, [searchParams, setSearchParams]);
+function TabCollapse({onClick} : {onClick : () => void}) {
 
   return (
-    <DeckHeaderStyled onClick={handleClick}>
+    <DeckHeaderStyled onClick={onClick}>
       <HiChevronDown />
       <HiChevronDown />
     </DeckHeaderStyled>

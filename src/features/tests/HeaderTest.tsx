@@ -8,7 +8,11 @@ import Tag from "../../ui/Tag";
 import { testStatusTheme } from "./TestContants";
 import { TagTheme } from "../../types/TagTheme.type";
 import Button from "../../ui/Button";
-import { IoSettingsOutline } from "react-icons/io5";
+import {
+  IoAlertCircle,
+  IoCheckmarkCircle,
+  IoSettingsOutline,
+} from "react-icons/io5";
 import { useSearchParams } from "react-router-dom";
 
 const IconContainer = styled.div`
@@ -21,10 +25,19 @@ const TitleTestContainer = styled.div`
   color: var(--text-main-dark);
 `;
 
+const ResultCountStyle = { alignItems: "center", gap: "4px" };
+const LeftContainerStyle = { alignItems: "center", height: "100%" };
+const HeaderStyle = { alignItems: "center", justifyContent: "space-between" };
+const JustifyCenter = {
+  justifyContent: "center",
+}
+const AlignItemCenter = { alignItems: "center", gap: "20px" }
+
 function HeaderTest() {
-  const { test, getProgress } = useTestStore();
+  const { test, getProgress, getCountCardsByResult } = useTestStore();
   const { countCards } = getProgress();
   const [, setSearchParams] = useSearchParams();
+  const countCardsByResult = getCountCardsByResult();
 
   const theme = useMemo<TagTheme>(() => {
     if (test) {
@@ -44,31 +57,39 @@ function HeaderTest() {
   if (!test) return null;
 
   return (
-    <Row $style={{ alignItems: "center", justifyContent: "space-between" }}>
-      <Row $gap={16} $style={{ alignItems: "center", height: "100%" }}>
+    <Row $style={HeaderStyle}>
+      <Row $gap={16} $style={LeftContainerStyle}>
         <IconContainer>
           <DeckIcon />
         </IconContainer>
         <Column
           $gap={8}
-          $style={{
-            justifyContent: "center",
-          }}
+          $style={JustifyCenter}
         >
           <TitleTestContainer>{test.testName}</TitleTestContainer>
           <Row $gap={8} $style={{ alignItems: "center" }}>
-            <span>{countCards} cards</span> <Tag theme={theme}>DRAFT</Tag>
-          </Row>
+            <span>{countCards} cards</span>{" "}
+            <Tag theme={theme}>{test.status}</Tag>
+          </Row> 
         </Column>
       </Row>
-      <Row $style={{ alignItems: "center", gap: "20px" }}>
+      <Row $style={AlignItemCenter}>
         <Button type="secondary" $icon={true} onClick={handleOpenSettings}>
-          <IoSettingsOutline size={20}/> Advanced settings
+          <IoSettingsOutline size={20} /> Advanced settings
         </Button>
         <Column $gap={4}>
-          <span>Mastered : 0</span>
-          <span>Hesitated : 0</span>
-          <span>Failed : 0</span>
+          <Row $style={ResultCountStyle}>
+            <IoCheckmarkCircle size={20} color="var(--color-positive-500)" />
+            Mastered : {countCardsByResult.mastered}
+          </Row>
+          <Row $style={ResultCountStyle}>
+            <IoAlertCircle size={20} color="var(--color-secondary-500)" />
+            Hesitated : {countCardsByResult.hesitated}
+          </Row>
+          <Row $style={ResultCountStyle}>
+            <IoAlertCircle size={20} color="var(--color-negative-500)" />
+            Failed : {countCardsByResult.failed}
+          </Row>
         </Column>
       </Row>
     </Row>

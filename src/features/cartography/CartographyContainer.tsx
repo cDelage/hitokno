@@ -2,6 +2,7 @@ import styled from "styled-components";
 import CartographyHeader from "./CartographyHeader";
 import "reactflow/dist/style.css";
 import Viewport from "./Viewport";
+import { useParams } from "react-router-dom";
 
 const CartographyContainerStyled = styled.div`
   flex-grow: 1;
@@ -11,9 +12,9 @@ const CartographyContainerStyled = styled.div`
 
 
 function CartographyContainer(): JSX.Element {
-
+  const {fileId} = useParams();
   return (
-    <CartographyContainerStyled>
+    <CartographyContainerStyled key={fileId}>
       <CartographyHeader />
       <Viewport/>
     </CartographyContainerStyled>

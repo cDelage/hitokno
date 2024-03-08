@@ -20,7 +20,9 @@ import FileSelected from "./features/home/FileSelected";
 import Cartography from "./pages/Cartography";
 import { SheetDetail } from "./types/Cartography.type";
 import Test from "./pages/Test";
-import { CreateTestProps, TestType } from "./types/Test.type";
+import { CreateTestProps, SearchByCriteriaResult, TestType } from "./types/Test.type";
+import { SearchCriterias } from "./types/SearchCriteria.type";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 /**
  * When i add it into a file .d.ts, then typescript not recognize the interface.
@@ -52,6 +54,7 @@ declare global {
       findTestById: ({ _id }: { _id: string }) => Promise<TestType>;
       updateTest: ({ test }: { test: TestType }) => Promise<number>;
       deleteTest: ({ _id }: { _id: string }) => Promise<number>;
+      findTestByCriterias: (criterias: SearchCriterias) => Promise<SearchByCriteriaResult>
     };
   }
 }
@@ -109,7 +112,7 @@ const queryClient = new QueryClient({
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      {/**<ReactQueryDevtools initialIsOpen={false} />*/}
+      <ReactQueryDevtools initialIsOpen={false} />
       <GlobalStyle />
       <RouterProvider router={router} />
     </QueryClientProvider>

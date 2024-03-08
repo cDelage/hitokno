@@ -1,6 +1,12 @@
 import { db } from "../database";
-import { CreateTestProps, SortMode, TestType } from "../../src/types/Test.type";
+import {
+  CreateTestProps,
+  SearchByCriteriaResult,
+  SortMode,
+  TestType,
+} from "../../src/types/Test.type";
 import { format } from "date-fns";
+import { SearchCriterias } from "../../src/types/SearchCriteria.type";
 
 export async function createTest({ decks }: CreateTestProps) {
   const testName = `Test ${format(new Date(), "yyyy-MM-dd HH:mm")}`;
@@ -10,7 +16,7 @@ export async function createTest({ decks }: CreateTestProps) {
     decks,
     status: "DRAFT",
     cards: [],
-    sortMode: "ORDERED" as SortMode
+    sortMode: "ORDERED" as SortMode,
   });
 
   return result;
@@ -30,4 +36,28 @@ export async function updateTest({ test }: { test: TestType }) {
 
 export async function deleteTest({ _id }: { _id: string }) {
   return await db.tests.remove({ _id }, { multi: false });
+}
+
+export async function findTestByCriteria({
+  criteria,
+  pageNumber,
+  pageSize,
+}: SearchCriterias): Promise<SearchByCriteriaResult> {
+  const skip = pageNumber * pageSize;
+  const regExp = criteria ? new RegExp(criteria) : undefined;
+  const request = criteria
+    ? {
+        $or: [{ "decks.fileName": regExp }, { testName: regExp }],
+      }
+    : {};
+
+  const tests = await db.tests
+    .find<TestType>(request)
+    .skip(skip)
+    .limit(pageSize);
+  const total = await db.tests.count(request);
+  return {
+    tests,
+    total,
+  };
 }

@@ -3,8 +3,7 @@ import { FileShort } from "../../types/Repository.types";
 import { DragEvent, useCallback, useState } from "react";
 import { MdDragIndicator } from "react-icons/md";
 
-
-const DeckEntryContainer = styled.div<{$isDragged: boolean}>`
+const DeckEntryContainer = styled.div<{ $isDragged: boolean }>`
   display: flex;
   box-sizing: border-box;
   border-bottom: 1px solid var(--color-gray-300);
@@ -21,43 +20,46 @@ const DeckEntryContainer = styled.div<{$isDragged: boolean}>`
     background-color: var(--color-gray-100);
   }
 
-  ${(props) => props.$isDragged && css`
-    background-color: var(--color-primary-200);
-  `}
-
+  ${(props) =>
+    props.$isDragged &&
+    css`
+      background-color: var(--color-primary-200);
+    `}
 `;
 
 function DeckSortable({
   file,
   index,
+  id,
   dragStart,
-  dragOver,
-  drop
+  dragEnter,
+  dragEnd,
 }: {
   file: FileShort;
   index: number;
-  dragStart: (index: number) => void;
-  dragOver: (e: DragEvent<HTMLDivElement>, index: number) => void;
-  drop: (e: DragEvent<HTMLDivElement>, index: number) => void;
+  id: string;
+  dragStart: (id: string) => void;
+  dragEnter: (e: DragEvent<HTMLDivElement>, index: number) => void;
+  dragEnd: (e: DragEvent<HTMLDivElement>, index: number) => void;
 }) {
   const [isDragged, setIsDragged] = useState(false);
 
   const handleDragStart = useCallback(() => {
-    setIsDragged(true)
-    dragStart(index)
-  },[setIsDragged, dragStart, index]);
+    setIsDragged(true);
+    dragStart(id);
+  }, [setIsDragged, dragStart, id]);
 
   return (
     <DeckEntryContainer
       className="list-item"
       draggable
       onDragStart={handleDragStart}
-      onDragOver={(e: DragEvent<HTMLDivElement>) => dragOver(e, index)}
-      onDrop={(e: DragEvent<HTMLDivElement>) => drop(e, index)}
+      onDragEnter={(e: DragEvent<HTMLDivElement>) => dragEnter(e, index)}
+      onDragEndCapture={(e: DragEvent<HTMLDivElement>) => dragEnd(e, index)}
       onDragEnd={() => setIsDragged(false)}
       $isDragged={isDragged}
     >
-      <MdDragIndicator size={20}/>
+      <MdDragIndicator size={20} />
       {file.fileName}
     </DeckEntryContainer>
   );

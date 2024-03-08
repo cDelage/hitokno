@@ -6,6 +6,7 @@ import {
   RenameFolderParams,
 } from "../src/types/Repository.types";
 import { CreateTestProps, TestType } from "../src/types/Test.type";
+import { SearchCriterias } from "../src/types/SearchCriteria.type";
 
 const windowManagement = {
   maximize: () => ipcRenderer.send("maximize"),
@@ -44,7 +45,10 @@ const tests = {
     await ipcRenderer.invoke("find-test-by-id", { _id }),
   updateTest: async ({ test }: { test: TestType }) =>
     await ipcRenderer.invoke("update-test", { test }),
-  deleteTest: async({ _id }: { _id: string }) => await ipcRenderer.invoke("delete-test", _id)
+  deleteTest: async ({ _id }: { _id: string }) =>
+    await ipcRenderer.invoke("delete-test", _id),
+  findTestByCriterias: async (criterias: SearchCriterias) =>
+    await ipcRenderer.invoke("find-tests-by-criterias", criterias),
 };
 
 // --------- Expose some API to the Renderer process ---------

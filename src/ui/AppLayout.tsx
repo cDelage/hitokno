@@ -5,6 +5,7 @@ import { useEffect } from "react";
 
 const AppLayoutStyled = styled.div`
   height: 100%;
+  max-height: 100%;
   display: flex;
   flex-direction: column;
 `;
@@ -12,6 +13,7 @@ const AppLayoutStyled = styled.div`
 const MainStyled = styled.main`
   flex-grow: 1;
   display: flex;
+  overflow: hidden;
 `;
 
 function AppLayout(): JSX.Element {
