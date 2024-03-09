@@ -1,6 +1,6 @@
 import styled, { css } from "styled-components";
 import { ImageNode, ImageProps } from "./ImageNode";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ResizableBox, ResizeCallbackData } from "react-resizable";
 import { useDivClickOutside } from "../../../hooks/useDivClickOutside";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
@@ -103,6 +103,14 @@ function ImageComponent({ image }: { image: ImageProps }) {
     height,
   });
 
+  const minHeight = useMemo(() => {
+    return height * 100 / width
+  },[width, height])
+
+  const maxHeight = useMemo(() => {
+    return height * 700 / width
+  },[width, height])
+
   const handleClick = useCallback(() => {
     setSelection(true);
   }, [setSelection]);
@@ -134,16 +142,23 @@ function ImageComponent({ image }: { image: ImageProps }) {
       const img = new Image();
       img.src = src;
       img.onload = function () {
-        setCurrentSize({
-          width: img.width,
-          height: img.height,
-        });
+        if(image.maxWidth && img.width > image.maxWidth){
+          setCurrentSize({
+            width: image.maxWidth,
+            height: (img.height * image.maxWidth) / img.width
+          })
+        }else{
+          setCurrentSize({
+            width: img.width,
+            height: img.height,
+          });
+        }
       };
     }
     if (!isResized) {
       getImageSize();
     }
-  }, [setCurrentSize, src, isResized]);
+  }, [setCurrentSize, src, isResized, image.maxWidth]);
 
   return (
     <ImageContainer
@@ -155,8 +170,8 @@ function ImageComponent({ image }: { image: ImageProps }) {
         <ResizableBox
           width={currentSize.width}
           height={currentSize.height}
-          minConstraints={[100, 100]}
-          maxConstraints={[800, 800]}
+          minConstraints={[100, minHeight]}
+          maxConstraints={[700, maxHeight]}
           lockAspectRatio={true}
           onResize={handleResize}
         >

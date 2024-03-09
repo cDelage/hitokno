@@ -16,10 +16,11 @@ import {
 import NodeCreation from "./NodeCreation";
 import NodeShape from "./NodeShape";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
+import { TableNode, TableRowNode, TableCellNode } from "@lexical/table";
 import { ListItemNode, ListNode } from "@lexical/list";
-import { LinkNode } from '@lexical/link';
-import { HorizontalRuleNode } from '@lexical/react/LexicalHorizontalRuleNode';
-import { CodeNode, CodeHighlightNode } from '@lexical/code';
+import { LinkNode } from "@lexical/link";
+import { HorizontalRuleNode } from "@lexical/react/LexicalHorizontalRuleNode";
+import { CodeNode, CodeHighlightNode } from "@lexical/code";
 import EdgeCustom from "./EdgeCustom";
 import { ImageNode } from "../lexicalPlugins/PluginImage/ImageNode";
 
@@ -265,7 +266,20 @@ export const ThemeLight: Theme[] = [
 export const initialNodeConfig = {
   namespace: "NodeEditor",
   editable: false,
-  nodes: [HeadingNode, ListNode, ListItemNode, QuoteNode, CodeNode, HorizontalRuleNode, LinkNode, CodeHighlightNode, ImageNode],
+  nodes: [
+    HeadingNode,
+    ListNode,
+    ListItemNode,
+    QuoteNode,
+    CodeNode,
+    HorizontalRuleNode,
+    LinkNode,
+    CodeHighlightNode,
+    ImageNode,
+    TableNode,
+    TableRowNode,
+    TableCellNode,
+  ],
   onError: (err: Error) => {
     console.log(err);
   },
@@ -446,7 +460,6 @@ export const TextThemesSecondLine: ThemeText[] = [
   },
 ];
 
-
 export const NodeTheme = {
   text: {
     italic: "node-italic",
@@ -459,7 +472,52 @@ export const SheetTheme = {
     italic: "sheet-italic",
     underline: "sheet-underline",
   },
-  code: 'sheet-code',
+  table: "PlaygroundEditorTheme__table",
+  tableAddColumns: "PlaygroundEditorTheme__tableAddColumns",
+  tableAddRows: "PlaygroundEditorTheme__tableAddRows",
+  tableCell: "PlaygroundEditorTheme__tableCell",
+  tableCellActionButton: "PlaygroundEditorTheme__tableCellActionButton",
+  tableCellActionButtonContainer:
+    "PlaygroundEditorTheme__tableCellActionButtonContainer",
+  tableCellEditing: "PlaygroundEditorTheme__tableCellEditing",
+  tableCellHeader: "PlaygroundEditorTheme__tableCellHeader",
+  tableCellPrimarySelected: "PlaygroundEditorTheme__tableCellPrimarySelected",
+  tableCellResizer: "PlaygroundEditorTheme__tableCellResizer",
+  tableCellSelected: "PlaygroundEditorTheme__tableCellSelected",
+  tableCellSortedIndicator: "PlaygroundEditorTheme__tableCellSortedIndicator",
+  tableResizeRuler: "PlaygroundEditorTheme__tableCellResizeRuler",
+  tableSelected: "PlaygroundEditorTheme__tableSelected",
+  code: "PlaygroundEditorTheme__code",
+  codeHighlight: {
+    atrule: 'PlaygroundEditorTheme__tokenAttr',
+    attr: 'PlaygroundEditorTheme__tokenAttr',
+    boolean: 'PlaygroundEditorTheme__tokenProperty',
+    builtin: 'PlaygroundEditorTheme__tokenSelector',
+    cdata: 'PlaygroundEditorTheme__tokenComment',
+    char: 'PlaygroundEditorTheme__tokenSelector',
+    class: 'PlaygroundEditorTheme__tokenFunction',
+    'class-name': 'PlaygroundEditorTheme__tokenFunction',
+    comment: 'PlaygroundEditorTheme__tokenComment',
+    constant: 'PlaygroundEditorTheme__tokenProperty',
+    deleted: 'PlaygroundEditorTheme__tokenProperty',
+    doctype: 'PlaygroundEditorTheme__tokenComment',
+    entity: 'PlaygroundEditorTheme__tokenOperator',
+    function: 'PlaygroundEditorTheme__tokenFunction',
+    important: 'PlaygroundEditorTheme__tokenVariable',
+    inserted: 'PlaygroundEditorTheme__tokenSelector',
+    keyword: 'PlaygroundEditorTheme__tokenAttr',
+    namespace: 'PlaygroundEditorTheme__tokenVariable',
+    number: 'PlaygroundEditorTheme__tokenProperty',
+    operator: 'PlaygroundEditorTheme__tokenOperator',
+    prolog: 'PlaygroundEditorTheme__tokenComment',
+    property: 'PlaygroundEditorTheme__tokenProperty',
+    punctuation: 'PlaygroundEditorTheme__tokenPunctuation',
+    regex: 'PlaygroundEditorTheme__tokenVariable',
+    selector: 'PlaygroundEditorTheme__tokenSelector',
+    string: 'PlaygroundEditorTheme__tokenSelector',
+    symbol: 'PlaygroundEditorTheme__tokenProperty',
+    tag: 'PlaygroundEditorTheme__tokenProperty',
+    url: 'PlaygroundEditorTheme__tokenOperator',
+    variable: 'PlaygroundEditorTheme__tokenVariable',
+  },
 };
-
-

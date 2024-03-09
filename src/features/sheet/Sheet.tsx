@@ -12,6 +12,7 @@ import PluginSwitchSheet from "../lexicalPlugins/PluginSwitchSheet";
 import PluginImage from "../lexicalPlugins/PluginImage/PluginImage";
 import PluginDragDropPaste from "../lexicalPlugins/PluginDragDropPaste";
 import {TabIndentationPlugin} from "@lexical/react/LexicalTabIndentationPlugin"
+import {TablePlugin} from "@lexical/react/LexicalTablePlugin"
 
 const NodeLabel = styled.div`
   font-size: 44px;
@@ -60,6 +61,7 @@ function Sheet() {
         <PluginImage />
         <PluginDragDropPaste />
         <TabIndentationPlugin />
+        <TablePlugin/>
       </SheetText>
     </RowStyled>
   );

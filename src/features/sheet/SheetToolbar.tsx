@@ -31,8 +31,10 @@ import { useCallback, useEffect, useState } from "react";
 import {
   $createParagraphNode,
   $getSelection,
+  $isElementNode,
   $isRangeSelection,
   $isRootOrShadowRoot,
+  FORMAT_ELEMENT_COMMAND,
   FORMAT_TEXT_COMMAND,
 } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
@@ -46,6 +48,7 @@ import {
 import ColorNodeIcon from "../../ui/icons/ColorNodeIcon";
 import { FontMenu } from "../../types/Cartography.type";
 import NoHighlightIcon from "../../ui/NoHighlightIcon";
+import { getSelectedNode } from "../../utils/getSelectedNode";
 
 const IconContainerLarge = styled.div`
   height: 28px;
@@ -73,6 +76,9 @@ function SheetToolbar({ nodeId }: { nodeId: string }) {
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
   const [isUnderline, setIsUnderline] = useState(false);
+  const [currentColor, setCurrentColor] = useState("black");
+  const [elementFormat, setElementFormat] = useState("left");
+  const [currentBackgroundColor, setCurrentBackgroundColor] = useState("none");
   const { zoom } = useViewport();
   const [currentStyle, setCurrentStyle] = useState<undefined | string>(
     undefined
@@ -81,12 +87,19 @@ function SheetToolbar({ nodeId }: { nodeId: string }) {
     fontFamilies.find((family) => currentStyle?.includes(family.fontCss)) ??
     fontFamilies[0];
 
-  function handleCloseSheet() {
+  const handleCloseSheet = useCallback(() => {
     const centerNode = getNodeCenterCoordinate(nodeId);
     setCenter(centerNode.x, centerNode.y, { duration: 200, zoom });
     searchParams.delete("sheetId");
     setSearchParams(searchParams);
-  }
+  }, [
+    setSearchParams,
+    searchParams,
+    getNodeCenterCoordinate,
+    nodeId,
+    setCenter,
+    zoom,
+  ]);
 
   const handleSetBold = useCallback(() => {
     editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold");
@@ -141,16 +154,12 @@ function SheetToolbar({ nodeId }: { nodeId: string }) {
     [editor]
   );
 
-  const handleSetAlignement = useCallback((alignement : "center" | "end" | "justify" | "left" | "right") => {
-    editor.update(() => {
-      const selection = $getSelection();
-        if (selection !== null) {
-          $patchStyleText(selection, {
-            "text-align": alignement,
-          });
-        }
-    })
-  },[editor])
+  const handleSetAlignement = useCallback(
+    (alignement: "center" | "end" | "justify" | "left" | "right") => {
+      editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, alignement);
+    },
+    [editor]
+  );
 
   const applyStyleText = useCallback(
     (styles: Record<string, string>) => {
@@ -194,6 +203,22 @@ function SheetToolbar({ nodeId }: { nodeId: string }) {
           const lastFamilyStyle = fontFamily[fontFamily.length - 1];
           setCurrentStyle(lastFamilyStyle);
 
+          const color = selection.style
+            .split(";")
+            .filter((e) => e.includes("color") && !e.includes("background"));
+          const lastColor = color[color.length - 1]?.replace("color: ", "");
+          setCurrentColor(lastColor ? lastColor : "black");
+          const bgColor = selection.style
+            .split(";")
+            .filter((e) => e.includes("background-color"));
+
+          const lastBgColor = bgColor[bgColor.length - 1]?.replace(
+            "background-color: ",
+            ""
+          );
+          setCurrentBackgroundColor(lastBgColor ? lastBgColor : "none");
+          console.log(lastBgColor);
+
           const anchorNode = selection.anchor.getNode();
           const element =
             anchorNode.getKey() === "root"
@@ -203,6 +228,18 @@ function SheetToolbar({ nodeId }: { nodeId: string }) {
                   return parent !== null && $isRootOrShadowRoot(parent);
                 });
           setCurrentNode(element?.__tag);
+
+          const node = getSelectedNode(selection);
+          const parent = node.getParent();
+          // If matchingParent is a valid node, pass it's format type
+          setElementFormat(
+            $isElementNode(parent)
+              ? parent.getFormatType()
+              : $isElementNode(node)
+              ? node.getFormatType()
+              : parent?.getFormatType() 
+              || "left"
+          );
         }
       });
     });
@@ -277,7 +314,11 @@ function SheetToolbar({ nodeId }: { nodeId: string }) {
           $justifyCenter={true}
         >
           <ToolbarSmallIcon>
-            <BiAlignLeft size={"100%"} />
+            { elementFormat === "right" ? <BiAlignRight size={"100%"}/>  
+            : elementFormat === "center" ? <BiAlignMiddle size={"100%"}/>
+            : elementFormat === "justify" ? <BiAlignJustify size={"100%"} />
+            :<BiAlignLeft size={"100%"} />}
+
           </ToolbarSmallIcon>
           <HiChevronDown size={12} />
         </MenuToolbar.Action>
@@ -288,9 +329,7 @@ function SheetToolbar({ nodeId }: { nodeId: string }) {
           $justifyCenter={true}
         >
           <ToolbarSmallIcon>
-            <PenColorIcon
-             fill={"#E24"}
-            />
+            <PenColorIcon fill={currentColor} />
           </ToolbarSmallIcon>
           <HiChevronDown size={12} />
         </MenuToolbar.Action>
@@ -301,14 +340,7 @@ function SheetToolbar({ nodeId }: { nodeId: string }) {
           $justifyCenter={true}
         >
           <ToolbarSmallIcon>
-            <HighlightColorIcon
-              theme={{
-                id: "purple-dark",
-                fill: "#4F46E5",
-                color: "#FFFFFF",
-                stroke: "#3730A3",
-              }}
-            />
+            <HighlightColorIcon fill={currentBackgroundColor} />
           </ToolbarSmallIcon>
           <HiChevronDown size={12} />
         </MenuToolbar.Action>
@@ -393,22 +425,22 @@ function SheetToolbar({ nodeId }: { nodeId: string }) {
         $alignRight={true}
       >
         <MenuToolbar.ActionLine>
-          <MenuToolbar.Action onClick={() => handleSetAlignement("left")}>
+          <MenuToolbar.Action onClick={() => handleSetAlignement("left")} $active={!["right","center","justify"].includes(elementFormat)}>
             <ToolbarSmallIcon>
               <BiAlignLeft size={"100%"} />
             </ToolbarSmallIcon>
           </MenuToolbar.Action>
-          <MenuToolbar.Action onClick={() => handleSetAlignement("right")}>
+          <MenuToolbar.Action onClick={() => handleSetAlignement("right")} $active={elementFormat === "right"}>
             <ToolbarSmallIcon>
               <BiAlignRight size={"100%"} />
             </ToolbarSmallIcon>
           </MenuToolbar.Action>
-          <MenuToolbar.Action  onClick={() => handleSetAlignement("center")}>
+          <MenuToolbar.Action onClick={() => handleSetAlignement("center")} $active={elementFormat === "center"}>
             <ToolbarSmallIcon>
               <BiAlignMiddle size={"100%"} />
             </ToolbarSmallIcon>
           </MenuToolbar.Action>
-          <MenuToolbar.Action  onClick={() => handleSetAlignement("justify")}>
+          <MenuToolbar.Action onClick={() => handleSetAlignement("justify")} $active={elementFormat === "justify"}>
             <ToolbarSmallIcon>
               <BiAlignJustify size={"100%"} />
             </ToolbarSmallIcon>
@@ -466,6 +498,7 @@ function SheetToolbar({ nodeId }: { nodeId: string }) {
                 onClick={() => {
                   onBgColorSelect(themeLight.fill);
                 }}
+                $active={themeLight.fill === currentBackgroundColor}
               >
                 <ToolbarSmallIcon>
                   <ColorNodeIcon fill={themeLight.fill} />
@@ -489,6 +522,7 @@ function SheetToolbar({ nodeId }: { nodeId: string }) {
                 onClick={() => {
                   onBgColorSelect(themeLight.fill);
                 }}
+                $active={themeLight.fill === currentBackgroundColor}
               >
                 <ToolbarSmallIcon>
                   <ColorNodeIcon fill={themeLight.fill} />

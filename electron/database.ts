@@ -8,7 +8,6 @@ interface ExtendedDatabase<T> extends Datastore<T> {
 
 
 const dbFactory = (fileName : string) => {
-  console.log(process.env.NODE_ENV)
   const database = Datastore.create({
     filename: `${
       process.env.NODE_ENV === 'development' ? '.' : app.getPath("userData")

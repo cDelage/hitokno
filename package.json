@@ -21,6 +21,7 @@
     "date-fns": "^3.3.1",
     "electron-router-dom": "^1.0.5",
     "lexical": "^0.13.1",
+    "lodash-es": "^4.17.21",
     "nedb": "^1.8.0",
     "nedb-promises": "^6.2.3",
     "react": "^18.2.0",

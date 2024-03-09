@@ -1,6 +1,5 @@
-import { Theme } from "../../types/Cartography.type";
 
-function HighlightColorIcon({ theme }: { theme: Theme }) {
+function HighlightColorIcon({ fill }: { fill: string }) {
   return (
     <svg
       width="100%"
@@ -17,10 +16,10 @@ function HighlightColorIcon({ theme }: { theme: Theme }) {
         />
         <path
           d="M10.5 10.75L8.90991 9.15999L14.35 3.79999L15.95 5.4L10.5 10.75Z"
-          fill={theme.fill}
+          fill={fill}
         />
-        <path d="M5 14L6.35 12.3L7.97 13.16L7.12 14H5Z" fill={theme.fill} />
-        <path d="M19 16H3V18H19V16Z" fill={theme.fill} />
+        <path d="M5 14L6.35 12.3L7.97 13.16L7.12 14H5Z" fill={fill} />
+        <path d="M19 16H3V18H19V16Z" fill={fill} />
       </g>
       <defs>
         <filter

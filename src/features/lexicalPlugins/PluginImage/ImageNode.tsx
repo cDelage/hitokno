@@ -17,6 +17,7 @@ export type ImageProps = {
   src: string;
   width: number;
   height: number;
+  maxWidth: number | undefined;
   isResized?: boolean;
 };
 
@@ -25,6 +26,7 @@ export type SerializedImageNode = Spread<
     src: string;
     width: number;
     height: number;
+    maxWidth: number | undefined;
     isResized: boolean;
   },
   SerializedLexicalNode
@@ -37,7 +39,12 @@ export const INSERT_IMAGE_COMMAND: LexicalCommand<ImageProps> = createCommand(
 function convertImageElement(domNode: Node): null | DOMConversionOutput {
   if (domNode instanceof HTMLImageElement) {
     const { src } = domNode;
-    const node = $createImageNode({ height: 500, src, width: 500 });
+    const node = $createImageNode({
+      height: 500,
+      src,
+      width: 500,
+      maxWidth: 700,
+    });
     return { node };
   }
   return null;
@@ -48,14 +55,15 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
   private _width: number;
   private _height: number;
   private _isResized: boolean;
+  private _maxWidth: number | undefined;
 
-
-  constructor({ key, src, width, height, isResized}: ImageProps) {
+  constructor({ key, src, width, height, isResized }: ImageProps) {
     super(key);
     this._src = src;
     this._width = width;
     this._height = height;
     this._isResized = isResized ? isResized : false;
+    this._maxWidth = 700;
   }
 
   static clone(node: ImageNode): ImageNode {
@@ -87,7 +95,8 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
           src: this.src,
           height: this.height,
           width: this.width,
-          isResized: this._isResized
+          maxWidth: this.maxWidth,
+          isResized: this._isResized,
         }}
       />
     );
@@ -121,12 +130,13 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
       height: this._height,
       width: this._width,
       isResized: this._isResized,
+      maxWidth: this._maxWidth,
       type: "image",
       version: 1,
     };
   }
 
-  update(payload: { width?: number; height?: number, isResized?: boolean }) {
+  update(payload: { width?: number; height?: number; isResized?: boolean }) {
     const writable = this.getWritable();
     const { width, height, isResized } = payload;
     if (width) {
@@ -135,7 +145,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
     if (height) {
       writable._height = height;
     }
-    if(isResized){
+    if (isResized) {
       writable._isResized = isResized;
     }
   }
@@ -166,6 +176,13 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
   }
   public set isResized(value: boolean) {
     this._isResized = value;
+  }
+
+  public get maxWidth(): number | undefined {
+    return this._maxWidth;
+  }
+  public set maxWidth(value: number | undefined) {
+    this._maxWidth = value;
   }
 }
 

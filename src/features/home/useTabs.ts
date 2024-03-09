@@ -9,6 +9,7 @@ type TabsStore = {
   closeTab: (tabId: string) => void;
   toggleCartographyMode: (tabId: string) => void;
   getCartographyMode: (tabId: string) => CartographyMode;
+  setTabs: (tabs : HeaderTab[]) => void;
 };
 
 const useTabs = create(
@@ -76,6 +77,9 @@ const useTabs = create(
           (tab) => tab.tabId === tabId
         )?.mode;
         return tabMode ? tabMode : "DEFAULT";
+      },
+      setTabs : (tabs) => {
+          set({tabs})
       },
     }),
     { name: "tab-storage" }

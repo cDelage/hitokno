@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { useFindFileById } from "../features/home/useFindFileById";
 import { IoDocumentOutline, IoClose, IoDocument } from "react-icons/io5";
-import { useCallback, useState } from "react";
+import { DragEvent, useCallback, useState } from "react";
 import { useTabs } from "../features/home/useTabs";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
@@ -13,7 +13,19 @@ const IconContainer = styled.div`
   width: 20px;
 `;
 
-function TabFile({ tab: { tabId } }: { tab: HeaderTab }): JSX.Element | null {
+function TabFile({
+  tab: { tabId },
+  dragStart,
+  dragEnter,
+  dragEnd,
+  index
+}: {
+  tab: HeaderTab;
+  index: number;
+  dragStart?: (id: string) => void;
+  dragEnter?: (e: DragEvent<HTMLDivElement>, index: number) => void;
+  dragEnd?: (e: DragEvent<HTMLDivElement>, index: number) => void;
+}): JSX.Element | null {
   const { fileDetail, isFileLoading } = useFindFileById(tabId);
   const [isHover, setIsHover] = useState<boolean>(false);
   const { closeTab } = useTabs();
@@ -56,6 +68,10 @@ function TabFile({ tab: { tabId } }: { tab: HeaderTab }): JSX.Element | null {
       onMouseLeave={() => setIsHover(false)}
       onClick={handleClick}
       $active={tabActive}
+      draggable
+      onDragStart={() => dragStart?.(tabId)}
+      onDragEnter={(e: DragEvent<HTMLDivElement>) => dragEnter?.(e, index)}
+      onDragEnd={(e: DragEvent<HTMLDivElement>) => dragEnd?.(e, index)}
     >
       <IconContainer>
         {tabActive ? (
