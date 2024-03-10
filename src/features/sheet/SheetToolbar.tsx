@@ -237,8 +237,7 @@ function SheetToolbar({ nodeId }: { nodeId: string }) {
               ? parent.getFormatType()
               : $isElementNode(node)
               ? node.getFormatType()
-              : parent?.getFormatType() 
-              || "left"
+              : parent?.getFormatType() || "left"
           );
         }
       });
@@ -314,11 +313,15 @@ function SheetToolbar({ nodeId }: { nodeId: string }) {
           $justifyCenter={true}
         >
           <ToolbarSmallIcon>
-            { elementFormat === "right" ? <BiAlignRight size={"100%"}/>  
-            : elementFormat === "center" ? <BiAlignMiddle size={"100%"}/>
-            : elementFormat === "justify" ? <BiAlignJustify size={"100%"} />
-            :<BiAlignLeft size={"100%"} />}
-
+            {elementFormat === "right" ? (
+              <BiAlignRight size={"100%"} />
+            ) : elementFormat === "center" ? (
+              <BiAlignMiddle size={"100%"} />
+            ) : elementFormat === "justify" ? (
+              <BiAlignJustify size={"100%"} />
+            ) : (
+              <BiAlignLeft size={"100%"} />
+            )}
           </ToolbarSmallIcon>
           <HiChevronDown size={12} />
         </MenuToolbar.Action>
@@ -425,22 +428,34 @@ function SheetToolbar({ nodeId }: { nodeId: string }) {
         $alignRight={true}
       >
         <MenuToolbar.ActionLine>
-          <MenuToolbar.Action onClick={() => handleSetAlignement("left")} $active={!["right","center","justify"].includes(elementFormat)}>
+          <MenuToolbar.Action
+            onClick={() => handleSetAlignement("left")}
+            $active={!["right", "center", "justify"].includes(elementFormat)}
+          >
             <ToolbarSmallIcon>
               <BiAlignLeft size={"100%"} />
             </ToolbarSmallIcon>
           </MenuToolbar.Action>
-          <MenuToolbar.Action onClick={() => handleSetAlignement("right")} $active={elementFormat === "right"}>
-            <ToolbarSmallIcon>
-              <BiAlignRight size={"100%"} />
-            </ToolbarSmallIcon>
-          </MenuToolbar.Action>
-          <MenuToolbar.Action onClick={() => handleSetAlignement("center")} $active={elementFormat === "center"}>
+          <MenuToolbar.Action
+            onClick={() => handleSetAlignement("center")}
+            $active={elementFormat === "center"}
+          >
             <ToolbarSmallIcon>
               <BiAlignMiddle size={"100%"} />
             </ToolbarSmallIcon>
           </MenuToolbar.Action>
-          <MenuToolbar.Action onClick={() => handleSetAlignement("justify")} $active={elementFormat === "justify"}>
+          <MenuToolbar.Action
+            onClick={() => handleSetAlignement("right")}
+            $active={elementFormat === "right"}
+          >
+            <ToolbarSmallIcon>
+              <BiAlignRight size={"100%"} />
+            </ToolbarSmallIcon>
+          </MenuToolbar.Action>
+          <MenuToolbar.Action
+            onClick={() => handleSetAlignement("justify")}
+            $active={elementFormat === "justify"}
+          >
             <ToolbarSmallIcon>
               <BiAlignJustify size={"100%"} />
             </ToolbarSmallIcon>

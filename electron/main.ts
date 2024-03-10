@@ -11,11 +11,13 @@ import {
   updateCartography,
   updateDeck,
   RemoveFile,
+  moveFile,
 } from "./services/apiRepository";
 import {
   File,
   FileRename,
   Folder,
+  MoveFile,
   RenameFolderParams,
 } from "../src/types/Repository.types";
 import { CreateTestProps, TestType } from "../src/types/Test.type";
@@ -180,6 +182,12 @@ function createWindow() {
     async (_event: IpcMainInvokeEvent, criterias: SearchCriterias) =>
       await findTestByCriteria(criterias)
   );
+
+  ipcMain.handle(
+    "move-file",
+    async (_event: IpcMainInvokeEvent, params: MoveFile) => 
+      await moveFile(params)
+  )
 }
 
 // Quit when all windows are closed, except on macOS. There, it's common

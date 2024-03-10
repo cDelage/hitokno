@@ -2,7 +2,8 @@ import { IoAdd } from "react-icons/io5";
 import styled from "styled-components";
 
 const NewFileButtonStyled = styled.button`
-  width: 100%;
+  width: 180px;
+  height: 140px;
   aspect-ratio: 4 / 3;
   background-color: transparent;
   font-size: 1rem;

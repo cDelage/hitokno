@@ -7,6 +7,9 @@ import { useCreateFolder } from "./useCreateFolder";
 import Spinner from "../../ui/Spinner";
 import FolderExplorer from "./FolderExplorer";
 import { useFindRepository } from "./useFindRepository";
+import { createContext, useCallback, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import useMoveFile from "./useMoveFile";
 
 const ExplorerStyled = styled.div`
   box-sizing: border-box;
@@ -35,45 +38,107 @@ const ExplorerMain = styled.div`
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  padding: 8px;
+  padding: 16px;
   gap: 8px;
 `;
+
+type ExplorerContextType = {
+  draggedFileId: string;
+  draggedEnterId: string;
+  dragStart: (id: string) => void;
+  dragEnter: (id: string) => void;
+  dragEnd: () => void;
+};
+
+export const ExplorerContext = createContext<ExplorerContextType | null>(null);
 
 function Explorer(): JSX.Element {
   const { repository, isRepositoryLoading } = useFindRepository();
   const { isPending, createFolder } = useCreateFolder();
+  const queryClient = useQueryClient();
 
-  function handleCreateFolder() {
-    createFolder();
-  }
+  const { moveFile } = useMoveFile();
+
+  const [draggedFileId, setDraggedFileId] = useState("");
+  const [draggedEnterId, setDraggedEnterId] = useState("");
+
+  const dragStart = useCallback(
+    (id: string) => {
+      setDraggedFileId(id);
+    },
+    [setDraggedFileId]
+  );
+
+  const dragEnter = useCallback(
+    (id: string) => {
+      setDraggedEnterId(id);
+    },
+    [setDraggedEnterId]
+  );
+
+  const dragEnd = useCallback(() => {
+    moveFile(
+      {
+        fileId: draggedFileId,
+        folderId: draggedEnterId,
+      },
+      {
+        onSuccess: () => {
+          queryClient.refetchQueries({
+            queryKey: ["repository"],
+          });
+        },
+      }
+    );
+
+    setDraggedFileId("");
+    setDraggedEnterId("");
+  }, [
+    queryClient,
+    setDraggedEnterId,
+    setDraggedFileId,
+    moveFile,
+    draggedFileId,
+    draggedEnterId,
+  ]);
 
   return (
-    <ExplorerStyled>
-      <ExplorerHeader>
-        <TitleContainer>
-          <IoFolderOpenOutline size={28} />
-          Explorer
-        </TitleContainer>
-        <CreationButton
-          $isContainIcon={true}
-          onClick={handleCreateFolder}
-          disabled={isPending}
-        >
-          <IoAdd size={20} /> New folder
-        </CreationButton>
-      </ExplorerHeader>
-      <ExplorerMain>
-        {isRepositoryLoading ? (
-          <Spinner />
-        ) : (
-          <>
-            {repository?.map((folder) => (
-              <FolderExplorer key={folder._id} folder={folder} />
-            ))}
-          </>
-        )}
-      </ExplorerMain>
-    </ExplorerStyled>
+    <ExplorerContext.Provider
+      value={{
+        dragEnter,
+        draggedEnterId,
+        draggedFileId,
+        dragStart,
+        dragEnd,
+      }}
+    >
+      <ExplorerStyled>
+        <ExplorerHeader>
+          <TitleContainer>
+            <IoFolderOpenOutline size={28} />
+            Explorer
+          </TitleContainer>
+          <CreationButton
+            $isContainIcon={true}
+            onClick={() => createFolder?.()}
+            disabled={isPending}
+          >
+            <IoAdd size={20} /> New folder
+          </CreationButton>
+        </ExplorerHeader>
+        <ExplorerMain>
+          {isRepositoryLoading ? (
+            <Spinner />
+          ) : (
+            <>
+              {repository?.map((folder) => (
+                <FolderExplorer key={folder._id} folder={folder} />
+              ))}
+            </>
+          )}
+        </ExplorerMain>
+      </ExplorerStyled>
+    </ExplorerContext.Provider>
   );
 }
 

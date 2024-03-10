@@ -283,6 +283,7 @@ function Action({
   }): JSX.Element {
   const { handleToggleSubMenu } = useMenuToolbarContext();
   const actionRef = useRef<HTMLDivElement>(null);
+  
   const handleClick = useCallback(
     (e: MouseEvent) => {
       onClick?.(e);

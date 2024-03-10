@@ -23,15 +23,17 @@ import { HorizontalRuleNode } from "@lexical/react/LexicalHorizontalRuleNode";
 import { CodeNode, CodeHighlightNode } from "@lexical/code";
 import EdgeCustom from "./EdgeCustom";
 import { ImageNode } from "../lexicalPlugins/PluginImage/ImageNode";
+import NodeImage from "./NodeImage";
 
 export const PX_UNIT_GAP = 8;
 
 export const NodeCustomsComponents = {
   shape: NodeShape,
   creation: NodeCreation,
+  image: NodeImage
 };
 
-export const NodeToSave = ["shape"];
+export const NodeToSave = ["shape","image"];
 
 export const DefaultShape: ShapeDescription = {
   shape: "rect" as Shape,
@@ -489,35 +491,42 @@ export const SheetTheme = {
   tableSelected: "PlaygroundEditorTheme__tableSelected",
   code: "PlaygroundEditorTheme__code",
   codeHighlight: {
-    atrule: 'PlaygroundEditorTheme__tokenAttr',
-    attr: 'PlaygroundEditorTheme__tokenAttr',
-    boolean: 'PlaygroundEditorTheme__tokenProperty',
-    builtin: 'PlaygroundEditorTheme__tokenSelector',
-    cdata: 'PlaygroundEditorTheme__tokenComment',
-    char: 'PlaygroundEditorTheme__tokenSelector',
-    class: 'PlaygroundEditorTheme__tokenFunction',
-    'class-name': 'PlaygroundEditorTheme__tokenFunction',
-    comment: 'PlaygroundEditorTheme__tokenComment',
-    constant: 'PlaygroundEditorTheme__tokenProperty',
-    deleted: 'PlaygroundEditorTheme__tokenProperty',
-    doctype: 'PlaygroundEditorTheme__tokenComment',
-    entity: 'PlaygroundEditorTheme__tokenOperator',
-    function: 'PlaygroundEditorTheme__tokenFunction',
-    important: 'PlaygroundEditorTheme__tokenVariable',
-    inserted: 'PlaygroundEditorTheme__tokenSelector',
-    keyword: 'PlaygroundEditorTheme__tokenAttr',
-    namespace: 'PlaygroundEditorTheme__tokenVariable',
-    number: 'PlaygroundEditorTheme__tokenProperty',
-    operator: 'PlaygroundEditorTheme__tokenOperator',
-    prolog: 'PlaygroundEditorTheme__tokenComment',
-    property: 'PlaygroundEditorTheme__tokenProperty',
-    punctuation: 'PlaygroundEditorTheme__tokenPunctuation',
-    regex: 'PlaygroundEditorTheme__tokenVariable',
-    selector: 'PlaygroundEditorTheme__tokenSelector',
-    string: 'PlaygroundEditorTheme__tokenSelector',
-    symbol: 'PlaygroundEditorTheme__tokenProperty',
-    tag: 'PlaygroundEditorTheme__tokenProperty',
-    url: 'PlaygroundEditorTheme__tokenOperator',
-    variable: 'PlaygroundEditorTheme__tokenVariable',
+    atrule: "PlaygroundEditorTheme__tokenAttr",
+    attr: "PlaygroundEditorTheme__tokenAttr",
+    boolean: "PlaygroundEditorTheme__tokenProperty",
+    builtin: "PlaygroundEditorTheme__tokenSelector",
+    cdata: "PlaygroundEditorTheme__tokenComment",
+    char: "PlaygroundEditorTheme__tokenSelector",
+    class: "PlaygroundEditorTheme__tokenFunction",
+    "class-name": "PlaygroundEditorTheme__tokenFunction",
+    comment: "PlaygroundEditorTheme__tokenComment",
+    constant: "PlaygroundEditorTheme__tokenProperty",
+    deleted: "PlaygroundEditorTheme__tokenProperty",
+    doctype: "PlaygroundEditorTheme__tokenComment",
+    entity: "PlaygroundEditorTheme__tokenOperator",
+    function: "PlaygroundEditorTheme__tokenFunction",
+    important: "PlaygroundEditorTheme__tokenVariable",
+    inserted: "PlaygroundEditorTheme__tokenSelector",
+    keyword: "PlaygroundEditorTheme__tokenAttr",
+    namespace: "PlaygroundEditorTheme__tokenVariable",
+    number: "PlaygroundEditorTheme__tokenProperty",
+    operator: "PlaygroundEditorTheme__tokenOperator",
+    prolog: "PlaygroundEditorTheme__tokenComment",
+    property: "PlaygroundEditorTheme__tokenProperty",
+    punctuation: "PlaygroundEditorTheme__tokenPunctuation",
+    regex: "PlaygroundEditorTheme__tokenVariable",
+    selector: "PlaygroundEditorTheme__tokenSelector",
+    string: "PlaygroundEditorTheme__tokenSelector",
+    symbol: "PlaygroundEditorTheme__tokenProperty",
+    tag: "PlaygroundEditorTheme__tokenProperty",
+    url: "PlaygroundEditorTheme__tokenOperator",
+    variable: "PlaygroundEditorTheme__tokenVariable",
   },
 };
+
+export const ImageTypes = [
+  "image/jpeg",
+  "image/png",
+  "image/svg+xml",
+  "image/webp",
+];

@@ -3,6 +3,7 @@ import {
   File,
   FileRename,
   Folder,
+  MoveFile,
   RenameFolderParams,
 } from "../src/types/Repository.types";
 import { CreateTestProps, TestType } from "../src/types/Test.type";
@@ -37,6 +38,8 @@ const repository = {
     await ipcRenderer.invoke("update-deck", file),
   removeFile: async (params: { _id: string }) =>
     await ipcRenderer.invoke("remove-file", params),
+  moveFile: async (params: MoveFile) =>
+    await ipcRenderer.invoke("move-file", params),
 };
 
 const tests = {

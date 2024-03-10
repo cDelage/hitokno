@@ -7,7 +7,8 @@
   "asar": true,
   "productName": "Hitokno",
   "directories": {
-    "output": "release/${version}"
+    "output": "release/${version}",
+    "buildResources": "build"
   },
   "files": [
     "dist",

@@ -88,7 +88,10 @@ type UseCartographyStore = {
   ) => void;
   deleteNode: (nodeId: string) => void;
   getNodeCenterCoordinate: (nodeId: string) => XYPosition;
-  findSheetData: (sheetId: string) => {nodeId : string, data : DataNode} | undefined;
+  findSheetData: (
+    sheetId: string
+  ) => { nodeId: string; data: DataNode } | undefined;
+  addNewNode: (node: Node<DataNode>) => void;
 };
 
 const useCartography = create<UseCartographyStore>((set, get) => ({
@@ -385,7 +388,7 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
           if (newNode.id === nodeId) newNode.data = data;
           return newNode;
         }),
-        isSyncWithDB: false
+        isSyncWithDB: false,
       };
     });
   },
@@ -467,22 +470,32 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
     });
   },
   getNodeCenterCoordinate: (nodeId: string) => {
-    const node = get().findNodeById(nodeId)
-    const centerX = node.position.x + (node.style?.width as number / 2)
-    const centerY = node.position.y + (node.style?.height as number / 2)
+    const node = get().findNodeById(nodeId);
+    const centerX = node.position.x + (node.style?.width as number) / 2;
+    const centerY = node.position.y + (node.style?.height as number) / 2;
     return {
       x: centerX,
-      y: centerY
-    }
+      y: centerY,
+    };
   },
   findSheetData: (sheetId: string) => {
-    const node = get().nodes.find(node => node.data.sheet?.sheetId === sheetId)
-    if(!node?.id) return undefined
+    const node = get().nodes.find(
+      (node) => node.data.sheet?.sheetId === sheetId
+    );
+    if (!node?.id) return undefined;
     return {
       nodeId: node.id,
-      data: node.data as DataNode
-    }
-  }
+      data: node.data as DataNode,
+    };
+  },
+  addNewNode: (node: Node<DataNode>) => {
+    set((state) => {
+      return {
+        nodes: [...state.nodes, node],
+        isSyncWithDB: false
+      };
+    });
+  },
 }));
 
 export default useCartography;

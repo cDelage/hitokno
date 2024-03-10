@@ -5,6 +5,7 @@ import {
   FileDetail,
   FileRename,
   Folder,
+  MoveFile,
   RenameFolderParams,
 } from "../../src/types/Repository.types";
 import { generateUUID } from "./generateUUID";
@@ -118,7 +119,7 @@ export async function RemoveFile({ _id }: { _id: string }) {
     "files._id": _id,
   })) as CompleteFolder;
 
-  const updatedFiles = folder.files.filter(file => file._id !== _id);
+  const updatedFiles = folder.files.filter((file) => file._id !== _id);
 
   return await db.repository.updateOne(
     { "files._id": _id },
@@ -211,4 +212,28 @@ export async function updateDeck({ _id, deck }: File) {
   if (!result) throw new Error("Fail to update cartography");
 
   return result;
+}
+
+export async function moveFile({ fileId, folderId }: MoveFile) {
+  if (folderId !== "" && fileId !== "") {
+    const folderSource = (await db.repository.findOne({
+      "files._id": fileId,
+    })) as CompleteFolder;
+
+    const folderTarget = (await db.repository.findOne({
+      _id: folderId,
+    })) as CompleteFolder;
+
+    const file = folderSource.files.find((file) => file._id === fileId) as File;
+
+    folderSource.files = folderSource.files.filter((f) => f._id !== fileId);
+
+    folderTarget.files.push(file);
+    if (folderTarget._id !== folderSource._id) {
+      await db.repository.updateOne({ _id: folderId }, folderTarget);
+      await db.repository.updateOne({ _id: folderSource._id }, folderSource);
+    }
+  }
+
+  return;
 }

@@ -11,7 +11,6 @@ import { PositionAbsolute } from "../../types/Position.type";
 import useNodeToolbar from "./useNodeToolbar";
 import useCartography from "./useCartography";
 import ShapeDispatch from "./shapes/ShapeDispatch";
-import { DataNode } from "../../types/Cartography.type";
 import NodeToolbar from "./NodeToolbar";
 import NodeText from "./NodeText";
 import PluginReadEditMode from "../lexicalPlugins/PluginReadEditMode";
@@ -22,6 +21,8 @@ import HandlesCreateEdge from "./HandlesCreateEdge";
 import Label from "./Label";
 import Resizer from "./Resizer";
 import SheetSignifiantButton from "./SheetSignifiantButton";
+import { DataNode, ShapeDescription } from "../../types/Cartography.type";
+import HandleDuplicateNode from "./HandleDuplicateNode";
 
 const NodeShapeStyled = styled.div`
   height: 100%;
@@ -54,11 +55,12 @@ function NodeShape({
     handles,
     label,
     sheet,
-    shapeDescription: { shape, shadow, theme, border },
+    shapeDescription,
   },
   xPos,
   yPos,
 }: NodeProps<DataNode>): JSX.Element {
+  const { shape, shadow, theme, border } = shapeDescription as ShapeDescription;
   const { flowToScreenPosition } = useReactFlow();
   const { setSelectedNode } = useNodeToolbar();
   const {
@@ -71,6 +73,7 @@ function NodeShape({
   const { zoom, x, y } = useViewport();
   const [isHover, setIsHover] = useState(false);
   const updateNodeInternals = useUpdateNodeInternals();
+  const size = getNodeSize(id);
 
   const handleDoubleClick = useCallback(() => {
     if (mode !== "EDIT" && selected) {
@@ -80,7 +83,7 @@ function NodeShape({
 
   useEffect(() => {
     if (showNodeToolbar && selected) {
-      const width = getNodeSize(id).width as number;
+      const width = size.width as number;
       const pos = flowToScreenPosition({
         x: xPos,
         y: yPos,
@@ -99,8 +102,8 @@ function NodeShape({
     yPos,
     nodes,
     selected,
+    size.width,
     id,
-    getNodeSize,
     zoom,
     x,
     y,
@@ -118,6 +121,20 @@ function NodeShape({
       {sheet?.sheetId && (
         <SheetSignifiantButton nodeSheetId={sheet.sheetId} nodeId={id} />
       )}
+      <HandleDuplicateNode
+        data={{
+          mode: "DEFAULT",
+          handles: [],
+          label: label + " copy",
+          shapeDescription,
+          editorState,
+        }}
+        selected={selected}
+        size={size}
+        xPos={xPos}
+        yPos={yPos}
+        type={"shape"}
+      />
       <Label label={label} />
       <ShapeDispatch
         shape={shape}

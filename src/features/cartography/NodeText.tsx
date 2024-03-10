@@ -23,9 +23,33 @@ const ContentEditableStyled = styled(ContentEditable)<ContenteEditableStyledProp
   margin: 0px;
   overflow: hidden;
   color: ${(props) => props.color};
+  font-size: 28px;
+  line-height  : 32px;
+  font-weight: 400;
 
   &:focus {
     outline: none;
+  }
+
+  h1 {
+    font-size: 52px;
+    line-height  : 48px;
+    font-weight: 500;
+    user-select: none;
+  }
+
+  h2 {
+    font-size: 36px;
+    line-height  : 48px;
+    font-weight: 400;
+    user-select: none;
+  }
+
+  h3 {
+    font-size: 28px;
+    line-height  : 36px;
+    font-weight: 400;
+    user-select: none;
   }
 
   .node-underline {

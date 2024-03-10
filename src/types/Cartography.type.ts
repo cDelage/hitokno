@@ -93,9 +93,10 @@ export type DataNode = {
   mode: NodeMode;
   editorState?: string;
   showNodeToolbar?: boolean;
-  shapeDescription: ShapeDescription;
+  shapeDescription?: ShapeDescription;
   handles: CreatedHandle[];
   sheet?: Sheet
+  src?: string;
   label: string;
 };
 

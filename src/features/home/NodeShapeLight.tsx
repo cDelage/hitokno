@@ -5,7 +5,7 @@ import {
   useUpdateNodeInternals,
 } from "reactflow";
 import styled from "styled-components";
-import { DataNode } from "../../types/Cartography.type";
+import { DataNode, ShapeDescription } from "../../types/Cartography.type";
 import PluginReadEditMode from "../lexicalPlugins/PluginReadEditMode";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import PluginUpdateNodeText from "../lexicalPlugins/PluginUpdateNodeText";
@@ -40,10 +40,10 @@ function NodeShapeLight({
     mode,
     editorState,
     handles,
-    shapeDescription: { shape, shadow, theme, border },
+    shapeDescription,
   },
 }: NodeProps<DataNode>): JSX.Element {
-
+  const { shape, shadow, theme, border } = shapeDescription as ShapeDescription
   const updateNodeInternals = useUpdateNodeInternals();
 
   useEffect(() => {

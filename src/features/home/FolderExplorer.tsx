@@ -5,13 +5,14 @@ import { ChangeEvent, useState } from "react";
 import NewFileButton from "./NewFileButton";
 import { useCreateFile } from "./useCreateFile";
 import FileExplorer from "./FileExplorer";
-import { device } from "../../Medias";
 import { FolderStateIcon } from "./FolderStateIcon";
 import FolderMenuActions from "./FolderMenuActions";
 import { TextEditMode } from "../../types/TextEditMode.type";
 import TextEditable from "../../ui/TextEditable";
 import { useRenameFolder } from "./useRenameFolder";
 import { useNavigate, useParams } from "react-router-dom";
+import { useRepositoryContext } from "./useRepositoryContext";
+import { Column } from "../../ui/Row";
 
 type FolderProps = {
   folder: Folder;
@@ -19,6 +20,7 @@ type FolderProps = {
 
 type FolderStyledProps = {
   $active: boolean;
+  draggedEnter: boolean;
 };
 
 const FolderStyled = styled.div<FolderStyledProps>`
@@ -38,6 +40,12 @@ const FolderStyled = styled.div<FolderStyledProps>`
     css`
       outline: solid 3px var(--outline-active);
     `}
+
+  ${(props) =>
+    props.draggedEnter &&
+    css`
+      background-color: var(--color-primary-100);
+    `}
 `;
 
 const FolderLeftContainer = styled.div`
@@ -49,16 +57,9 @@ const FolderLeftContainer = styled.div`
 
 const FolderOpenMain = styled.div`
   display: grid;
-  grid-gap: 8px;
-  grid-template-columns: repeat(2, 1fr);
-
-  @media ${device.md} {
-    grid-template-columns: repeat(4, 1fr);
-  }
-
-  @media ${device.xl} {
-    grid-template-columns: repeat(6, 1fr);
-  }
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  grid-column-gap: 16px;
+  grid-row-gap: 16px;
 `;
 
 const FolderRightContainer = styled.div`
@@ -88,6 +89,7 @@ function FolderExplorer({ folder }: FolderProps): JSX.Element {
   const { renameFolder } = useRenameFolder();
   const { folderId } = useParams();
   const navigate = useNavigate();
+  const { dragEnter, draggedEnterId } = useRepositoryContext();
 
   const folderNameMode: TextEditMode = folderId === _id ? "EDIT" : "DEFAULT";
 
@@ -110,8 +112,12 @@ function FolderExplorer({ folder }: FolderProps): JSX.Element {
   }
 
   return (
-    <>
-      <FolderStyled onClick={handleClickTab} $active={active}>
+    <Column $gap={8} onDragEnter={() => dragEnter(_id)}>
+      <FolderStyled
+        onClick={handleClickTab}
+        $active={active}
+        draggedEnter={draggedEnterId === _id}
+      >
         <FolderLeftContainer>
           <FolderStateIcon isFolderOpen={isFolderOpen} />
           <FolderName>
@@ -143,7 +149,7 @@ function FolderExplorer({ folder }: FolderProps): JSX.Element {
           />
         </FolderOpenMain>
       )}
-    </>
+    </Column>
   );
 }
 

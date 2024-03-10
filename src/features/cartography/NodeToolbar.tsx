@@ -3,10 +3,20 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { v4 as uuidv4 } from "uuid";
 import MenuToolbar from "../../ui/MenuToolbar";
 import ShapesIcon from "../../ui/icons/ShapesIcon";
-import { HiChevronUp } from "react-icons/hi2";
+import { HiChevronDown, HiChevronUp } from "react-icons/hi2";
 import ColorNodeIcon from "../../ui/icons/ColorNodeIcon";
 import ShadowIcon from "../../ui/icons/ShadowIcon";
-import { BiBold, BiItalic, BiUnderline, BiPen, BiTrash } from "react-icons/bi";
+import {
+  BiBold,
+  BiItalic,
+  BiUnderline,
+  BiPen,
+  BiTrash,
+  BiAlignRight,
+  BiAlignMiddle,
+  BiAlignJustify,
+  BiAlignLeft,
+} from "react-icons/bi";
 import {
   MenuBorderRight,
   ShadowsMenu,
@@ -25,6 +35,7 @@ import {
   Shadow,
   ShadowProps,
   Shape,
+  ShapeDescription,
   SheetToolbarMode,
   Theme,
 } from "../../types/Cartography.type";
@@ -35,8 +46,10 @@ import { RxBorderNone } from "react-icons/rx";
 import {
   $createParagraphNode,
   $getSelection,
+  $isElementNode,
   $isRangeSelection,
   $isRootOrShadowRoot,
+  FORMAT_ELEMENT_COMMAND,
   FORMAT_TEXT_COMMAND,
 } from "lexical";
 import { $setBlocksType, $patchStyleText } from "@lexical/selection";
@@ -45,12 +58,13 @@ import {
   INSERT_UNORDERED_LIST_COMMAND,
   INSERT_ORDERED_LIST_COMMAND,
 } from "@lexical/list";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { $findMatchingParent } from "@lexical/utils";
 import TitleFormatToolbar from "./TitleFormatToolbar";
 import { useSearchParams } from "react-router-dom";
 import { IoClose } from "react-icons/io5";
 import { useReactFlow, useViewport } from "reactflow";
+import { getSelectedNode } from "../../utils/getSelectedNode";
 
 const ShapeContainer = styled.div`
   height: 40px;
@@ -85,7 +99,7 @@ const OptionContainer = styled.span<{ color?: string }>`
   gap: 4px;
 `;
 
-const FontFamilyStyled = styled.div<{fontFamily : string}>`
+const FontFamilyStyled = styled.div<{ fontFamily: string }>`
   font-family: ${(props) => props.fontFamily};
   width: 100px;
 `;
@@ -113,7 +127,27 @@ function NodeToolbar({
   const [searchParams, setSearchParams] = useSearchParams();
   const { zoom } = useViewport();
   const sheetId = searchParams.get("sheetId");
+  const [elementFormat, setElementFormat] = useState("left");
   const { setCenter } = useReactFlow();
+  const deleteRef = useRef<HTMLDivElement>(null);
+
+  const handleClickOnDelete = useCallback((e: KeyboardEvent) => {
+    console.log(e.key, deleteRef.current);
+    if (e.key === "Delete") {
+      if (deleteRef.current) {
+        console.log("CLICK");
+        deleteRef.current.click();
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleClickOnDelete);
+
+    return () => {
+      document.removeEventListener("keydown", handleClickOnDelete);
+    };
+  }, [handleClickOnDelete]);
 
   const [currentStyle, setCurrentStyle] = useState<undefined | string>(
     undefined
@@ -129,7 +163,7 @@ function NodeToolbar({
       setNodeData(selectedNodeId, {
         ...data,
         shapeDescription: {
-          ...data.shapeDescription,
+          ...(data.shapeDescription as ShapeDescription),
           theme,
         },
       });
@@ -142,7 +176,7 @@ function NodeToolbar({
       setNodeData(selectedNodeId, {
         ...data,
         shapeDescription: {
-          ...data.shapeDescription,
+          ...(data.shapeDescription as ShapeDescription),
           shadow,
         },
       });
@@ -155,7 +189,7 @@ function NodeToolbar({
       setNodeData(selectedNodeId, {
         ...data,
         shapeDescription: {
-          ...data.shapeDescription,
+          ...(data.shapeDescription as ShapeDescription),
           shape,
         },
       });
@@ -168,7 +202,7 @@ function NodeToolbar({
       setNodeData(selectedNodeId, {
         ...data,
         shapeDescription: {
-          ...data.shapeDescription,
+          ...(data.shapeDescription as ShapeDescription),
           border,
         },
       });
@@ -264,6 +298,13 @@ function NodeToolbar({
     zoom,
   ]);
 
+  const handleSetAlignement = useCallback(
+    (alignement: "center" | "end" | "justify" | "left" | "right") => {
+      editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, alignement);
+    },
+    [editor]
+  );
+
   useEffect(() => {
     const removeListener = editor.registerUpdateListener(({ editorState }) => {
       editorState.read(() => {
@@ -288,6 +329,17 @@ function NodeToolbar({
                   return parent !== null && $isRootOrShadowRoot(parent);
                 });
           setCurrentNode(element?.__tag);
+
+          const node = getSelectedNode(selection);
+          const parent = node.getParent();
+          // If matchingParent is a valid node, pass it's format type
+          setElementFormat(
+            $isElementNode(parent)
+              ? parent.getFormatType()
+              : $isElementNode(node)
+              ? node.getFormatType()
+              : parent?.getFormatType() || "left"
+          );
         }
       });
     });
@@ -300,10 +352,9 @@ function NodeToolbar({
   if (!positionToolbar.top || !selectedNodeId || selectedNodeId !== id || !data)
     return null;
 
-  const {
-    shapeDescription: { theme, shadow, shape, border },
-    sheet,
-  } = data;
+  const { shapeDescription, sheet } = data;
+
+  const { theme, shadow, shape, border } = shapeDescription as ShapeDescription;
 
   const sheetMode: SheetToolbarMode = sheet
     ? sheetId === sheet.sheetId
@@ -423,6 +474,26 @@ function NodeToolbar({
                   style={{ transform: "translateY(1px) scale(1.2)" }}
                 />
               </ToolbarSmallIcon>
+            </MenuToolbar.Action>
+            {/* Align */}
+            <MenuToolbar.Action
+              toggle="alignement"
+              border={MenuBorderRight}
+              $isAlignRight={true}
+              $justifyCenter={true}
+            >
+              <ToolbarSmallIcon>
+                {elementFormat === "right" ? (
+                  <BiAlignRight size={"100%"} />
+                ) : elementFormat === "center" ? (
+                  <BiAlignMiddle size={"100%"} />
+                ) : elementFormat === "justify" ? (
+                  <BiAlignJustify size={"100%"} />
+                ) : (
+                  <BiAlignLeft size={"100%"} />
+                )}
+              </ToolbarSmallIcon>
+              <HiChevronDown size={12} />
             </MenuToolbar.Action>
           </>
         )}
@@ -618,6 +689,46 @@ function NodeToolbar({
             </OptionContainer>
           </MenuToolbar.Action>
         </MenuToolbar.ActionColumn>
+      </MenuToolbar.SubMenu>
+      <MenuToolbar.SubMenu
+        name="alignement"
+        $displayBottom={true}
+        $alignRight={true}
+      >
+        <MenuToolbar.ActionLine>
+          <MenuToolbar.Action
+            onClick={() => handleSetAlignement("left")}
+            $active={!["right", "center", "justify"].includes(elementFormat)}
+          >
+            <ToolbarSmallIcon>
+              <BiAlignLeft size={"100%"} />
+            </ToolbarSmallIcon>
+          </MenuToolbar.Action>
+          <MenuToolbar.Action
+            onClick={() => handleSetAlignement("center")}
+            $active={elementFormat === "center"}
+          >
+            <ToolbarSmallIcon>
+              <BiAlignMiddle size={"100%"} />
+            </ToolbarSmallIcon>
+          </MenuToolbar.Action>
+          <MenuToolbar.Action
+            onClick={() => handleSetAlignement("right")}
+            $active={elementFormat === "right"}
+          >
+            <ToolbarSmallIcon>
+              <BiAlignRight size={"100%"} />
+            </ToolbarSmallIcon>
+          </MenuToolbar.Action>
+          <MenuToolbar.Action
+            onClick={() => handleSetAlignement("justify")}
+            $active={elementFormat === "justify"}
+          >
+            <ToolbarSmallIcon>
+              <BiAlignJustify size={"100%"} />
+            </ToolbarSmallIcon>
+          </MenuToolbar.Action>
+        </MenuToolbar.ActionLine>
       </MenuToolbar.SubMenu>
     </MenuToolbar>
   );

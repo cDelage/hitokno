@@ -44,3 +44,8 @@ export type RenameFolderParams = {
   folderId: string;
   name: string;
 };
+
+export type MoveFile = {
+  fileId: string;
+  folderId: string;
+}

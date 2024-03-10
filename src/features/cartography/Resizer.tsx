@@ -17,7 +17,7 @@ const ResizerBorderStyle: CSSProperties = {
   boxSizing: "border-box",
 };
 
-function Resizer({ selected }: { selected: boolean }) {
+function Resizer({ selected, keepAspectRatio }: { selected: boolean, keepAspectRatio? : boolean }) {
   const { zoom } = useViewport();
   const NodeResizerStyle: CSSProperties = {
     ...ResizerHandleStyle,
@@ -32,6 +32,7 @@ function Resizer({ selected }: { selected: boolean }) {
       handleStyle={NodeResizerStyle}
       lineStyle={ResizerBorderStyle}
       isVisible={selected}
+      keepAspectRatio={keepAspectRatio}
     />
   );
 }

@@ -16,15 +16,16 @@ import {
   PX_UNIT_GAP,
 } from "./CartographyConstants";
 import useNodeToolbar from "./useNodeToolbar";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import MainToolbar from "./MainToolbar";
 import { useTabs } from "../home/useTabs";
 import { useParams } from "react-router-dom";
 import { useFindFileById } from "../home/useFindFileById";
-import { useUpdateCartography } from "./useUpdateCartography";
 import ConnectionEdgeCustom from "./ConnectionEdgeCustom";
 import SheetContainer from "../sheet/SheetContainer";
 import DeckContainer from "../deck/DeckContainer";
+import ViewportSyncWithDb from "./ViewportSyncWithDb";
+import PasteImage from "./PasteImage";
 
 const ViewportContainer = styled.div`
   flex-grow: 1;
@@ -33,7 +34,6 @@ const ViewportContainer = styled.div`
 `;
 
 function Viewport(): JSX.Element {
-  const [isTimeoutActive, setIsTimeoutActive] = useState<boolean>(false);
   const {
     nodes,
     edges,
@@ -44,8 +44,6 @@ function Viewport(): JSX.Element {
     setPanOnDragMode,
     setSelectionMode,
     initCartography,
-    getNodesForSave,
-    isSyncWithDB,
     setIsSyncWithDB,
     setEdgeCreationProps,
   } = useCartography();
@@ -53,18 +51,18 @@ function Viewport(): JSX.Element {
   const { clearPositionToolbar } = useNodeToolbar();
   const { fileId } = useParams();
   const { fileDetail } = useFindFileById(fileId as string);
-  const { updateCartography, isUpdateCartographyPending } =
-    useUpdateCartography();
-
   const { getCartographyMode } = useTabs();
   const mode = getCartographyMode(fileId as string);
 
-  function handleNodeChange(change: NodeChange[]) {
-    if (mode === "EDIT") {
-      onNodesChange(change);
-      setIsSyncWithDB(false);
-    }
-  }
+  const handleNodeChange = useCallback(
+    (change: NodeChange[]) => {
+      if (mode === "EDIT") {
+        onNodesChange(change);
+        setIsSyncWithDB(false);
+      }
+    },
+    [onNodesChange, setIsSyncWithDB, mode]
+  );
 
   useEffect(() => {
     if (fileDetail?.file) {
@@ -106,55 +104,16 @@ function Viewport(): JSX.Element {
     }
   }, [mode, setSelectionMode]);
 
-  /**
-   * Synchronize viewport with database
-   * If nodes & edges is change
-   * Add a timeout to save each 2sec
-   * (for avoid lot of save operation)
-   */
-  useEffect(() => {
-    const nodesToSave = getNodesForSave();
-    if (
-      !isSyncWithDB &&
-      !isTimeoutActive &&
-      !isUpdateCartographyPending &&
-      fileDetail &&
-      !mainToolbarActiveMenu?.startsWith("CREATION") &&
-      (nodesToSave.length != 0 || edges.length != 0)
-    ) {
-      updateCartography({
-        ...fileDetail.file,
-        nodes: nodesToSave,
-        edges,
-      });
-      setIsSyncWithDB(true);
-      setIsTimeoutActive(true);
-      setTimeout(() => {
-        setIsTimeoutActive(false);
-      }, 2000);
-    }
-  }, [
-    updateCartography,
-    setIsTimeoutActive,
-    isSyncWithDB,
-    setIsSyncWithDB,
-    isTimeoutActive,
-    isUpdateCartographyPending,
-    fileDetail,
-    edges,
-    getNodesForSave,
-    mainToolbarActiveMenu,
-  ]);
-
   return (
     <ViewportContainer>
+      <PasteImage />
+      <ViewportSyncWithDb />
       {mode === "EDIT" && (
         <>
           <MainToolbar />
         </>
       )}
-      <SheetContainer/>
-      
+      <SheetContainer />
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -194,7 +153,7 @@ function Viewport(): JSX.Element {
           )}
         </>
       </ReactFlow>
-      <DeckContainer/>
+      <DeckContainer />
     </ViewportContainer>
   );
 }

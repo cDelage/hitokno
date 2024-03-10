@@ -32,6 +32,7 @@ export default function PluginDragDropPaste(): null {
                 src: result,
                 width: 500,
                 height: 500,
+                maxWidth: 700
               });
             }
           }

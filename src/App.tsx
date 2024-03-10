@@ -6,6 +6,7 @@ import {
   FileDetail,
   FileRename,
   Folder,
+  MoveFile,
   RenameFolderParams,
 } from "./types/Repository.types";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -46,7 +47,8 @@ declare global {
       updateCartography: (file: File) => Promise<number>;
       updateDeck: (file: File) => Promise<number>;
       findSheet: (sheetId: string) => Promise<SheetDetail>;
-      removeFile: (params : {_id: string}) => Promise<number>;
+      removeFile: (params: { _id: string }) => Promise<number>;
+      moveFile: (params: MoveFile) => Promise<void>;
     };
     tests: {
       createTest: (params: CreateTestProps) => Promise<TestType>;
@@ -103,14 +105,8 @@ function App() {
                     </>
                   }
                 />
-                <Route
-                  path="/cartography/:fileId"
-                  element={<Cartography/>}
-                />
-                <Route
-                  path="/test/:testId"
-                  element={<Test/>}
-                />
+                <Route path="/cartography/:fileId" element={<Cartography />} />
+                <Route path="/test/:testId" element={<Test />} />
               </>
             }
           />
