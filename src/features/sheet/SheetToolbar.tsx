@@ -217,7 +217,6 @@ function SheetToolbar({ nodeId }: { nodeId: string }) {
             ""
           );
           setCurrentBackgroundColor(lastBgColor ? lastBgColor : "none");
-          console.log(lastBgColor);
 
           const anchorNode = selection.anchor.getNode();
           const element =

@@ -20,6 +20,7 @@ import {
   DataNode,
   EdgeCreationProps,
   MainToolbarMode,
+  NodeAlignement,
   NodeMode,
   PaneOnDragMode,
   ShapeDescription,
@@ -51,6 +52,9 @@ type UseCartographyStore = {
   isSyncWithDB: boolean;
   edgeCreationProps: EdgeCreationProps;
   handlesActive: string[];
+  movedNode: string | undefined;
+  identicalWidthNodes: string[];
+  identicalHeightNodes: string[];
   addHandlesActive: (handles: string[]) => void;
   removeHandlesActive: (handles: string[]) => void;
   setEdgeCreationProps: (edgeCreationProps: EdgeCreationProps) => void;
@@ -92,6 +96,13 @@ type UseCartographyStore = {
     sheetId: string
   ) => { nodeId: string; data: DataNode } | undefined;
   addNewNode: (node: Node<DataNode>) => void;
+  handleDuplicateNode: () => void;
+  findTopAlignedNode: (id: string, pointToAlign: number) => boolean;
+  findLeftAlignedNode: (id: string, pointToAlign: number) => boolean;
+  findRightAlignedNode: (id: string, pointToAlign: number) => boolean;
+  findBottomAlignedNode: (id: string, pointToAlign: number) => boolean;
+  findCenterXAlignedNode: (id: string, pointToAlign: number) => boolean;
+  findCenterYAlignedNode: (id: string, pointToAlign: number) => boolean;
 };
 
 const useCartography = create<UseCartographyStore>((set, get) => ({
@@ -103,6 +114,9 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
   isSyncWithDB: true,
   edgeCreationProps: {} as EdgeCreationProps,
   handlesActive: [],
+  identicalWidthNodes: [],
+  identicalHeightNodes: [],
+  movedNode: undefined,
   addHandlesActive: (handles: string[]) => {
     set((state) => {
       return {
@@ -302,6 +316,67 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
     });
   },
   onNodesChange: (changes: NodeChange[]) => {
+    const movedNode = get().movedNode;
+    //Check if node is moved or resized, to add helper lines if other nodes are aligned
+    if (
+      (changes[0].type === "position" && !movedNode && changes[0].dragging) ||
+      (changes[0].type === "dimensions" && changes[0].dimensions)
+    ) {
+      set({ movedNode: changes[0].id });
+    } else if (
+      (movedNode && changes[0].type === "position" && !changes[0].dragging) ||
+      (changes[0].type === "dimensions" && !changes[0].dimensions)
+    ) {
+      set({ movedNode: undefined });
+    }
+
+    //Check if other nodes have same size to display
+    if (changes[0].type === "dimensions" && changes[0].dimensions) {
+      const dimension = changes[0].dimensions;
+      const id = changes[0].id;
+      console.log(
+        dimension,
+        id,
+        get().nodes.map((x) => {
+          return {
+            height: x.style?.height,
+            width: x.style?.width,
+            id: x.id,
+            sameId: x.id === id,
+            sameWidth: x.style?.width === dimension.width,
+            sameHeight: x.style?.height === dimension.height,
+          };
+        })
+      );
+      const identicalWidth = get()
+        .nodes.filter((node) => 
+          node.id !== id && node.style?.width === dimension.width
+        )
+        .map((node) => node.id);
+      if (identicalWidth.length) {
+        identicalWidth.push(id);
+      }
+      console.log(identicalWidth)
+
+      const identicalHeight = get()
+        .nodes.filter((node) => 
+          node.id !== id && node.style?.height === dimension.height
+        )
+        .map((node) => node.id);
+      if (identicalHeight.length) {
+        identicalHeight.push(id);
+      }
+      set({
+        identicalWidthNodes: identicalWidth,
+        identicalHeightNodes: identicalHeight,
+      });
+    } else if (changes[0].type === "dimensions" && !changes[0].dimensions) {
+      set({
+        identicalWidthNodes: [],
+        identicalHeightNodes: [],
+      });
+    }
+
     const beforeSelected = get().nodes.find((node) => node.selected);
 
     if (changes.filter(selectedNodeOnChange).length === 1) {
@@ -492,9 +567,114 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
     set((state) => {
       return {
         nodes: [...state.nodes, node],
-        isSyncWithDB: false
+        isSyncWithDB: false,
       };
     });
+  },
+  handleDuplicateNode: () => {
+    const selectedNodes = get().nodes.filter((node) => node.selected);
+    selectedNodes.forEach((node) => {
+      const { width, height } = get().getNodeSize(node.id);
+      const newNode: Node<DataNode> = {
+        id: uuidv4(),
+        position: {
+          x: node.position.x,
+          y: node.position.y + height + 20,
+        },
+        style: {
+          width: width,
+          height: height,
+        },
+        data: {
+          mode: "DEFAULT",
+          handles: [],
+          label: node.data.label + " copy",
+          shapeDescription: node.data.shapeDescription,
+          editorState: node.data.editorState,
+        },
+        type: node.type,
+      };
+
+      get().addNewNode(newNode);
+    });
+  },
+  findAlignedNodes: (
+    id: string,
+    position: NodeAlignement,
+    pointToAlign: number
+  ) => {
+    const nodes = get().nodes;
+    if (position === "top") {
+      return (
+        nodes.filter(
+          (node) => node.id !== id && node.position.y === pointToAlign
+        ).length > 0
+      );
+    }
+    if (position === "left") {
+      return (
+        nodes.filter(
+          (node) => node.id !== id && node.position.x === pointToAlign
+        ).length > 0
+      );
+    }
+    return false;
+  },
+  findTopAlignedNode: (id, pointToAlign) => {
+    return (
+      get().nodes.filter(
+        (node) => node.id !== id && node.position.y === pointToAlign
+      ).length > 0
+    );
+  },
+  findRightAlignedNode: (id, pointToAlign) => {
+    return (
+      get().nodes.filter(
+        (node) =>
+          node.id !== id &&
+          node.position.x + (node.style ? (node.style.width as number) : 0) ===
+            pointToAlign
+      ).length > 0
+    );
+  },
+  findLeftAlignedNode: (id, pointToAlign) => {
+    return (
+      get().nodes.filter(
+        (node) => node.id !== id && node.position.x === pointToAlign
+      ).length > 0
+    );
+  },
+  findBottomAlignedNode: (id, pointToAlign) => {
+    return (
+      get().nodes.filter(
+        (node) =>
+          node.id !== id &&
+          node.position.y + (node.style ? (node.style.height as number) : 0) ===
+            pointToAlign
+      ).length > 0
+    );
+  },
+  findCenterXAlignedNode: (id, pointToAlign) => {
+    return (
+      get().nodes.filter(
+        (node) =>
+          node.id !== id &&
+          node.position.x +
+            (node.style ? (node.style.width as number) / 2 : 0) ===
+            pointToAlign
+      ).length > 0
+    );
+  },
+  findCenterYAlignedNode: (id, pointToAlign) => {
+    return (
+      get().nodes.filter(
+        (node) =>
+          node.id !== id &&
+          node.position.y +
+            (node.style ? (node.style.height as number) / 2 : 0) ===
+            pointToAlign
+      ).length > 0
+    );
   },
 }));
 

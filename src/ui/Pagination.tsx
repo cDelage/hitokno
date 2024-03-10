@@ -48,7 +48,6 @@ function Pagination({
 }) {
 
   function handlePageChange(selected: number){
-    console.log("handle page change :", selected)
     onPageChange(selected)
   }
   return (

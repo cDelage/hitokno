@@ -58,7 +58,7 @@ import {
   INSERT_UNORDERED_LIST_COMMAND,
   INSERT_ORDERED_LIST_COMMAND,
 } from "@lexical/list";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { $findMatchingParent } from "@lexical/utils";
 import TitleFormatToolbar from "./TitleFormatToolbar";
 import { useSearchParams } from "react-router-dom";
@@ -129,25 +129,6 @@ function NodeToolbar({
   const sheetId = searchParams.get("sheetId");
   const [elementFormat, setElementFormat] = useState("left");
   const { setCenter } = useReactFlow();
-  const deleteRef = useRef<HTMLDivElement>(null);
-
-  const handleClickOnDelete = useCallback((e: KeyboardEvent) => {
-    console.log(e.key, deleteRef.current);
-    if (e.key === "Delete") {
-      if (deleteRef.current) {
-        console.log("CLICK");
-        deleteRef.current.click();
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    document.addEventListener("keydown", handleClickOnDelete);
-
-    return () => {
-      document.removeEventListener("keydown", handleClickOnDelete);
-    };
-  }, [handleClickOnDelete]);
 
   const [currentStyle, setCurrentStyle] = useState<undefined | string>(
     undefined

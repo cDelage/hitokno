@@ -1,4 +1,5 @@
 import { Position } from "reactflow";
+import { PositionAbsolute } from "./Position.type";
 
 export type CartographyMode = "DEFAULT" | "EDIT";
 
@@ -142,4 +143,14 @@ export type EdgeCreationProps = {
   targetNodeId? : string;
   targetHandleId? : string;
   targetPosition? : Position;
+}
+
+export type NodeAlignement = "left" | "right" | "top" | "bottom";
+
+
+export type HelperLine = {
+  id: NodeAlignement;
+  position : PositionAbsolute;
+  width: number;
+  height: number
 }

@@ -19,7 +19,7 @@ import useNodeToolbar from "./useNodeToolbar";
 import { useCallback, useEffect } from "react";
 import MainToolbar from "./MainToolbar";
 import { useTabs } from "../home/useTabs";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { useFindFileById } from "../home/useFindFileById";
 import ConnectionEdgeCustom from "./ConnectionEdgeCustom";
 import SheetContainer from "../sheet/SheetContainer";
@@ -46,6 +46,7 @@ function Viewport(): JSX.Element {
     initCartography,
     setIsSyncWithDB,
     setEdgeCreationProps,
+    handleDuplicateNode,
   } = useCartography();
   const { zoom } = useViewport();
   const { clearPositionToolbar } = useNodeToolbar();
@@ -53,6 +54,10 @@ function Viewport(): JSX.Element {
   const { fileDetail } = useFindFileById(fileId as string);
   const { getCartographyMode } = useTabs();
   const mode = getCartographyMode(fileId as string);
+  const [searchParams] = useSearchParams();
+
+  const deckOpen = searchParams.get("deckOpen");
+  const sheetId = searchParams.get("sheetId");
 
   const handleNodeChange = useCallback(
     (change: NodeChange[]) => {
@@ -104,6 +109,28 @@ function Viewport(): JSX.Element {
     }
   }, [mode, setSelectionMode]);
 
+  const handleEventDuplicateNode = useCallback(
+    (e: KeyboardEvent) => {
+      const isCtrlPressed = e.ctrlKey || e.metaKey;
+      if ((isCtrlPressed && e.key === "d") || e.key === "D") {
+        handleDuplicateNode();
+      }
+    },
+    [handleDuplicateNode]
+  );
+
+  useEffect(() => {
+    if (!deckOpen && !sheetId) {
+      document.addEventListener("keydown", handleEventDuplicateNode);
+    } else {
+      document.removeEventListener("keydown", handleEventDuplicateNode);
+    }
+
+    return () => {
+      document.removeEventListener("keydown", handleEventDuplicateNode);
+    };
+  }, [handleEventDuplicateNode, deckOpen, sheetId]);
+
   return (
     <ViewportContainer>
       <PasteImage />
@@ -117,6 +144,7 @@ function Viewport(): JSX.Element {
       <ReactFlow
         nodes={nodes}
         edges={edges}
+        id="viewport-container-reactflow"
         onNodesChange={handleNodeChange}
         onEdgesChange={onEdgesChange}
         nodeTypes={NodeCustomsComponents}
@@ -130,6 +158,7 @@ function Viewport(): JSX.Element {
         panOnDrag={panOnDragMode}
         selectionMode={SelectionMode.Full}
         minZoom={1}
+        style={{userSelect: "auto"}}
         maxZoom={2.5}
       >
         <>

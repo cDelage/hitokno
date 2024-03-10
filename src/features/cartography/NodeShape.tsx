@@ -22,7 +22,8 @@ import Label from "./Label";
 import Resizer from "./Resizer";
 import SheetSignifiantButton from "./SheetSignifiantButton";
 import { DataNode, ShapeDescription } from "../../types/Cartography.type";
-import HandleDuplicateNode from "./HandleDuplicateNode";
+import HelperLines from "./HelperLines";
+import IdenticalWidthSignifier from "./IdenticalWidthSignifier";
 
 const NodeShapeStyled = styled.div`
   height: 100%;
@@ -69,6 +70,8 @@ function NodeShape({
     toggleEditMode,
     mainToolbarActiveMenu,
     handlesActive,
+    movedNode,
+    identicalWidthNodes
   } = useCartography();
   const { zoom, x, y } = useViewport();
   const [isHover, setIsHover] = useState(false);
@@ -121,20 +124,17 @@ function NodeShape({
       {sheet?.sheetId && (
         <SheetSignifiantButton nodeSheetId={sheet.sheetId} nodeId={id} />
       )}
-      <HandleDuplicateNode
-        data={{
-          mode: "DEFAULT",
-          handles: [],
-          label: label + " copy",
-          shapeDescription,
-          editorState,
-        }}
-        selected={selected}
-        size={size}
-        xPos={xPos}
-        yPos={yPos}
-        type={"shape"}
-      />
+      {identicalWidthNodes.includes(id) && <IdenticalWidthSignifier/>}
+      {movedNode === id && (
+        <HelperLines
+          id={id}
+          position={{
+            xPos,
+            yPos,
+          }}
+          size={size}
+        />
+      )}
       <Label label={label} />
       <ShapeDispatch
         shape={shape}

@@ -27,8 +27,6 @@ function TestDatabaseSync() {
 
   useEffect(() => {
     if (test?._id && !isSyncWithDb) {
-      console.log("Update effective")
-      console.log(test)
       updateTestDatabase({ test });
       setIsSyncWithDb(true)
     }
