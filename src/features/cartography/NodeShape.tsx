@@ -23,7 +23,8 @@ import Resizer from "./Resizer";
 import SheetSignifiantButton from "./SheetSignifiantButton";
 import { DataNode, ShapeDescription } from "../../types/Cartography.type";
 import HelperLines from "./HelperLines";
-import IdenticalWidthSignifier from "./IdenticalWidthSignifier";
+import IdenticalWidthSignifiant from "./IdenticalWidthSignifiant";
+import IdenticalHeightSignifiant from "./IdenticalHeightSignifiant";
 
 const NodeShapeStyled = styled.div`
   height: 100%;
@@ -71,7 +72,8 @@ function NodeShape({
     mainToolbarActiveMenu,
     handlesActive,
     movedNode,
-    identicalWidthNodes
+    identicalWidthNodes,
+    identicalHeightNodes,
   } = useCartography();
   const { zoom, x, y } = useViewport();
   const [isHover, setIsHover] = useState(false);
@@ -124,7 +126,8 @@ function NodeShape({
       {sheet?.sheetId && (
         <SheetSignifiantButton nodeSheetId={sheet.sheetId} nodeId={id} />
       )}
-      {identicalWidthNodes.includes(id) && <IdenticalWidthSignifier/>}
+      {identicalWidthNodes.includes(id) && <IdenticalWidthSignifiant />}
+      {identicalHeightNodes.includes(id) && <IdenticalHeightSignifiant />}
       {movedNode === id && (
         <HelperLines
           id={id}
@@ -147,10 +150,10 @@ function NodeShape({
           <HandlesCreateEdge isHoverNode={isHover} nodeId={id} />
         )}
         {mainToolbarActiveMenu !== "CREATION-EDGE" && (
-          <Resizer selected={selected} />
+          <Resizer selected={selected} id={id} />
         )}
 
-        <NodeText mode={mode} editorState={editorState} theme={theme}>
+        <NodeText mode={mode} editorState={editorState} theme={theme} key={`nodetext-${id}`}>
           <PluginReadEditMode mode={mode} />
           <PluginUpdateNodeText id={id} />
           {mainToolbarActiveMenu !== "CREATION-EDGE" && (

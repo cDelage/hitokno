@@ -58,11 +58,13 @@ const CardHeader = styled.div<{ fill: string }>`
 const Question = styled.div`
   flex-grow: 1;
   box-shadow: var(--shadow-md);
+  padding: 16px;
 `;
 
 const Answer = styled.div`
   flex-grow: 1;
   position: relative;
+  padding: 16px;
 `;
 
 const HideAnswer = styled.div`

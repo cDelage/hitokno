@@ -59,15 +59,15 @@ function WindowHeaderManagement(): JSX.Element {
         hoverColor="--text-layout"
         onClick={minimize}
       >
-        <VscChromeMinimize size={24} />
+        <VscChromeMinimize size={16} />
       </WindowHeaderButton>
       <WindowHeaderButton
         hoverBgColor="--bg-white"
         hoverColor="--text-layout"
         onClick={isMaximizedWindow ? unmaximize : maximize}
       >
-        {!isMaximizedWindow && <VscChromeMaximize size={24} />}
-        {isMaximizedWindow && <VscChromeRestore size={24} />}
+        {!isMaximizedWindow && <VscChromeMaximize size={20} />}
+        {isMaximizedWindow && <VscChromeRestore size={20} />}
       </WindowHeaderButton>
       <WindowHeaderButton
         hoverBgColor="--bg-close"

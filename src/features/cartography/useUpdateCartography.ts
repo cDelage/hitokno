@@ -1,10 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
-import { File } from "../../types/Repository.types";
+import { FileHitokno } from "../../types/Repository.types";
 
 export function useUpdateCartography() {
   const { mutate: updateCartography, isPending: isUpdateCartographyPending } =
     useMutation({
-      mutationFn: (file: File) =>
+      mutationFn: (file: FileHitokno) =>
         window.repository.updateCartography(file),
       onSuccess: () => {},
       onError: (err) => {

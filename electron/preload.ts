@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer } from "electron";
 import {
-  File,
+  FileHitokno,
   FileRename,
   Folder,
   MoveFile,
@@ -8,6 +8,7 @@ import {
 } from "../src/types/Repository.types";
 import { CreateTestProps, TestType } from "../src/types/Test.type";
 import { SearchCriterias } from "../src/types/SearchCriteria.type";
+import { SaveParams } from "../src/types/Save.type";
 
 const windowManagement = {
   maximize: () => ipcRenderer.send("maximize"),
@@ -22,24 +23,28 @@ const repository = {
     await ipcRenderer.invoke("create-folder"),
   findRepository: async (): Promise<Folder[]> =>
     await ipcRenderer.invoke("find-repository"),
-  createFile: async (folderId: string): Promise<File | null> =>
+  createFile: async (folderId: string): Promise<FileHitokno | null> =>
     await ipcRenderer.invoke("create-file", folderId),
   removeFolder: async (folderId: string) =>
     await ipcRenderer.invoke("remove-folder", folderId),
   renameFolder: async (params: RenameFolderParams) =>
     await ipcRenderer.invoke("rename-folder", params),
-  findFile: async (fileId: string): Promise<File> =>
+  findFile: async (fileId: string): Promise<FileHitokno> =>
     await ipcRenderer.invoke("find-file", fileId),
   renameFile: async (params: FileRename) =>
     await ipcRenderer.invoke("rename-file", params),
-  updateCartography: async (file: File) =>
+  updateCartography: async (file: FileHitokno) =>
     await ipcRenderer.invoke("update-cartography", file),
-  updateDeck: async (file: File) =>
+  updateDeck: async (file: FileHitokno) =>
     await ipcRenderer.invoke("update-deck", file),
   removeFile: async (params: { _id: string }) =>
     await ipcRenderer.invoke("remove-file", params),
   moveFile: async (params: MoveFile) =>
     await ipcRenderer.invoke("move-file", params),
+  saveFile: async (params: SaveParams) =>
+    await ipcRenderer.invoke("save-file", params),
+  importFile: async(fileId: string) => 
+    await ipcRenderer.invoke("import-file", fileId)
 };
 
 const tests = {

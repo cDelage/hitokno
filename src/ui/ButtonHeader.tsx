@@ -5,7 +5,7 @@ export const ButtonHeader = styled.button`
     border: none;
     display: flex;
     gap: 4px;
-    padding: 4px 8px;
+    padding: 4px 8px 4px 4px;
     font-size: 1rem;
     border-radius: 8px;
     cursor: pointer;

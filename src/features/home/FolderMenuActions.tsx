@@ -10,6 +10,7 @@ import Modal from "../../ui/Modal";
 import ConfirmDelete from "../../ui/ConfirmDelete";
 import { useRemoveFolder } from "./useRemoveFolder";
 import { useNavigate } from "react-router-dom";
+import { useImportFile } from "./useImportFile";
 
 type FolderMenuActionsProps = {
   _id: string;
@@ -21,15 +22,8 @@ function FolderMenuActions({
   folderName,
 }: FolderMenuActionsProps): JSX.Element {
   const { removeFolder } = useRemoveFolder();
+  const { importFile, isImportFile } = useImportFile();
   const navigate = useNavigate();
-
-  function deleteFolder() {
-    removeFolder(_id);
-  }
-
-  function handleRenameFolder() {
-    navigate(`/explorer/folder/${_id}`);
-  }
 
   return (
     <Modal>
@@ -41,10 +35,10 @@ function FolderMenuActions({
           <Menu.Tab>
             <IoPlay /> Execute a test
           </Menu.Tab>
-          <Menu.Tab onClick={handleRenameFolder}>
+          <Menu.Tab onClick={() => navigate(`/explorer/folder/${_id}`)}>
             <IoPencil /> Rename
           </Menu.Tab>
-          <Menu.Tab>
+          <Menu.Tab disabled={isImportFile} onClick={() => importFile(_id)}>
             <IoCodeDownload /> Import a file
           </Menu.Tab>
           <Modal.Toggle id={_id}>
@@ -55,7 +49,10 @@ function FolderMenuActions({
         </Menu.ListTabs>
       </Menu>
       <Modal.Body>
-        <ConfirmDelete deleteItem={folderName} onConfirm={deleteFolder} />
+        <ConfirmDelete
+          deleteItem={folderName}
+          onConfirm={() => removeFolder(_id)}
+        />
       </Modal.Body>
     </Modal>
   );

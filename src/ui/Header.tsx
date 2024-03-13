@@ -8,8 +8,8 @@ const HeaderStyled = styled.header`
   justify-content: space-between;
   background-color: var(--bg-layout);
   width: 100%;
-  height: 40px;
-  min-height: 40px;
+  height: 36px;
+  min-height: 36px;
   -webkit-app-region: drag;
 `;
 

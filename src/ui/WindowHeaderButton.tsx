@@ -21,7 +21,7 @@ const WindowIconButtonStyled = styled.button<WindowIconButtonStyledProps>`
   align-items: center;
   background-color: transparent;
   border: none;
-  padding: 0px 16px;
+  padding: 0px 12px;
   color: var(--text-layout);
   &:hover {
     background-color: var(${(props) => props.$hoverBgColor});

@@ -19,7 +19,7 @@ const TextArea = styled.textarea`
   font-weight: inherit;
   height: 100%;
   width: 100%;
-  padding: 16px;
+  padding: 0px;
   box-sizing: border-box;
   margin: 0;
   resize: none;
@@ -27,7 +27,6 @@ const TextArea = styled.textarea`
 
   &:read-only {
     cursor: inherit;
-    pointer-events: none;
   }
 `;
 

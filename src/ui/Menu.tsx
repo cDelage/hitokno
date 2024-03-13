@@ -16,6 +16,7 @@ const ListTabsStyled = styled.ul<ListTabsStyledProps>`
   border-radius: 4px;
   box-shadow: var(--shadow-md);
   position: absolute;
+  z-index: 1000;
   overflow: hidden;
   top: ${(props) => props.position.top}px;
   right: ${(props) => props.position.right}px;
@@ -69,6 +70,7 @@ type TabMenuProps = {
 type ToggleMenuProps = {
   children: ReactNode;
   id: string;
+  isStyleNotApplied?: boolean
 };
 
 const MenuContext = createContext<MenuContextProps | null>(null);
@@ -133,10 +135,10 @@ function Tab({ children, onClick, disabled }: TabMenuProps): JSX.Element {
 /**
  * Toggle menu
  */
-function Toggle({ children, id }: ToggleMenuProps): JSX.Element {
+function Toggle({ children, id, isStyleNotApplied }: ToggleMenuProps): JSX.Element {
   const { open, close, openId } = useContext(MenuContext) as MenuContextProps;
 
-  function handleClick(e: MouseEvent<HTMLButtonElement>) {
+  function handleClick(e: MouseEvent) {
     e.stopPropagation();
     const rect = (e.target as HTMLElement)
       .closest("button")
@@ -149,7 +151,7 @@ function Toggle({ children, id }: ToggleMenuProps): JSX.Element {
       openId === "" || openId !== id ? open(menuPosition, id) : close();
     }
   }
-
+  if(isStyleNotApplied) return <div onClick={handleClick}>{children}</div>;
   return <IconButton onClick={handleClick}>{children}</IconButton>;
 }
 

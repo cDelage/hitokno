@@ -2,6 +2,7 @@ import ReactFlow, {
   Background,
   BackgroundVariant,
   EdgeTypes,
+  MiniMap,
   NodeChange,
   SelectionMode,
   useViewport,
@@ -31,6 +32,9 @@ const ViewportContainer = styled.div`
   flex-grow: 1;
   background-color: var(--color-gray-100);
   position: relative;
+  .react-flow__node {
+    z-index: -1 !important;
+  }
 `;
 
 function Viewport(): JSX.Element {
@@ -44,9 +48,10 @@ function Viewport(): JSX.Element {
     setPanOnDragMode,
     setSelectionMode,
     initCartography,
-    setIsSyncWithDB,
     setEdgeCreationProps,
     handleDuplicateNode,
+    clearHelpers,
+    addHelperLines
   } = useCartography();
   const { zoom } = useViewport();
   const { clearPositionToolbar } = useNodeToolbar();
@@ -63,10 +68,9 @@ function Viewport(): JSX.Element {
     (change: NodeChange[]) => {
       if (mode === "EDIT") {
         onNodesChange(change);
-        setIsSyncWithDB(false);
       }
     },
-    [onNodesChange, setIsSyncWithDB, mode]
+    [onNodesChange, mode]
   );
 
   useEffect(() => {
@@ -98,7 +102,11 @@ function Viewport(): JSX.Element {
     }
 
     setEdgeCreationProps(InitialEdgeCreationState);
-  }, [mainToolbarActiveMenu, setPanOnDragMode, setEdgeCreationProps]);
+  }, [
+    mainToolbarActiveMenu,
+    setPanOnDragMode,
+    setEdgeCreationProps,
+  ]);
 
   //Manage change between default & edit mode
   useEffect(() => {
@@ -112,7 +120,7 @@ function Viewport(): JSX.Element {
   const handleEventDuplicateNode = useCallback(
     (e: KeyboardEvent) => {
       const isCtrlPressed = e.ctrlKey || e.metaKey;
-      if ((isCtrlPressed && e.key === "d") || e.key === "D") {
+      if (isCtrlPressed && (e.key === "d" || e.key === "D")) {
         handleDuplicateNode();
       }
     },
@@ -145,20 +153,25 @@ function Viewport(): JSX.Element {
         nodes={nodes}
         edges={edges}
         id="viewport-container-reactflow"
+        key={`viewport-${fileId}`}
         onNodesChange={handleNodeChange}
         onEdgesChange={onEdgesChange}
+        onNodeDragStart={(_e, node) => addHelperLines(node.id)}
+        onNodeDragStop={clearHelpers}
         nodeTypes={NodeCustomsComponents}
         edgeTypes={EDGE_TYPE_COMPONENT as EdgeTypes}
         defaultEdgeOptions={DEFAULT_EDGE_OPTIONS}
         connectionLineComponent={ConnectionEdgeCustom}
+        onNodeDrag={(_e, id) => console.log("DRAG : ", id)}
         snapToGrid={true}
         snapGrid={[8, 8]}
         panOnScroll
+        nodeDragThreshold={24}
         selectionOnDrag={!mainToolbarActiveMenu?.startsWith("CREATION")}
         panOnDrag={panOnDragMode}
         selectionMode={SelectionMode.Full}
-        minZoom={1}
-        style={{userSelect: "auto"}}
+        minZoom={0.2}
+        style={{ userSelect: "auto" }}
         maxZoom={2.5}
       >
         <>
@@ -180,6 +193,7 @@ function Viewport(): JSX.Element {
               id="top"
             />
           )}
+          <MiniMap />
         </>
       </ReactFlow>
       <DeckContainer />

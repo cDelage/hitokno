@@ -7,24 +7,26 @@ const IndeticalWidthStyled = styled.div`
   left: 0;
   right: 0;
   display: flex;
-  box-shadow: var(--shadow-md);
+  align-items: center;
+  transform: translateY(-50%);
   z-index: 300;
 `;
 
 const Line = styled.div`
   flex-grow: 1;
   height: 2px;
-  background-color: var(--color-secondary-500);
+  background-color: var(--color-primary-700);
+  box-shadow: var(--shadow-md);
 `;
 
-function IdenticalWidthSignifier() {
+function IdenticalWidthSignifiant() {
   return (
     <IndeticalWidthStyled>
-      <BiChevronLeft />
+      <BiChevronLeft size={24} color="var(--color-primary-700)" />
       <Line />
-      <BiChevronRight />
+      <BiChevronRight size={24} color="var(--color-primary-700)" />
     </IndeticalWidthStyled>
   );
 }
 
-export default IdenticalWidthSignifier;
+export default IdenticalWidthSignifiant;

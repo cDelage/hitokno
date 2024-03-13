@@ -14,7 +14,7 @@ import {
   moveFile,
 } from "./services/apiRepository";
 import {
-  File,
+  FileHitokno,
   FileRename,
   Folder,
   MoveFile,
@@ -31,6 +31,8 @@ import {
 } from "./services/apiTest";
 import { SearchCriterias } from "../src/types/SearchCriteria.type";
 import { createFileRoute, createURLRoute } from "electron-router-dom";
+import { SaveParams } from "../src/types/Save.type";
+import { importFile, saveFile } from "./services/manageFileService";
 
 // The built directory structure
 //
@@ -60,19 +62,19 @@ function createWindow() {
     },
   });
 
+
   // Test active push message to Renderer-process.
   win.webContents.on("did-finish-load", () => {
     win?.webContents.send("main-process-message", new Date().toLocaleString());
   });
 
   if (VITE_DEV_SERVER_URL) {
-    win.loadURL(createURLRoute(
-      VITE_DEV_SERVER_URL,
-      'main'
-    ))
+    win.loadURL(createURLRoute(VITE_DEV_SERVER_URL, "main"));
   } else {
     // win.loadFile('dist/index.html')
-    win.loadFile(...createFileRoute(path.join(process.env.DIST, 'index.html'), 'main'))
+    win.loadFile(
+      ...createFileRoute(path.join(process.env.DIST, "index.html"), "main")
+    );
   }
 
   ipcMain.on("maximize", () => {
@@ -107,8 +109,10 @@ function createWindow() {
 
   ipcMain.handle(
     "create-file",
-    async (_event: IpcMainInvokeEvent, folderId: string): Promise<File | null> =>
-      await createFile(folderId)
+    async (
+      _event: IpcMainInvokeEvent,
+      folderId: string
+    ): Promise<FileHitokno | null> => await createFile(folderId)
   );
 
   ipcMain.handle(
@@ -136,19 +140,19 @@ function createWindow() {
 
   ipcMain.handle(
     "remove-file",
-    async (_event: IpcMainInvokeEvent, params: {_id : string}) =>
+    async (_event: IpcMainInvokeEvent, params: { _id: string }) =>
       await RemoveFile(params)
   );
 
   ipcMain.handle(
     "update-cartography",
-    async (_event: IpcMainInvokeEvent, file: File) =>
+    async (_event: IpcMainInvokeEvent, file: FileHitokno) =>
       await updateCartography(file)
   );
 
   ipcMain.handle(
     "update-deck",
-    async (_event: IpcMainInvokeEvent, file: File) => await updateDeck(file)
+    async (_event: IpcMainInvokeEvent, file: FileHitokno) => await updateDeck(file)
   );
 
   ipcMain.handle(
@@ -185,8 +189,23 @@ function createWindow() {
 
   ipcMain.handle(
     "move-file",
-    async (_event: IpcMainInvokeEvent, params: MoveFile) => 
+    async (_event: IpcMainInvokeEvent, params: MoveFile) =>
       await moveFile(params)
+  );
+
+  ipcMain.handle(
+    "save-file", 
+    async (_event: IpcMainInvokeEvent, params: SaveParams) =>
+      await saveFile(params)
+  )
+
+  ipcMain.handle(
+    "import-file",
+    async (_event: IpcMainInvokeEvent, folderId: string) =>{
+      if(win){
+        return await importFile(win, folderId)
+      }
+    }
   )
 }
 

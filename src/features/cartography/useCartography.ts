@@ -26,7 +26,7 @@ import {
   ShapeDescription,
 } from "../../types/Cartography.type";
 import { v4 as uuidv4 } from "uuid";
-import { File } from "../../types/Repository.types";
+import { FileHitokno } from "../../types/Repository.types";
 
 const applyNodeMode = (node: Node<DataNode>, mode: NodeMode) => {
   return {
@@ -55,6 +55,7 @@ type UseCartographyStore = {
   movedNode: string | undefined;
   identicalWidthNodes: string[];
   identicalHeightNodes: string[];
+  isInitViewport: boolean;
   addHandlesActive: (handles: string[]) => void;
   removeHandlesActive: (handles: string[]) => void;
   setEdgeCreationProps: (edgeCreationProps: EdgeCreationProps) => void;
@@ -82,7 +83,7 @@ type UseCartographyStore = {
   updateNode: (node: Node<DataNode>) => void;
   findNodeById: (nodeId: string) => Node;
   setSelectionMode: (selectable: boolean) => void;
-  initCartography: (file: File) => void;
+  initCartography: (file: FileHitokno) => void;
   toggleEditMode: (nodeId: string) => void;
   createNewEdge: () => void;
   deleteEdge: (
@@ -103,6 +104,12 @@ type UseCartographyStore = {
   findBottomAlignedNode: (id: string, pointToAlign: number) => boolean;
   findCenterXAlignedNode: (id: string, pointToAlign: number) => boolean;
   findCenterYAlignedNode: (id: string, pointToAlign: number) => boolean;
+  clearHelpers: () => void;
+  addHelperLines: (id: string) => void;
+  addSameSizeHelperLines: (
+    id: string,
+    dimension: { width: number; height: number }
+  ) => void;
 };
 
 const useCartography = create<UseCartographyStore>((set, get) => ({
@@ -117,6 +124,7 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
   identicalWidthNodes: [],
   identicalHeightNodes: [],
   movedNode: undefined,
+  isInitViewport: false,
   addHandlesActive: (handles: string[]) => {
     set((state) => {
       return {
@@ -176,6 +184,7 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
 
       set((state) => {
         return {
+          isSyncWithDB: false,
           nodes: state.nodes.map((node) => {
             if (node.id === sourceNodeId) {
               return {
@@ -299,7 +308,7 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
       edges: edg,
     });
   },
-  initCartography: ({ nodes, edges }: File) => {
+  initCartography: ({ nodes, edges }: FileHitokno) => {
     set({
       nodes,
       edges,
@@ -316,69 +325,7 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
     });
   },
   onNodesChange: (changes: NodeChange[]) => {
-    const movedNode = get().movedNode;
-    //Check if node is moved or resized, to add helper lines if other nodes are aligned
-    if (
-      (changes[0].type === "position" && !movedNode && changes[0].dragging) ||
-      (changes[0].type === "dimensions" && changes[0].dimensions)
-    ) {
-      set({ movedNode: changes[0].id });
-    } else if (
-      (movedNode && changes[0].type === "position" && !changes[0].dragging) ||
-      (changes[0].type === "dimensions" && !changes[0].dimensions)
-    ) {
-      set({ movedNode: undefined });
-    }
-
-    //Check if other nodes have same size to display
-    if (changes[0].type === "dimensions" && changes[0].dimensions) {
-      const dimension = changes[0].dimensions;
-      const id = changes[0].id;
-      console.log(
-        dimension,
-        id,
-        get().nodes.map((x) => {
-          return {
-            height: x.style?.height,
-            width: x.style?.width,
-            id: x.id,
-            sameId: x.id === id,
-            sameWidth: x.style?.width === dimension.width,
-            sameHeight: x.style?.height === dimension.height,
-          };
-        })
-      );
-      const identicalWidth = get()
-        .nodes.filter((node) => 
-          node.id !== id && node.style?.width === dimension.width
-        )
-        .map((node) => node.id);
-      if (identicalWidth.length) {
-        identicalWidth.push(id);
-      }
-      console.log(identicalWidth)
-
-      const identicalHeight = get()
-        .nodes.filter((node) => 
-          node.id !== id && node.style?.height === dimension.height
-        )
-        .map((node) => node.id);
-      if (identicalHeight.length) {
-        identicalHeight.push(id);
-      }
-      set({
-        identicalWidthNodes: identicalWidth,
-        identicalHeightNodes: identicalHeight,
-      });
-    } else if (changes[0].type === "dimensions" && !changes[0].dimensions) {
-      set({
-        identicalWidthNodes: [],
-        identicalHeightNodes: [],
-      });
-    }
-
     const beforeSelected = get().nodes.find((node) => node.selected);
-
     if (changes.filter(selectedNodeOnChange).length === 1) {
       const nodeSelected = changes.find(
         selectedNodeOnChange
@@ -404,6 +351,10 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
           nodes: state.nodes.map((node) => applyNodeMode(node, "DEFAULT")),
         };
       });
+    }else if(beforeSelected){
+      set({
+        isSyncWithDB: false
+      })
     }
   },
   onEdgesChange: (changes: EdgeChange[]) => {
@@ -675,6 +626,85 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
             pointToAlign
       ).length > 0
     );
+  },
+  clearHelpers: () => {
+    set({
+      movedNode: undefined,
+      identicalHeightNodes: [],
+      identicalWidthNodes: [],
+    });
+  },
+  addHelperLines: (id: string) => {
+    set({
+      movedNode: id,
+    });
+
+    /**
+     * 
+     
+    //Check if other nodes have same size to display
+    if (
+      changes[0].type === "dimensions" &&
+      changes[0].dimensions &&
+      changes.length < 2
+    ) {
+      const dimension = changes[0].dimensions;
+      const id = changes[0].id;
+      const identicalWidth = get()
+        .nodes.filter(
+          (node) => node.id !== id && node.style?.width === dimension.width
+        )
+        .map((node) => node.id);
+      if (identicalWidth.length) {
+        identicalWidth.push(id);
+      }
+      const identicalHeight = get()
+        .nodes.filter(
+          (node) => node.id !== id && node.style?.height === dimension.height
+        )
+        .map((node) => node.id);
+      if (identicalHeight.length) {
+        identicalHeight.push(id);
+      }
+      set({
+        identicalWidthNodes: identicalWidth,
+        identicalHeightNodes: identicalHeight,
+      });
+    } else if (
+      get().identicalWidthNodes.length ||
+      get().identicalHeightNodes.length
+    ) {
+      set({
+        identicalWidthNodes: [],
+        identicalHeightNodes: [],
+      });
+    }*/
+  },
+  addSameSizeHelperLines: (
+    id: string,
+    dimension: { width: number; height: number }
+  ) => {
+    const identicalWidth = get()
+      .nodes.filter(
+        (node) => node.id !== id && node.style?.width === dimension.width
+      )
+      .map((node) => node.id);
+
+    if (identicalWidth.length) {
+      identicalWidth.push(id);
+    }
+    const identicalHeight = get()
+      .nodes.filter(
+        (node) => node.id !== id && node.style?.height === dimension.height
+      )
+      .map((node) => node.id);
+    if (identicalHeight.length) {
+      identicalHeight.push(id);
+    }
+    set({
+      identicalWidthNodes: identicalWidth,
+      identicalHeightNodes: identicalHeight,
+    });
   },
 }));
 

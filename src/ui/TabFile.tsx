@@ -11,6 +11,8 @@ import { CloseButton, TabStyled, TextContainer } from "./TabStyled";
 const IconContainer = styled.div`
   height: 20px;
   width: 20px;
+  min-height: 20px;
+  min-width: 20px;
 `;
 
 function TabFile({
@@ -18,7 +20,7 @@ function TabFile({
   dragStart,
   dragEnter,
   dragEnd,
-  index
+  index,
 }: {
   tab: HeaderTab;
   index: number;
@@ -53,8 +55,18 @@ function TabFile({
     (e: MouseEvent) => {
       e.stopPropagation();
       if (!tabActive) {
-        queryClient.invalidateQueries({ queryKey: ["file", tabId] });
-        navigate(`/cartography/${tabId}`);
+        queryClient
+          .invalidateQueries({ queryKey: ["test"] })
+          .then(() => {
+            queryClient
+              .invalidateQueries({ queryKey: ["file"], exact: false })
+              .then(() => {
+                navigate(`/cartography/${tabId}`);
+              });
+          })
+          .catch((error: Error) => {
+            console.log("Fail to navigate : ", error);
+          });
       }
     },
     [tabActive, queryClient, navigate, tabId]

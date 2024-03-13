@@ -2,7 +2,7 @@ import GlobalStyle from "./GlobalStyle";
 import AppLayout from "./ui/AppLayout";
 import Home from "./pages/Home";
 import {
-  File,
+  FileHitokno,
   FileDetail,
   FileRename,
   Folder,
@@ -23,6 +23,7 @@ import {
 import { SearchCriterias } from "./types/SearchCriteria.type";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Router, Route } from "electron-router-dom";
+import { SaveParams } from "./types/Save.type";
 
 /**
  * When i add it into a file .d.ts, then typescript not recognize the interface.
@@ -39,16 +40,18 @@ declare global {
     repository: {
       createFolder: () => Promise<Folder | null>;
       findRepository: () => Promise<Folder[] | null>;
-      createFile: (folderId: string) => Promise<File | null>;
+      createFile: (folderId: string) => Promise<FileHitokno | null>;
       removeFolder: (folderId: string) => Promise<string>;
       renameFolder: (params: RenameFolderParams) => Promise<Folder>;
       findFile: (fileId: string) => Promise<FileDetail | undefined>;
       renameFile: (params: FileRename) => Promise<Folder>;
-      updateCartography: (file: File) => Promise<number>;
-      updateDeck: (file: File) => Promise<number>;
+      updateCartography: (file: FileHitokno) => Promise<number>;
+      updateDeck: (file: FileHitokno) => Promise<number>;
       findSheet: (sheetId: string) => Promise<SheetDetail>;
       removeFile: (params: { _id: string }) => Promise<number>;
       moveFile: (params: MoveFile) => Promise<void>;
+      saveFile: (params: SaveParams) => Promise<void>;
+      importFile: (fileId: string) => Promise<FileHitokno>
     };
     tests: {
       createTest: (params: CreateTestProps) => Promise<TestType>;

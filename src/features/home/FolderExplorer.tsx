@@ -13,6 +13,7 @@ import { useRenameFolder } from "./useRenameFolder";
 import { useNavigate, useParams } from "react-router-dom";
 import { useRepositoryContext } from "./useRepositoryContext";
 import { Column } from "../../ui/Row";
+import { device } from "../../Medias";
 
 type FolderProps = {
   folder: Folder;
@@ -56,10 +57,19 @@ const FolderLeftContainer = styled.div`
 `;
 
 const FolderOpenMain = styled.div`
+  width: 100%;
+  max-width: 100%;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-  grid-column-gap: 16px;
-  grid-row-gap: 16px;
+  grid-gap: 8px;
+  grid-template-columns: repeat(2, 50%);
+
+  @media ${device.md} {
+    grid-template-columns: repeat(4, 25%);
+  }
+
+  @media ${device.xl} {
+    grid-template-columns: repeat(6, 1fr);
+  }
 `;
 
 const FolderRightContainer = styled.div`

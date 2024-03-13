@@ -3,7 +3,7 @@ import { DataNode } from "./Cartography.type";
 import { FlashCard } from "./Flashcard.type";
 
 export type FileDetail = {
-  file: File;
+  file: FileHitokno;
   folderName: string;
 };
 
@@ -12,7 +12,7 @@ export type FileRename = {
   filename: string;
 };
 
-export type FileShort = Omit<File, "nodes" | "edges">;
+export type FileShort = Omit<FileHitokno, "nodes" | "edges">;
 
 export type Folder = {
   _id: string;
@@ -25,19 +25,20 @@ export type Folder = {
 export type CompleteFolder = {
   _id: string;
   folderName: string;
-  files: File[];
+  files: FileHitokno[];
   createdAt: Date;
   updatedAt: Date;
 };
 
 export type Repository = Folder[];
 
-export type File = {
+export type FileHitokno = {
   _id: string;
   fileName: string;
   nodes: Node<DataNode>[];
   edges: Edge[];
   deck: FlashCard[];
+  filePath?: string;
 };
 
 export type RenameFolderParams = {

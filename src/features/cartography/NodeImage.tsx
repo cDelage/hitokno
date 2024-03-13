@@ -45,7 +45,7 @@ function NodeImage({
   return (
     <>
       {mainToolbarActiveMenu !== "CREATION-EDGE" && (
-        <Resizer selected={selected} keepAspectRatio={true}/>
+        <Resizer selected={selected} keepAspectRatio={true} id={id}/>
       )}
 
       <img src={src} width={"100%"} height={"100%"}/>

@@ -11,6 +11,8 @@ import { useQueryClient } from "@tanstack/react-query";
 const IconContainer = styled.div`
   height: 20px;
   width: 20px;
+  min-height: 20px;
+  min-width: 20px;
 `;
 
 function TabTest({
@@ -18,7 +20,7 @@ function TabTest({
   dragStart,
   dragEnter,
   dragEnd,
-  index
+  index,
 }: {
   tab: HeaderTab;
   index: number;
@@ -50,8 +52,13 @@ function TabTest({
     (e: MouseEvent) => {
       e.stopPropagation();
       if (!tabActive) {
-        queryClient.invalidateQueries({ queryKey: ["test"] });
-        navigate(`/test/${tabId}`);
+        queryClient.invalidateQueries({ queryKey: ["test"] }).then(() => {
+          queryClient
+            .invalidateQueries({ queryKey: ["file"], exact: false })
+            .then(() => {
+              navigate(`/test/${tabId}`);
+            });
+        });
       }
     },
     [tabActive, queryClient, navigate, tabId]

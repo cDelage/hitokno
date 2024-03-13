@@ -3,6 +3,7 @@ import styled, { css } from "styled-components";
 import { TabState } from "../types/Tabs.types.ts";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 type HomeHeaderButtonStyledProps = {
   $tabState: TabState;
@@ -32,12 +33,28 @@ const HomeHeaderButtonStyled = styled.button<HomeHeaderButtonStyledProps>`
 function HomeHeaderButton() {
   const location = useLocation();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const [isHomeActive, setIsHomeActive] = useState(false);
 
   function goToHome() {
     if (!isHomeActive) {
-      navigate("/explorer");
+      queryClient
+        .invalidateQueries({ queryKey: ["test"] })
+        .then(() => {
+          queryClient
+            .invalidateQueries({ queryKey: ["file"], exact: false })
+            .then(() => {
+              queryClient
+                .invalidateQueries({ queryKey: ["repository"], exact: false })
+                .then(() => {
+                  navigate("/explorer");
+                });
+            });
+        })
+        .catch((error: Error) => {
+          console.log("Fail to navigate : ", error);
+        });
     }
   }
 

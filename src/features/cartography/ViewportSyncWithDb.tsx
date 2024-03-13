@@ -43,7 +43,7 @@ function ViewportSyncWithDb() {
       setIsTimeoutActive(true);
       setTimeout(() => {
         setIsTimeoutActive(false);
-      }, 2000);
+      }, 1000);
     }
   }, [
     updateCartography,

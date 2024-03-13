@@ -150,7 +150,7 @@ const GlobalStyle = createGlobalStyle`
   
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 20px;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 400;
   font-synthesis: none;
   text-rendering: optimizeLegibility;

@@ -7,15 +7,15 @@ import { ChildrenProps } from "../../types/ChildrenProps.type";
 import { NodeTheme, initialNodeConfig } from "./CartographyConstants";
 import { Theme } from "../../types/Cartography.type";
 
-
-
 type ContenteEditableStyledProps = {
   color: string;
   $selectedColor: string;
   $active: boolean;
 };
 
-const ContentEditableStyled = styled(ContentEditable)<ContenteEditableStyledProps>`
+const ContentEditableStyled = styled(
+  ContentEditable
+)<ContenteEditableStyledProps>`
   flex-grow: 1;
   height: 100%;
   padding: 8px;
@@ -24,7 +24,7 @@ const ContentEditableStyled = styled(ContentEditable)<ContenteEditableStyledProp
   overflow: hidden;
   color: ${(props) => props.color};
   font-size: 28px;
-  line-height  : 32px;
+  line-height: 32px;
   font-weight: 400;
 
   &:focus {
@@ -33,21 +33,21 @@ const ContentEditableStyled = styled(ContentEditable)<ContenteEditableStyledProp
 
   h1 {
     font-size: 52px;
-    line-height  : 48px;
+    line-height: 48px;
     font-weight: 500;
     user-select: none;
   }
 
   h2 {
     font-size: 36px;
-    line-height  : 48px;
+    line-height: 48px;
     font-weight: 400;
     user-select: none;
   }
 
   h3 {
     font-size: 28px;
-    line-height  : 36px;
+    line-height: 36px;
     font-weight: 400;
     user-select: none;
   }
@@ -70,22 +70,30 @@ const ContentEditableStyled = styled(ContentEditable)<ContenteEditableStyledProp
     color: ${(props) => props.color};
   }
 
-  ${props => props.$active ? css`
-    cursor: text;
-  ` : css`
-    user-select: none;
-  `}
+  ${(props) =>
+    props.$active
+      ? css`
+          cursor: text;
+        `
+      : css`
+          user-select: none;
+        `}
 `;
 
 function NodeText({
   children,
   mode,
-  editorState,
   theme,
+  editorState,
 }: ChildrenProps & { mode: string; editorState?: string; theme: Theme }) {
   return (
     <LexicalComposer
-      initialConfig={{ ...initialNodeConfig, theme: NodeTheme, editorState }}
+      initialConfig={{
+        ...initialNodeConfig,
+        editorState,
+        theme: NodeTheme,
+        editable: true,
+      }}
     >
       <RichTextPlugin
         contentEditable={
@@ -96,7 +104,7 @@ function NodeText({
             }
             color={theme.color}
             $selectedColor={theme.stroke}
-            $active= {mode === "EDIT"}
+            $active={mode === "EDIT"}
           />
         }
         placeholder={<></>}

@@ -1,6 +1,7 @@
 import { NodeResizer, useViewport } from "reactflow";
 import { CSSProperties } from "styled-components";
 import { PX_UNIT_GAP } from "./CartographyConstants";
+import useCartography from "./useCartography";
 
 const ResizerHandleStyle: CSSProperties = {
   borderRadius: "2px",
@@ -17,8 +18,17 @@ const ResizerBorderStyle: CSSProperties = {
   boxSizing: "border-box",
 };
 
-function Resizer({ selected, keepAspectRatio }: { selected: boolean, keepAspectRatio? : boolean }) {
+function Resizer({
+  selected,
+  keepAspectRatio,
+  id,
+}: {
+  selected: boolean;
+  keepAspectRatio?: boolean;
+  id: string;
+}) {
   const { zoom } = useViewport();
+  const { addSameSizeHelperLines, addHelperLines, clearHelpers } = useCartography();
   const NodeResizerStyle: CSSProperties = {
     ...ResizerHandleStyle,
     width: `${16 / zoom}px`,
@@ -33,6 +43,14 @@ function Resizer({ selected, keepAspectRatio }: { selected: boolean, keepAspectR
       lineStyle={ResizerBorderStyle}
       isVisible={selected}
       keepAspectRatio={keepAspectRatio}
+      onResizeStart={() => addHelperLines(id)}
+      onResize={(_e, resize) =>
+        addSameSizeHelperLines(id, {
+          width: resize.width,
+          height: resize.height,
+        })
+      }
+      onResizeEnd={clearHelpers}
     />
   );
 }

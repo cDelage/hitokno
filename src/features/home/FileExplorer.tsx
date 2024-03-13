@@ -17,13 +17,10 @@ type FileExplorerStyledProps = {
 };
 
 const FileExplorerStyled = styled.div<FileExplorerStyledProps>`
-  width: 180px;
-  height: 140px;
-  min-width: 180px;
-  max-width: 180px;
-  min-height: 140px;
-  max-height: 140px;
+  width: 100%;
+  max-width: 100%;
   aspect-ratio: 4 / 3;
+  overflow: hidden;
   background-color: var(--bg-element);
   border-radius: 4px;
   padding: 8px;
@@ -63,9 +60,6 @@ const IconContainer = styled.div`
 `;
 
 const BottomContainer = styled.div`
-  width: 100%;
-  max-width: 100%;
-  align-items: center;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

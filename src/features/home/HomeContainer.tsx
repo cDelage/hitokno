@@ -32,8 +32,8 @@ const ExplorerContainer = styled.div`
 const HeaderHome = styled.div`
   background-color: white;
   display: flex;
-  height: 40px;
-  min-height: 40px;
+  height: 36px;
+  min-height: 36px;
   box-shadow: var(--shadow-md);
   padding: 0px 8px;
   align-items: center;
