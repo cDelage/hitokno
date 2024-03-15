@@ -3,7 +3,7 @@ import MenuToolbar from "../../ui/MenuToolbar";
 import ToolbarAction from "../../ui/ToolbarAction";
 import DeckIcon from "../../ui/icons/DeckIcon";
 import SidebarIcon from "../../ui/icons/SidebarIcon";
-import { IoArrowForward, IoArrowUp, IoAdd } from "react-icons/io5";
+import { IoArrowForward, IoArrowUp, IoAdd, IoArrowBack } from "react-icons/io5";
 import {
   MenuBorderRight,
   ShadowsMenu,
@@ -75,9 +75,23 @@ function MainToolbar() {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const sheetId = searchParams.get("sheetId");
+  const nodeControlSidebarOpen = searchParams.get("nodeControlSidebar");
+
+  const handleOpenNodeControlSidebar = useCallback(() => {
+    searchParams.delete("sheetId");
+    searchParams.delete("deckOpen");
+    if (!searchParams.get("nodeControlSidebar")) {
+      searchParams.append("nodeControlSidebar", "true");
+      setSearchParams(searchParams);
+    } else {
+      searchParams.delete("nodeControlSidebar");
+      setSearchParams(searchParams);
+    }
+  }, [searchParams, setSearchParams]);
 
   const handleOpenDeck = useCallback(() => {
     searchParams.delete("sheetId");
+    searchParams.delete("nodeControlSidebar");
     if (!searchParams.get("deckOpen")) {
       searchParams.append("deckOpen", "true");
       setSearchParams(searchParams);
@@ -86,21 +100,41 @@ function MainToolbar() {
       setSearchParams(searchParams);
     }
   }, [searchParams, setSearchParams]);
+  
+  const handleClearPosition = useCallback(() => {
+    searchParams.delete("sheetId");
+    searchParams.delete("nodeControlSidebar");
+    searchParams.delete("deckOpen");
+    setSearchParams(searchParams);
+  },[searchParams, setSearchParams])
 
-  const handleKeyboardEvent = useCallback((e : KeyboardEvent) => {
-    const isCtrlPressed = e.ctrlKey || e.metaKey;
+  const handleKeyboardEvent = useCallback(
+    (e: KeyboardEvent) => {
+      e.stopPropagation();
+      const isCtrlPressed = e.ctrlKey || e.metaKey;
       if (isCtrlPressed && e.key === " ") {
-        handleOpenDeck()
+        handleOpenDeck();
       }
-  },[handleOpenDeck])
+
+      if (isCtrlPressed && (e.key === "q" || e.key === "Q")) {
+        handleOpenNodeControlSidebar();
+      }
+      
+      if (isCtrlPressed && (e.key === "B" || e.key === "b")) {
+        handleClearPosition();
+      }
+      
+    },
+    [handleOpenDeck, handleOpenNodeControlSidebar,handleClearPosition]
+  );
 
   useEffect(() => {
-    document.addEventListener("keydown", handleKeyboardEvent)
+    document.addEventListener("keydown", handleKeyboardEvent);
 
     return () => {
-      document.removeEventListener("keydown", handleKeyboardEvent)
-    }
-  })
+      document.removeEventListener("keydown", handleKeyboardEvent);
+    };
+  });
 
   //Manage menu change selection
   useEffect(() => {
@@ -154,14 +188,15 @@ function MainToolbar() {
           </MenuToolbar.ActionColumn>
 
           {/* Sidebar (to list all nodes) */}
-          <MenuToolbar.Action>
+          <MenuToolbar.Action onClick={handleOpenNodeControlSidebar}>
             <ToolbarAction>
               <ToolbarLargeIconContainer>
                 <SidebarIcon />
               </ToolbarLargeIconContainer>
-              <ToolbarAction.ActionButton $hoverTransform="translateX(8px)">
-                <IoArrowForward />
-              </ToolbarAction.ActionButton>
+                <ToolbarAction.ActionButton $hoverTransform={nodeControlSidebarOpen ? "translateX(-8px)" : "translateX(8px)"}>
+                  {!nodeControlSidebarOpen && <IoArrowForward />}
+                  {nodeControlSidebarOpen && <IoArrowBack />}
+                </ToolbarAction.ActionButton>
             </ToolbarAction>
           </MenuToolbar.Action>
 

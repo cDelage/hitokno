@@ -70,7 +70,7 @@ function SortDecks({
 
   return (
     <>
-      <Column>
+      <Column $gap={4}>
         {selectedFilesCopy.map((file, index) => (
           <DeckSortable
             file={file}

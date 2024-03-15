@@ -112,6 +112,9 @@ type UseCartographyStore = {
     id: string,
     dimension: { width: number; height: number }
   ) => void;
+  handleDeleteSelected: () => void;
+  selectNode: (id: string) => void;
+  addNodeToSelection: (id: string) => void;
 };
 
 const useCartography = create<UseCartographyStore>((set, get) => ({
@@ -315,7 +318,7 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
     set({
       nodes,
       edges,
-      isSaved
+      isSaved,
     });
   },
   setMainToolbarActiveMenu: (mainToolbarMode: MainToolbarMode) => {
@@ -671,6 +674,41 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
   },
   setIsSaved: (isSaved: boolean) => {
     set({ isSaved });
+  },
+  handleDeleteSelected: () => {
+    set((state) => {
+      return {
+        nodes: state.nodes.filter((node) => !node.selected || node.data.sheet),
+      };
+    });
+  },
+  selectNode: (id: string) => {
+    set((state) => {
+      return {
+        nodes: state.nodes.map((node) => {
+          return {
+            ...node,
+            selected: node.id === id,
+          };
+        }),
+      };
+    });
+  },
+  addNodeToSelection: (id: string) => {
+    set((state) => {
+      return {
+        nodes: state.nodes.map((node) => {
+          return {
+            ...node,
+            selected: node.selected
+              ? node.id === id
+                ? false
+                : true
+              : node.id === id,
+          };
+        }),
+      };
+    });
   },
 }));
 

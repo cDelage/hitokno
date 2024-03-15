@@ -1,18 +1,28 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
-export const ButtonHeader = styled.button`
-    background-color: transparent;
-    border: none;
-    display: flex;
-    gap: 4px;
-    padding: 4px 8px 4px 4px;
-    font-size: 1rem;
-    border-radius: 4px;
-    box-shadow: var(--shadow-md);
-    cursor: pointer;
-    align-items: center;
+export const ButtonHeader = styled.button<{
+  $padding?: string;
+  $active?: boolean;
+}>`
+  background-color: transparent;
+  border: none;
+  display: flex;
+  gap: 4px;
+  padding: ${(props) => (props.$padding ? props.$padding : "4px")};
+  font-size: 1rem;
+  border-radius: 4px;
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+  align-items: center;
 
-    &:hover{
-        background-color: var(--color-gray-200);
-    }
-`
+  ${(props) =>
+    props.$active
+      ? css`
+          background-color: var(--color-primary-200);
+        `
+      : css`
+          &:hover {
+            background-color: var(--color-gray-200);
+          }
+        `}
+`;

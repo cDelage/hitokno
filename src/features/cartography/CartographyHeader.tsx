@@ -22,7 +22,7 @@ const CartographyHeaderStyled = styled.div`
   min-height: 36px;
   padding: 0px 8px;
   box-shadow: var(--shadow-md);
-  z-index: 10;
+  z-index: 120;
 `;
 
 const CartographyBlock = styled.span`

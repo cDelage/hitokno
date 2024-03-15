@@ -279,6 +279,21 @@ p{
   transition: transform 200ms;
 }
 
+.node-control-enter {
+  transform: translateX(-100%);
+}
+.node-control-enter-active {
+  transform: translateX(0%);
+  transition: transform 200ms;
+}
+.node-control-exit {
+  transform: translateX(0%);
+}
+.node-control-exit-active {
+  transform: translateX(-100%);
+  transition: transform 200ms;
+}
+
 
 .deck-enter {
   transform: translateY(100%);

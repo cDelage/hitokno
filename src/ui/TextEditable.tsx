@@ -49,7 +49,7 @@ const Input = styled.input<InputProps>`
 
   &:read-only {
     cursor: inherit;
-    pointer-events: none;
+    user-select: none;
   }
 
   ${(props) =>

@@ -13,6 +13,7 @@ const DeckEntryContainer = styled.div<{ $isDragged: boolean }>`
   box-sizing: border-box;
   padding: 8px;
   gap: 8px;
+  border-radius: 8px;
   background-color: var(--bg-element);
 
   cursor: pointer;

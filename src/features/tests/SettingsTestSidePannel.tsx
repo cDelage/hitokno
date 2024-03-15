@@ -33,8 +33,8 @@ const ModalBackground = styled.div`
   box-shadow: var(--shadow-md);
   border-top-left-radius: 8px;
   border-bottom-left-radius: 8px;
-  border-left: 1px solid var(--color-gray-300);
   overflow: hidden;
+  border: 1px solid var(--color-gray-300);
 `;
 
 const OptionsList = styled.div`
@@ -42,7 +42,7 @@ const OptionsList = styled.div`
   height: 248px;
   max-height: 248px;
   overflow-y: auto;
-  background-color: var(--color-gray-100);
+  background-color: var(--color-gray-200);
   border-radius: 8px;
   box-shadow: var(--shadow-md);
   padding: 12px;
@@ -233,8 +233,8 @@ function SettingsTestSidePannel() {
             $hover={LeftCloseModalHover}
             onClick={handleCloseSetting}
           >
-            <IoChevronForward size={20} />
-            <IoChevronForward size={20} />
+            <IoChevronForward />
+            <IoChevronForward />
           </Column>
           <Column $style={RightColumnStyle}>
             <Title>
@@ -316,12 +316,10 @@ function SettingsTestSidePannel() {
                       Shuffled cards inside sorted decks
                     </Row>
                     <OptionsList>
-                      <OptionsContainer>
                         <SortDecks
                           selectedFiles={selectedFiles}
                           disabled={disabled}
                         />
-                      </OptionsContainer>
                     </OptionsList>
                   </>
                 )}

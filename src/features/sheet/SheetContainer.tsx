@@ -22,7 +22,7 @@ function SheetContainer(): JSX.Element {
   return (
     <CSSTransition
       in={sheetId !== null}
-      timeout={400}
+      timeout={200}
       classNames="sheet"
       unmountOnExit
       mountOnEnter

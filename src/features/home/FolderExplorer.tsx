@@ -21,7 +21,7 @@ type FolderProps = {
 
 type FolderStyledProps = {
   $active: boolean;
-  draggedEnter: boolean;
+  $draggedEnter: boolean;
 };
 
 const FolderStyled = styled.div<FolderStyledProps>`
@@ -43,7 +43,7 @@ const FolderStyled = styled.div<FolderStyledProps>`
     `}
 
   ${(props) =>
-    props.draggedEnter &&
+    props.$draggedEnter &&
     css`
       background-color: var(--color-primary-100);
     `}
@@ -126,7 +126,7 @@ function FolderExplorer({ folder }: FolderProps): JSX.Element {
       <FolderStyled
         onClick={handleClickTab}
         $active={active}
-        draggedEnter={draggedEnterId === _id}
+        $draggedEnter={draggedEnterId === _id}
       >
         <FolderLeftContainer>
           <FolderStateIcon isFolderOpen={isFolderOpen} />

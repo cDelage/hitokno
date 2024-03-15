@@ -27,6 +27,7 @@ import SheetContainer from "../sheet/SheetContainer";
 import DeckContainer from "../deck/DeckContainer";
 import ViewportSyncWithDb from "./ViewportSyncWithDb";
 import PasteImage from "./PasteImage";
+import NodeControlSidebar from "./NodeControlSidebar";
 
 const ViewportContainer = styled.div`
   flex-grow: 1;
@@ -51,7 +52,8 @@ function Viewport(): JSX.Element {
     setEdgeCreationProps,
     handleDuplicateNode,
     clearHelpers,
-    addHelperLines
+    addHelperLines,
+    handleDeleteSelected
   } = useCartography();
   const { zoom } = useViewport();
   const { clearPositionToolbar } = useNodeToolbar();
@@ -123,8 +125,13 @@ function Viewport(): JSX.Element {
       if (isCtrlPressed && (e.key === "d" || e.key === "D")) {
         handleDuplicateNode();
       }
+
+      if(e.key === "Delete"){
+        handleDeleteSelected();
+      }
+
     },
-    [handleDuplicateNode]
+    [handleDuplicateNode, handleDeleteSelected]
   );
 
   useEffect(() => {
@@ -149,6 +156,7 @@ function Viewport(): JSX.Element {
         </>
       )}
       <SheetContainer />
+      <NodeControlSidebar/>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -162,7 +170,6 @@ function Viewport(): JSX.Element {
         edgeTypes={EDGE_TYPE_COMPONENT as EdgeTypes}
         defaultEdgeOptions={DEFAULT_EDGE_OPTIONS}
         connectionLineComponent={ConnectionEdgeCustom}
-        onNodeDrag={(_e, id) => console.log("DRAG : ", id)}
         snapToGrid={true}
         snapGrid={[8, 8]}
         panOnScroll
@@ -173,6 +180,8 @@ function Viewport(): JSX.Element {
         minZoom={0.2}
         style={{ userSelect: "auto" }}
         maxZoom={2.5}
+        fitView
+        fitViewOptions={{minZoom: 1, maxZoom: 1, nodes}}
       >
         <>
           {zoom < 1.5 && (

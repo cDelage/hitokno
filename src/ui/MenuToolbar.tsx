@@ -39,7 +39,6 @@ const ActionStyled = styled.div<BorderProps & ActionProps & { $theme?: string; $
   display: flex;
   align-items: center;
   user-select: none;
-  z-index: 1000;
   ${(props) => {
     return props.border;
   }}
