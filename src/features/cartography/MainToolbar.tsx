@@ -77,10 +77,30 @@ function MainToolbar() {
   const sheetId = searchParams.get("sheetId");
 
   const handleOpenDeck = useCallback(() => {
-    searchParams.delete("sheetId")
-    searchParams.append("deckOpen", "true");
-    setSearchParams(searchParams)
-  },[searchParams, setSearchParams])
+    searchParams.delete("sheetId");
+    if (!searchParams.get("deckOpen")) {
+      searchParams.append("deckOpen", "true");
+      setSearchParams(searchParams);
+    } else {
+      searchParams.delete("deckOpen");
+      setSearchParams(searchParams);
+    }
+  }, [searchParams, setSearchParams]);
+
+  const handleKeyboardEvent = useCallback((e : KeyboardEvent) => {
+    const isCtrlPressed = e.ctrlKey || e.metaKey;
+      if (isCtrlPressed && e.key === " ") {
+        handleOpenDeck()
+      }
+  },[handleOpenDeck])
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyboardEvent)
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyboardEvent)
+    }
+  })
 
   //Manage menu change selection
   useEffect(() => {

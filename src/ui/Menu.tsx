@@ -22,7 +22,6 @@ const ListTabsStyled = styled.ul<ListTabsStyledProps>`
   right: ${(props) => props.position.right}px;
   display: flex;
   flex-direction: column;
-  width: 200px;
 `;
 
 const TabStyled = styled.button`
@@ -59,6 +58,7 @@ type ListTabsProps = {
 
 type ListTabsStyledProps = {
   position: PositionAbsoluteRight;
+  width?: number;
 };
 
 type TabMenuProps = {
@@ -70,7 +70,7 @@ type TabMenuProps = {
 type ToggleMenuProps = {
   children: ReactNode;
   id: string;
-  isStyleNotApplied?: boolean
+  isStyleNotApplied?: boolean;
 };
 
 const MenuContext = createContext<MenuContextProps | null>(null);
@@ -135,7 +135,11 @@ function Tab({ children, onClick, disabled }: TabMenuProps): JSX.Element {
 /**
  * Toggle menu
  */
-function Toggle({ children, id, isStyleNotApplied }: ToggleMenuProps): JSX.Element {
+function Toggle({
+  children,
+  id,
+  isStyleNotApplied,
+}: ToggleMenuProps): JSX.Element {
   const { open, close, openId } = useContext(MenuContext) as MenuContextProps;
 
   function handleClick(e: MouseEvent) {
@@ -151,7 +155,7 @@ function Toggle({ children, id, isStyleNotApplied }: ToggleMenuProps): JSX.Eleme
       openId === "" || openId !== id ? open(menuPosition, id) : close();
     }
   }
-  if(isStyleNotApplied) return <div onClick={handleClick}>{children}</div>;
+  if (isStyleNotApplied) return <div onClick={handleClick}>{children}</div>;
   return <IconButton onClick={handleClick}>{children}</IconButton>;
 }
 

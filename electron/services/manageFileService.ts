@@ -19,6 +19,11 @@ export async function saveFile({ fileId, saveMode: saveType }: SaveParams) {
     };
     if (saveType === "SAVE" && file.filePath) {
       fs.writeFileSync(file.filePath, JSON.stringify(newFile));
+      await updateFilepath({
+        ...file,
+        filePath: file.filePath,
+        isSaved: true,
+      });
     } else {
       const { canceled, filePath } = await dialog.showSaveDialog({
         title: "Register hitokno file",
@@ -28,7 +33,7 @@ export async function saveFile({ fileId, saveMode: saveType }: SaveParams) {
       });
 
       if (!canceled && filePath) {
-        await updateFilepath({ ...file, filePath });
+        await updateFilepath({ ...file, filePath, isSaved: true });
         fs.writeFileSync(filePath, JSON.stringify(newFile));
       }
     }
@@ -57,7 +62,7 @@ export async function importFile(win: BrowserWindow, folderId: string) {
       const result = await importFileFromRepository(folderId, newFile);
       return result;
     } else {
-      throw new Error("Fail to import the file, probably not the good format")
+      throw new Error("Fail to import the file, probably not the good format");
     }
   }
 }

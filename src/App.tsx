@@ -1,6 +1,5 @@
 import GlobalStyle from "./GlobalStyle";
 import AppLayout from "./ui/AppLayout";
-import Home from "./pages/Home";
 import {
   FileHitokno,
   FileDetail,
@@ -10,11 +9,7 @@ import {
   RenameFolderParams,
 } from "./types/Repository.types";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import FileDisabled from "./features/home/FileDisabled";
-import FileSelected from "./features/home/FileSelected";
-import Cartography from "./pages/Cartography";
 import { SheetDetail } from "./types/Cartography.type";
-import Test from "./pages/Test";
 import {
   CreateTestProps,
   SearchByCriteriaResult,
@@ -24,6 +19,10 @@ import { SearchCriterias } from "./types/SearchCriteria.type";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Router, Route } from "electron-router-dom";
 import { SaveParams } from "./types/Save.type";
+import { Suspense, lazy } from "react";
+import FileDisabled from "./features/home/FileDisabled";
+import Home from "./pages/Home";
+import FileSelected from "./features/home/FileSelected";
 
 /**
  * When i add it into a file .d.ts, then typescript not recognize the interface.
@@ -51,7 +50,7 @@ declare global {
       removeFile: (params: { _id: string }) => Promise<number>;
       moveFile: (params: MoveFile) => Promise<void>;
       saveFile: (params: SaveParams) => Promise<void>;
-      importFile: (fileId: string) => Promise<FileHitokno>
+      importFile: (fileId: string) => Promise<FileHitokno>;
     };
     tests: {
       createTest: (params: CreateTestProps) => Promise<TestType>;
@@ -73,6 +72,9 @@ const queryClient = new QueryClient({
     },
   },
 });
+
+const Cartography = lazy(() => import("./pages/Cartography"));
+const Test = lazy(() => import("./pages/Test"));
 
 function App() {
   return (
@@ -108,8 +110,22 @@ function App() {
                     </>
                   }
                 />
-                <Route path="/cartography/:fileId" element={<Cartography />} />
-                <Route path="/test/:testId" element={<Test />} />
+                <Route
+                  path="/cartography/:fileId"
+                  element={
+                    <Suspense>
+                      <Cartography />
+                    </Suspense>
+                  }
+                />
+                <Route
+                  path="/test/:testId"
+                  element={
+                    <Suspense>
+                      <Test />
+                    </Suspense>
+                  }
+                />
               </>
             }
           />

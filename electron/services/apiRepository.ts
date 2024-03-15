@@ -164,6 +164,7 @@ export async function updateCartography({
   nodes,
   edges,
   fileName,
+  isSaved
 }: FileHitokno) {
   const folder = (await db.repository.findOne({
     "files._id": _id,
@@ -175,6 +176,7 @@ export async function updateCartography({
         ...file,
         nodes,
         edges,
+        isSaved
       };
     } else {
       return { ...file };
@@ -191,7 +193,7 @@ export async function updateCartography({
   return result;
 }
 
-export async function updateFilepath({ _id, filePath }: FileHitokno) {
+export async function updateFilepath({ _id, filePath, isSaved }: FileHitokno) {
   const folder = (await db.repository.findOne({
     "files._id": _id,
   })) as CompleteFolder;
@@ -201,6 +203,7 @@ export async function updateFilepath({ _id, filePath }: FileHitokno) {
       return {
         ...file,
         filePath,
+        isSaved
       };
     } else {
       return { ...file };

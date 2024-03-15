@@ -56,6 +56,8 @@ type UseCartographyStore = {
   identicalWidthNodes: string[];
   identicalHeightNodes: string[];
   isInitViewport: boolean;
+  isSaved: boolean;
+  setIsSaved: (isSaved: boolean) => void;
   addHandlesActive: (handles: string[]) => void;
   removeHandlesActive: (handles: string[]) => void;
   setEdgeCreationProps: (edgeCreationProps: EdgeCreationProps) => void;
@@ -125,6 +127,7 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
   identicalHeightNodes: [],
   movedNode: undefined,
   isInitViewport: false,
+  isSaved: true,
   addHandlesActive: (handles: string[]) => {
     set((state) => {
       return {
@@ -308,10 +311,11 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
       edges: edg,
     });
   },
-  initCartography: ({ nodes, edges }: FileHitokno) => {
+  initCartography: ({ nodes, edges, isSaved }: FileHitokno) => {
     set({
       nodes,
       edges,
+      isSaved
     });
   },
   setMainToolbarActiveMenu: (mainToolbarMode: MainToolbarMode) => {
@@ -351,10 +355,10 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
           nodes: state.nodes.map((node) => applyNodeMode(node, "DEFAULT")),
         };
       });
-    }else if(beforeSelected){
+    } else if (beforeSelected) {
       set({
-        isSyncWithDB: false
-      })
+        isSyncWithDB: false,
+      });
     }
   },
   onEdgesChange: (changes: EdgeChange[]) => {
@@ -638,47 +642,6 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
     set({
       movedNode: id,
     });
-
-    /**
-     * 
-     
-    //Check if other nodes have same size to display
-    if (
-      changes[0].type === "dimensions" &&
-      changes[0].dimensions &&
-      changes.length < 2
-    ) {
-      const dimension = changes[0].dimensions;
-      const id = changes[0].id;
-      const identicalWidth = get()
-        .nodes.filter(
-          (node) => node.id !== id && node.style?.width === dimension.width
-        )
-        .map((node) => node.id);
-      if (identicalWidth.length) {
-        identicalWidth.push(id);
-      }
-      const identicalHeight = get()
-        .nodes.filter(
-          (node) => node.id !== id && node.style?.height === dimension.height
-        )
-        .map((node) => node.id);
-      if (identicalHeight.length) {
-        identicalHeight.push(id);
-      }
-      set({
-        identicalWidthNodes: identicalWidth,
-        identicalHeightNodes: identicalHeight,
-      });
-    } else if (
-      get().identicalWidthNodes.length ||
-      get().identicalHeightNodes.length
-    ) {
-      set({
-        identicalWidthNodes: [],
-        identicalHeightNodes: [],
-      });
-    }*/
   },
   addSameSizeHelperLines: (
     id: string,
@@ -705,6 +668,9 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
       identicalWidthNodes: identicalWidth,
       identicalHeightNodes: identicalHeight,
     });
+  },
+  setIsSaved: (isSaved: boolean) => {
+    set({ isSaved });
   },
 }));
 

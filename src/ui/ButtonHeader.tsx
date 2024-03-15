@@ -7,7 +7,8 @@ export const ButtonHeader = styled.button`
     gap: 4px;
     padding: 4px 8px 4px 4px;
     font-size: 1rem;
-    border-radius: 8px;
+    border-radius: 4px;
+    box-shadow: var(--shadow-md);
     cursor: pointer;
     align-items: center;
 

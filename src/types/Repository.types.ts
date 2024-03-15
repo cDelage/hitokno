@@ -39,6 +39,7 @@ export type FileHitokno = {
   edges: Edge[];
   deck: FlashCard[];
   filePath?: string;
+  isSaved?: boolean;
 };
 
 export type RenameFolderParams = {

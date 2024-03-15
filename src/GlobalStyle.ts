@@ -326,6 +326,21 @@ p{
   transition: transform 200ms;
 }
 
+.success-enter {
+  transform: scale(0);
+}
+.success-enter-active {
+  transform: scale(1);
+  transition: transform 200ms;
+}
+.success-exit {
+  transform: scale(1);
+}
+.success-exit-active {
+  transform: scale(0);
+  transition: transform 200ms;
+}
+
 `;
 
 export default GlobalStyle;

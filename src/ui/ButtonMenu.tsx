@@ -5,9 +5,10 @@ import Menu from "./Menu";
 
 const ButtonContainer = styled.div`
   display: flex;
-  border-radius: 8px;
-  border: 1px var(--color-gray-300) solid;
+  border-radius: 4px;
+  box-shadow: var(--shadow-md);
   overflow: hidden;
+  transition: all 200ms;
   `;
 
 const LeftButton = styled.button`
@@ -52,9 +53,9 @@ const RightButton = styled.button`
   }
 `;
 
-export function ButtonMenu({ children, tabs }: { children: ReactNode, tabs: ReactNode }) {
+export function ButtonMenu({ children, tabs, onClick }: { children: ReactNode, tabs: ReactNode, onClick?: () => void }) {
   return (
-    <ButtonContainer>
+    <ButtonContainer onClick={onClick}>
       <LeftButton>{children}</LeftButton>
       <RightButton>
         <Menu>
