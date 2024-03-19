@@ -101,16 +101,6 @@ function SheetToolbar({ nodeId }: { nodeId: string }) {
     zoom,
   ]);
 
-  const handleKeydown = useCallback(
-    (e: KeyboardEvent) => {
-      const isCtrlPressed = e.ctrlKey || e.metaKey;
-      if (isCtrlPressed && e.key === "ArrowRight") {
-        handleCloseSheet();
-      }
-    },
-    [handleCloseSheet]
-  );
-
   const handleSetBold = useCallback(() => {
     editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold");
   }, [editor]);
@@ -256,14 +246,6 @@ function SheetToolbar({ nodeId }: { nodeId: string }) {
       removeListener();
     };
   }, [editor]);
-
-  useEffect(() => {
-    document.addEventListener("keydown", handleKeydown);
-
-    return () => {
-      document.removeEventListener("keydown", handleKeydown);
-    };
-  }, [handleKeydown]);
 
   return (
     <MenuToolbar $position={{}} $isDisplayBlock={true}>

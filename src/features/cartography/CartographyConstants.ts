@@ -24,16 +24,18 @@ import { CodeNode, CodeHighlightNode } from "@lexical/code";
 import EdgeCustom from "./EdgeCustom";
 import { ImageNode } from "../lexicalPlugins/PluginImage/ImageNode";
 import NodeImage from "./NodeImage";
+import NodeGroup from "./NodeGroup";
 
 export const PX_UNIT_GAP = 8;
 
 export const NodeCustomsComponents = {
   shape: NodeShape,
   creation: NodeCreation,
-  image: NodeImage
+  image: NodeImage,
+  groupNode: NodeGroup
 };
 
-export const NodeToSave = ["shape","image"];
+export const NodeToSave = ["shape","image","groupNode"];
 
 export const DefaultShape: ShapeDescription = {
   shape: "rect" as Shape,

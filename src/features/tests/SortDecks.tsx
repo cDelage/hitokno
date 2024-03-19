@@ -2,7 +2,7 @@ import { DragEvent, useCallback, useEffect, useState } from "react";
 import { FileShort } from "../../types/Repository.types";
 import DeckSortable from "./DeckSortable";
 import { Column } from "../../ui/Row";
-import moveElement from "../../utils/MoveElement";
+import moveElement from "../../utils/moveElement";
 import { DeckTestConfig } from "../../types/Test.type";
 import useTestStore from "./useTestStore";
 

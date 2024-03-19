@@ -51,9 +51,10 @@ function Viewport(): JSX.Element {
     initCartography,
     setEdgeCreationProps,
     handleDuplicateNode,
-    clearHelpers,
+    handleDragStop: clearHelpers,
     addHelperLines,
-    handleDeleteSelected
+    handleDeleteSelected,
+    handleNodeDrag
   } = useCartography();
   const { zoom } = useViewport();
   const { clearPositionToolbar } = useNodeToolbar();
@@ -166,6 +167,7 @@ function Viewport(): JSX.Element {
         onEdgesChange={onEdgesChange}
         onNodeDragStart={(_e, node) => addHelperLines(node.id)}
         onNodeDragStop={clearHelpers}
+        onNodeDrag={(_e, node) => handleNodeDrag(node)}
         nodeTypes={NodeCustomsComponents}
         edgeTypes={EDGE_TYPE_COMPONENT as EdgeTypes}
         defaultEdgeOptions={DEFAULT_EDGE_OPTIONS}

@@ -28,7 +28,7 @@ function Resizer({
   id: string;
 }) {
   const { zoom } = useViewport();
-  const { addSameSizeHelperLines, addHelperLines, clearHelpers } = useCartography();
+  const { addSameSizeHelperLines, addHelperLines, handleDragStop: clearHelpers } = useCartography();
   const NodeResizerStyle: CSSProperties = {
     ...ResizerHandleStyle,
     width: `${16 / zoom}px`,

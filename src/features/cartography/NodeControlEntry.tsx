@@ -9,11 +9,9 @@ import { useSearchParams } from "react-router-dom";
 import { ChangeEvent, DragEvent, MouseEvent, useCallback } from "react";
 import TextEditable from "../../ui/TextEditable";
 import useCartography from "./useCartography";
+import useControlNodeSortContext from "./useControlNodeSortContext";
 
-const NodeControlEntryStyled = styled.div<{
-  $selected?: boolean;
-  $dragged?: boolean;
-}>`
+const NodeControlEntryStyled = styled.div<{$selected?: boolean; $dragged?: boolean;}>`
   padding: 8px;
   cursor: pointer;
   overflow: hidden;
@@ -46,27 +44,16 @@ const NodeControlEntryStyled = styled.div<{
 
 function NodeControlEntry({
   node,
-  dragStart,
-  dragEnd,
-  dragEnter,
-  onRename,
-  draggedId,
-  renameNodeId,
-  closeRenameMode,
+  groupId
 }: {
   node: Node<DataNode>;
-  renameNodeId: string | undefined;
-  draggedId: string | undefined;
-  onRename: () => void;
-  dragStart: () => void;
-  dragEnter: (e: DragEvent<HTMLDivElement>) => void;
-  dragEnd: () => void;
-  closeRenameMode: () => void;
+  groupId?: string | undefined;
 }) {
   const [, setSearchParams] = useSearchParams();
   const { data, selected, id } = node;
   const { label, sheet } = data;
   const { setNodeData, selectNode, addNodeToSelection } = useCartography();
+  const {currentDragged, currentRenamed, handleSetCurrentRenamed, handleDragStart, handleDragEnter, handleCloseRename, handleDoubleClickRename} = useControlNodeSortContext();
 
   const handleOpenSheet = useCallback(() => {
     if (sheet) {
@@ -99,20 +86,19 @@ function NodeControlEntry({
     <NodeControlEntryStyled
       $selected={selected}
       draggable
-      onDragStart={dragStart}
-      onDragEnter={dragEnter}
-      onDragEndCapture={dragEnd}
-      $dragged={draggedId === id}
-      onDoubleClick={onRename}
+      $dragged={currentDragged === id}
       onClick={handleClick}
+      onDoubleClick={() => handleDoubleClickRename(id)}
+      onDragStart={() => handleDragStart(id, groupId)}
+      onDragEnter={(e: DragEvent<HTMLDivElement>) => handleDragEnter(e, id, groupId)}
     >
       <Row $gap={4} $style={{ flexGrow: 1, overflow: "hidden" }}>
         <MdDragIndicator size={20} />
         <TextEditable
-          mode={renameNodeId === id ? "EDIT" : "DEFAULT"}
+          mode={currentRenamed === id ? "EDIT" : "DEFAULT"}
           onEdit={handleRename}
           value={label}
-          onClickOutside={closeRenameMode}
+          onClickOutside={handleCloseRename}
         ></TextEditable>
       </Row>
       <Row>
@@ -122,8 +108,8 @@ function NodeControlEntry({
           </ButtonHeader>
         )}
         <ButtonHeader
-          onClick={renameNodeId === id ? closeRenameMode : onRename}
-          $active={renameNodeId === id}
+          $active={currentRenamed === id}
+          onClick={() => handleSetCurrentRenamed(id)}
         >
           <BiPen />
         </ButtonHeader>

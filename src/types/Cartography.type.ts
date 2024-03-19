@@ -1,4 +1,4 @@
-import { Position } from "reactflow";
+import { Node, Position } from "reactflow";
 import { PositionAbsolute } from "./Position.type";
 
 export type CartographyMode = "DEFAULT" | "EDIT";
@@ -99,7 +99,14 @@ export type DataNode = {
   sheet?: Sheet
   src?: string;
   label: string;
+  isGrouped?: boolean;
+  parentIdStored?: string | undefined;
 };
+
+export type NodeSortListItem = {
+  node : Node<DataNode>;
+  childs : NodeSortListItem [];
+}
 
 export type Sheet = {
   sheetId: string;

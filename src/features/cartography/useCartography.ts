@@ -27,6 +27,7 @@ import {
 } from "../../types/Cartography.type";
 import { v4 as uuidv4 } from "uuid";
 import { FileHitokno } from "../../types/Repository.types";
+import moveElement from "../../utils/moveElement";
 
 const applyNodeMode = (node: Node<DataNode>, mode: NodeMode) => {
   return {
@@ -38,10 +39,65 @@ const applyNodeMode = (node: Node<DataNode>, mode: NodeMode) => {
   };
 };
 
+const isInsideGroup = (
+  node: Node<DataNode>,
+  group: Node<DataNode>,
+  exit: boolean
+) => {
+  const {
+    position: { x: nodeX, y: nodeY },
+    width: nodeWidth,
+    height: nodeHeight,
+  } = node;
+  const {
+    position: { x: groupX, y: groupY },
+    width: groupWidth,
+    height: groupHeight,
+  } = group;
+
+  if (exit) {
+    return (
+      nodeX >= groupX &&
+      nodeY >= groupY &&
+      nodeX + (nodeWidth as number) <= groupX + (groupWidth as number) &&
+      nodeY + (nodeHeight as number) <= groupY + (groupHeight as number)
+    );
+  }
+
+  const nodeMaxX = nodeX + (nodeWidth as number) + groupX;
+  const nodeMaxY = nodeY + (nodeHeight as number) + groupY;
+  const groupMaxX = groupX + (groupWidth as number);
+  const groupMaxY = groupY + (groupHeight as number);
+
+  return !(
+    nodeMaxX <= groupX ||
+    nodeMaxY <= groupY ||
+    nodeX + groupX >= groupMaxX ||
+    nodeY + groupY >= groupMaxY
+  );
+};
+
 const selectedNodeOnChange = (change: NodeChange) =>
   change.type === "select" && change.selected === true;
 const unSelectedNodeOnChange = (change: NodeChange) =>
   change.type === "select" && change.selected === false;
+
+const getGroupPositionGap = (
+  field: "x" | "y",
+  groupAround: Node<DataNode> | undefined,
+  isGrouped: boolean,
+  exitGroup: boolean,
+  node: Node<DataNode>,
+  isOutOfTheBox: boolean
+) => {
+  if (groupAround && !isGrouped) {
+    return node.position[field] - groupAround.position[field];
+  } else if ((exitGroup || isOutOfTheBox) && groupAround) {
+    return groupAround.position[field] + node.position[field];
+  } else {
+    return node.position[field];
+  }
+};
 
 type UseCartographyStore = {
   nodes: Node<DataNode>[];
@@ -106,7 +162,7 @@ type UseCartographyStore = {
   findBottomAlignedNode: (id: string, pointToAlign: number) => boolean;
   findCenterXAlignedNode: (id: string, pointToAlign: number) => boolean;
   findCenterYAlignedNode: (id: string, pointToAlign: number) => boolean;
-  clearHelpers: () => void;
+  handleDragStop: () => void;
   addHelperLines: (id: string) => void;
   addSameSizeHelperLines: (
     id: string,
@@ -115,6 +171,24 @@ type UseCartographyStore = {
   handleDeleteSelected: () => void;
   selectNode: (id: string) => void;
   addNodeToSelection: (id: string) => void;
+  //To delete
+  dummyGroup: () => void;
+  setGroupAround: (
+    node: Node<DataNode>,
+    minX: number,
+    minY: number,
+    maxX: number,
+    maxY: number
+  ) => void;
+  setNodesInside: (
+    id: string,
+    minX: number,
+    minY: number,
+    maxX: number,
+    maxY: number
+  ) => void;
+  handleNodeDrag: (node: Node<DataNode>) => void;
+  setNodeInGroup: (nodeId: string, groupId: string) => void;
 };
 
 const useCartography = create<UseCartographyStore>((set, get) => ({
@@ -634,11 +708,23 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
       ).length > 0
     );
   },
-  clearHelpers: () => {
-    set({
-      movedNode: undefined,
-      identicalHeightNodes: [],
-      identicalWidthNodes: [],
+  handleDragStop: () => {
+    set((state) => {
+      return {
+        movedNode: undefined,
+        identicalHeightNodes: [],
+        identicalWidthNodes: [],
+        nodes: state.nodes.map((node) => {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              isGrouped: node.parentNode ? true : false,
+              parentIdStored: node.parentNode,
+            },
+          };
+        }),
+      };
     });
   },
   addHelperLines: (id: string) => {
@@ -676,11 +762,31 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
     set({ isSaved });
   },
   handleDeleteSelected: () => {
-    set((state) => {
-      return {
-        nodes: state.nodes.filter((node) => !node.selected || node.data.sheet),
-      };
-    });
+    const modeEdit = get()
+      .nodes.map((x) => x.data.mode)
+      .includes("EDIT");
+
+    if (!modeEdit) {
+      const groupsDeleted = get()
+        .nodes.filter((node) => node.selected && node.type === "groupNode")
+        .map((node) => node.id);
+      set((state) => {
+        return {
+          isSyncWithDB: false,
+          nodes: state.nodes
+            .filter((node) => !node.selected || node.data.sheet)
+            .map((node) => {
+              return {
+                ...node,
+                parentNode:
+                  node.parentNode && groupsDeleted.includes(node.parentNode)
+                    ? undefined
+                    : node.parentNode,
+              };
+            }),
+        };
+      });
+    }
   },
   selectNode: (id: string) => {
     set((state) => {
@@ -710,6 +816,175 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
       };
     });
   },
+  dummyGroup: () => {
+    set((state) => {
+      return {
+        nodes: [
+          ...state.nodes,
+          {
+            id: uuidv4(),
+            position: {
+              x: 0,
+              y: 0,
+            },
+            data: {
+              handles: [],
+              label: "GROUP",
+              mode: "DEFAULT",
+              shapeDescription: {
+                shape: "rect",
+                border: true,
+                shadow: "var(--shadow-shape-md)",
+                theme: {
+                  id: "orange-light",
+                  fill: "#FED7AA",
+                  color: "#1C1917",
+                  stroke: "#FB923C",
+                },
+              },
+            },
+            style: {
+              width: 200,
+              height: 200,
+            },
+            type: "groupNode",
+          },
+        ],
+      };
+    });
+  },
+  setGroupAround: (
+    node: Node<DataNode>,
+    minX: number,
+    minY: number,
+    maxX: number,
+    maxY: number
+  ) => {
+    const {
+      data: { isGrouped, parentIdStored },
+      parentNode,
+    } = node;
+
+    const storedGroup = isGrouped
+      ? get().nodes.find((group) => group.id === parentIdStored)
+      : undefined;
+
+    const groupAround = get()
+      .nodes.filter((n) => n.type === "groupNode" && n.id !== node.id)
+      .find((group) => {
+        const {
+          position: { x, y },
+          width,
+          height,
+        } = group;
+        const groupMaxX = x + (width || 0);
+        const groupMaxY = y + (height || 0);
+
+        return (
+          minX + (isGrouped ? x : 0) >= x &&
+          minY + (isGrouped ? y : 0) >= y &&
+          maxX + (isGrouped ? x : 0) <= groupMaxX &&
+          maxY + (isGrouped ? y : 0) <= groupMaxY
+        );
+      });
+    
+    if(groupAround){
+      get().setNodeInGroup(node.id, groupAround.id)
+    }
+
+    const definitiveGroup = storedGroup ? storedGroup : groupAround;
+    const isOutOfTheBox =
+      parentNode === undefined &&
+      isGrouped !== undefined &&
+      isGrouped &&
+      (!groupAround || groupAround.id === parentIdStored);
+
+    const exitGroup: boolean =
+      isGrouped && storedGroup
+        ? !isInsideGroup(node, storedGroup, parentNode === undefined)
+        : false;
+
+    set((state) => {
+      return {
+        nodes: state.nodes.map((n) => {
+          if (n.id === node.id) {
+            return {
+              ...n,
+              parentNode:
+                definitiveGroup && !exitGroup ? definitiveGroup.id : undefined,
+              position: {
+                x: getGroupPositionGap(
+                  "x",
+                  definitiveGroup,
+                  n.data.isGrouped ? n.data.isGrouped : false,
+                  exitGroup,
+                  node,
+                  isOutOfTheBox
+                ),
+                y: getGroupPositionGap(
+                  "y",
+                  definitiveGroup,
+                  n.data.isGrouped ? n.data.isGrouped : false,
+                  exitGroup,
+                  node,
+                  isOutOfTheBox
+                ),
+              },
+            };
+          } else {
+            return n;
+          }
+        }),
+      };
+    });
+  },
+
+  setNodesInside: (
+    id: string,
+    minX: number,
+    minY: number,
+    maxX: number,
+    maxY: number
+  ) => {
+    get()
+      .nodes.filter((node) => node.type !== "groupNode")
+      .filter((node) => {
+        const nodeMaxX = node.position.x + ((node.style?.width as number) || 0);
+        const nodeMaxY =
+          node.position.y + ((node.style?.height as number) || 0);
+
+        return (
+          minX < node.position.x &&
+          minY < node.position.y &&
+          maxX > nodeMaxX &&
+          maxY > nodeMaxY
+        );
+      })
+      .map((x) => x.id);
+  },
+  handleNodeDrag: (node: Node<DataNode>) => {
+    const { x, y } = node.position;
+    const { width, height } = node;
+    get().setGroupAround(
+      node,
+      x,
+      y,
+      x + (width as number),
+      y + (height as number)
+    );
+  },
+  setNodeInGroup : (nodeId: string, groupId:string) => {
+    set((state) => {
+      const nodes = state.nodes;
+      const nodeIndex = nodes.findIndex(x => x.id === nodeId);
+      const targetGrouplist = nodes.filter(x => x.id === groupId || x.parentNode === groupId)
+      const targetIndex = nodes.findIndex(x => x.id === targetGrouplist[targetGrouplist.length-1].id) + 1;
+      const newList = moveElement(nodes, nodeIndex, targetIndex);
+      return {
+        nodes: newList
+      }
+    })
+  }
 }));
 
 export default useCartography;

@@ -65,6 +65,7 @@ function MainToolbar() {
     setMainToolbarActiveMenu,
     shapeCreationDesc,
     setShapeCreationDesc,
+    dummyGroup,
   } = useCartography();
   const {
     theme: { id: themeId, fill, stroke },
@@ -100,13 +101,6 @@ function MainToolbar() {
       setSearchParams(searchParams);
     }
   }, [searchParams, setSearchParams]);
-  
-  const handleClearPosition = useCallback(() => {
-    searchParams.delete("sheetId");
-    searchParams.delete("nodeControlSidebar");
-    searchParams.delete("deckOpen");
-    setSearchParams(searchParams);
-  },[searchParams, setSearchParams])
 
   const handleKeyboardEvent = useCallback(
     (e: KeyboardEvent) => {
@@ -119,13 +113,9 @@ function MainToolbar() {
       if (isCtrlPressed && (e.key === "q" || e.key === "Q")) {
         handleOpenNodeControlSidebar();
       }
-      
-      if (isCtrlPressed && (e.key === "B" || e.key === "b")) {
-        handleClearPosition();
-      }
-      
+
     },
-    [handleOpenDeck, handleOpenNodeControlSidebar,handleClearPosition]
+    [handleOpenDeck, handleOpenNodeControlSidebar]
   );
 
   useEffect(() => {
@@ -193,10 +183,16 @@ function MainToolbar() {
               <ToolbarLargeIconContainer>
                 <SidebarIcon />
               </ToolbarLargeIconContainer>
-                <ToolbarAction.ActionButton $hoverTransform={nodeControlSidebarOpen ? "translateX(-8px)" : "translateX(8px)"}>
-                  {!nodeControlSidebarOpen && <IoArrowForward />}
-                  {nodeControlSidebarOpen && <IoArrowBack />}
-                </ToolbarAction.ActionButton>
+              <ToolbarAction.ActionButton
+                $hoverTransform={
+                  nodeControlSidebarOpen
+                    ? "translateX(-8px)"
+                    : "translateX(8px)"
+                }
+              >
+                {!nodeControlSidebarOpen && <IoArrowForward />}
+                {nodeControlSidebarOpen && <IoArrowBack />}
+              </ToolbarAction.ActionButton>
             </ToolbarAction>
           </MenuToolbar.Action>
 
@@ -315,7 +311,10 @@ function MainToolbar() {
 
           {/* Create new group */}
           <MenuToolbar.Action
-            onClick={() => setMainToolbarActiveMenu("CREATION-GROUP")}
+            onClick={() => {
+              setMainToolbarActiveMenu("CREATION-GROUP");
+              dummyGroup();
+            }}
             $active={mainToolbarActiveMenu === "CREATION-GROUP"}
             toggle=""
           >

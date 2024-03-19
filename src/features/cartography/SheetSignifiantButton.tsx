@@ -79,7 +79,7 @@ function SheetSignifiantButton({
   const handleKeydown = useCallback(
     (e: KeyboardEvent) => {
       const isCtrlPressed = e.ctrlKey || e.metaKey;
-      if (isCtrlPressed && e.key === "ArrowLeft") {
+      if (isCtrlPressed && (e.key === "O"||e.key === "o")) {
         handleOpenSheet();
       }
     },
@@ -96,7 +96,7 @@ function SheetSignifiantButton({
     return () => {
       document.removeEventListener("keydown", handleKeydown);
     };
-  }, [selectedNodeId, handleKeydown, nodeId]);
+  }, [selectedNodeId, handleKeydown, nodeId, active]);
 
   return (
     <SheetButton onClick={handleClick} $isActive={active}>

@@ -4,8 +4,8 @@ import { IoChevronBack } from "react-icons/io5";
 import { useSearchParams } from "react-router-dom";
 import { CSSTransition } from "react-transition-group";
 import { useCallback } from "react";
-import NodeSortList from "./NodeSortList";
 import { MdOutlineSyncAlt } from "react-icons/md";
+import NodeControlSortList from "./NodeControlSortList";
 
 const NodeControlSidebarStyled = styled.div`
   position: absolute;
@@ -67,7 +67,7 @@ function NodeControlSidebar() {
         <Row $style={RowContainerStyle}>
           <Column $style={LeftContainerStyle}>
             <Title><MdOutlineSyncAlt transform="rotate(90)" size={20}/>Node control</Title>
-            <NodeSortList/>
+            <NodeControlSortList/>
           </Column>
           <Column
             $style={RightCloseModalStyle}

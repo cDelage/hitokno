@@ -12,6 +12,7 @@ type TextEditableProps = {
   style?: CSSProperties;
   fontWeigth?: string;
   lockSelection?: boolean;
+  fontSize?: string;
 };
 
 type InputProps = {
@@ -19,15 +20,19 @@ type InputProps = {
   $resizable: boolean;
   $style?: CSSProperties;
   $fontWeigth?: string;
+  $fontSize? : string | undefined;
 };
 
-function getTextWidth(text: string, fontWeigth?: string) {
+function getTextWidth(text: string, fontWeigth?: string, fontSize?: string) {
   const element = document.createElement("div");
   element.style.display = "inline-block";
   if (fontWeigth) {
     element.style.fontWeight = fontWeigth;
   }
-  element.innerHTML = text;
+  if(fontSize){
+    element.style.fontSize = fontSize
+  }
+  element.innerHTML = text+ "&nbsp;";
   document.body.appendChild(element);
   const width = element.offsetWidth;
   document.body.removeChild(element);
@@ -38,14 +43,14 @@ const Input = styled.input<InputProps>`
   font-family: inherit;
   font-size: inherit;
   color: inherit;
-  background-color: inherit;
-  border: inherit;
+  background-color: transparent;
+  border: none;
   font-weight: inherit;
   height: 100%;
-  padding: 0;
   margin: 0;
   resize: none;
   outline: none;
+  overflow: hidden;
 
   &:read-only {
     cursor: inherit;
@@ -55,7 +60,7 @@ const Input = styled.input<InputProps>`
   ${(props) =>
     props.$resizable
       ? css`
-          width: ${getTextWidth(props.value as string, props.$fontWeigth)}px;
+          width: ${getTextWidth(props.value as string, props.$fontWeigth, props.$fontSize)}px;
           padding: 0px 4px;
         `
       : css`
@@ -70,7 +75,8 @@ function TextEditable({
   onClickOutside,
   resizable,
   fontWeigth,
-  lockSelection
+  lockSelection,
+  fontSize
 }: TextEditableProps): JSX.Element {
   const ref = useInputOutsideDoubleClick(() => {
     if (mode === "EDIT") {
@@ -101,6 +107,7 @@ function TextEditable({
       onClick={handleClick}
       $resizable={resizable as boolean}
       $fontWeigth={fontWeigth}
+      $fontSize={fontSize}
     />
   );
 }
