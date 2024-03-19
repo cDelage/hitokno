@@ -98,7 +98,7 @@ function Viewport(): JSX.Element {
   useEffect(() => {
     if (mainToolbarActiveMenu === "SELECT") {
       setPanOnDragMode([1, 2]);
-    } else if (mainToolbarActiveMenu === "CREATION-NODE") {
+    } else if (mainToolbarActiveMenu === "CREATION-NODE" || mainToolbarActiveMenu === "CREATION-GROUP") {
       setPanOnDragMode([2]);
     } else {
       setPanOnDragMode(undefined);

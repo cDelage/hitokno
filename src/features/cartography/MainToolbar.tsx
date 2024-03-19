@@ -60,12 +60,14 @@ const ShapeContainer = styled.div`
 function MainToolbar() {
   const {
     setCreateNodeMode,
+    getCreationNode,
+    setCreateGroupMode,
+    clearCreateGroupMode,
     clearCreateNodeMode,
     mainToolbarActiveMenu,
     setMainToolbarActiveMenu,
     shapeCreationDesc,
     setShapeCreationDesc,
-    dummyGroup,
   } = useCartography();
   const {
     theme: { id: themeId, fill, stroke },
@@ -113,7 +115,6 @@ function MainToolbar() {
       if (isCtrlPressed && (e.key === "q" || e.key === "Q")) {
         handleOpenNodeControlSidebar();
       }
-
     },
     [handleOpenDeck, handleOpenNodeControlSidebar]
   );
@@ -128,12 +129,26 @@ function MainToolbar() {
 
   //Manage menu change selection
   useEffect(() => {
+    const creationNodes = getCreationNode();
     if (mainToolbarActiveMenu === "CREATION-NODE") {
       setCreateNodeMode();
-    } else {
+    } else if (creationNodes.length) {
       clearCreateNodeMode();
     }
-  }, [mainToolbarActiveMenu, setCreateNodeMode, clearCreateNodeMode]);
+
+    if (mainToolbarActiveMenu === "CREATION-GROUP") {
+      setCreateGroupMode();
+    } else if (creationNodes.length) {
+      clearCreateGroupMode();
+    }
+  }, [
+    mainToolbarActiveMenu,
+    setCreateNodeMode,
+    clearCreateNodeMode,
+    setCreateGroupMode,
+    clearCreateGroupMode,
+    getCreationNode,
+  ]);
 
   return (
     <CSSTransition
@@ -313,7 +328,6 @@ function MainToolbar() {
           <MenuToolbar.Action
             onClick={() => {
               setMainToolbarActiveMenu("CREATION-GROUP");
-              dummyGroup();
             }}
             $active={mainToolbarActiveMenu === "CREATION-GROUP"}
             toggle=""

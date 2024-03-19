@@ -12,6 +12,7 @@ import {
 import { create } from "zustand";
 import {
   DefaultShape,
+  GROUP_CREATION,
   NODE_CREATION,
   NodeToSave,
 } from "./CartographyConstants";
@@ -131,8 +132,17 @@ type UseCartographyStore = {
   getNodeData: (nodeId: string) => DataNode;
   setNodeData: (nodeId: string, data: DataNode) => void;
   setCreateNodeMode: () => void;
+  setCreateGroupMode: () => void;
   clearCreateNodeMode: () => void;
+  clearCreateGroupMode: () => void;
+  getCreationNode:() => Node<DataNode>[];
   handleCreateNode: (
+    xPos: number,
+    yPos: number,
+    width: number,
+    height: number
+  ) => void;
+  handleCreateGroup: (
     xPos: number,
     yPos: number,
     width: number,
@@ -172,7 +182,6 @@ type UseCartographyStore = {
   selectNode: (id: string) => void;
   addNodeToSelection: (id: string) => void;
   //To delete
-  dummyGroup: () => void;
   setGroupAround: (
     node: Node<DataNode>,
     minX: number,
@@ -503,8 +512,18 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
     set((state) => {
       return {
         nodes: [
-          ...state.nodes.filter((node) => node.type !== "creation"),
+          ...state.nodes.filter((node) => node.type !== "creation" && node.type !== "creation-group"),
           NODE_CREATION,
+        ],
+      };
+    });
+  },
+  setCreateGroupMode: () => {
+    set((state) => {
+      return {
+        nodes: [
+          ...state.nodes.filter((node) => node.type !== "creation" && node.type !== "creation-group"),
+          GROUP_CREATION,
         ],
       };
     });
@@ -512,9 +531,19 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
   clearCreateNodeMode: () => {
     set((state) => {
       return {
-        nodes: state.nodes.filter((node) => node.type !== "creation"),
+        nodes: state.nodes.filter((node) => node.type !== "creation" && node.type !== "creation-group"),
       };
     });
+  },
+  clearCreateGroupMode: () => {
+    set((state) => {
+      return {
+        nodes: state.nodes.filter((node) => node.type !== "creation-group"),
+      };
+    });
+  },
+  getCreationNode: () => {
+    return get().nodes.filter(node => node.type?.startsWith("creation"));
   },
   handleCreateNode: (x, y, width, height) => {
     const countShape = get().nodes.filter(
@@ -526,7 +555,7 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
       return {
         mainToolbarActiveMenu: undefined,
         nodes: [
-          ...state.nodes,
+          ...state.nodes.filter(node => !node.type?.startsWith("creation")),
           {
             id: uuidv4(),
             type: "shape",
@@ -535,6 +564,39 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
               handles: [] as CreatedHandle[],
               shapeDescription: state.shapeCreationDesc,
               label: `${state.shapeCreationDesc.shape.toUpperCase()} ${countShape}`,
+            },
+            style: {
+              width,
+              height,
+            },
+            position: {
+              x,
+              y,
+            },
+          },
+        ],
+      };
+    });
+  },
+  handleCreateGroup: (x, y, width, height) => {
+    const countShape = get().nodes.filter(
+      (node) =>
+        node.type === "groupNode"
+    ).length;
+
+    set((state) => {
+      return {
+        mainToolbarActiveMenu: undefined,
+        nodes: [
+          ...state.nodes.filter(node => !node.type?.startsWith("creation")),
+          {
+            id: uuidv4(),
+            type: "groupNode",
+            data: {
+              mode: "DEFAULT",
+              handles: [] as CreatedHandle[],
+              shapeDescription: state.shapeCreationDesc,
+              label: `GROUP ${countShape}`,
             },
             style: {
               width,
@@ -813,43 +875,6 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
               : node.id === id,
           };
         }),
-      };
-    });
-  },
-  dummyGroup: () => {
-    set((state) => {
-      return {
-        nodes: [
-          ...state.nodes,
-          {
-            id: uuidv4(),
-            position: {
-              x: 0,
-              y: 0,
-            },
-            data: {
-              handles: [],
-              label: "GROUP",
-              mode: "DEFAULT",
-              shapeDescription: {
-                shape: "rect",
-                border: true,
-                shadow: "var(--shadow-shape-md)",
-                theme: {
-                  id: "orange-light",
-                  fill: "#FED7AA",
-                  color: "#1C1917",
-                  stroke: "#FB923C",
-                },
-              },
-            },
-            style: {
-              width: 200,
-              height: 200,
-            },
-            type: "groupNode",
-          },
-        ],
       };
     });
   },

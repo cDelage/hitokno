@@ -25,6 +25,7 @@ import EdgeCustom from "./EdgeCustom";
 import { ImageNode } from "../lexicalPlugins/PluginImage/ImageNode";
 import NodeImage from "./NodeImage";
 import NodeGroup from "./NodeGroup";
+import GroupCreation from "./GroupCreation";
 
 export const PX_UNIT_GAP = 8;
 
@@ -32,7 +33,8 @@ export const NodeCustomsComponents = {
   shape: NodeShape,
   creation: NodeCreation,
   image: NodeImage,
-  groupNode: NodeGroup
+  groupNode: NodeGroup,
+  creationGroup : GroupCreation
 };
 
 export const NodeToSave = ["shape","image","groupNode"];
@@ -131,8 +133,38 @@ export const NODE_CREATION: Node<DataNode> = {
   selectable: false,
   draggable: false,
   style: {
-    width: PX_UNIT_GAP,
-    height: PX_UNIT_GAP,
+    width: 0,
+    height: 0,
+  },
+};
+
+export const GROUP_CREATION: Node<DataNode> = {
+  id: "group-creation",
+  type: "creationGroup",
+  position: { x: 0, y: 0 },
+  selected: false,
+  data: {
+    mode: "DEFAULT",
+    handles: [] as CreatedHandle[],
+    label: "",
+    shapeDescription: {
+      shape: "rect" as Shape,
+      border: false,
+      shadow: "var(--shadow-shape-md)" as Shadow,
+      theme: {
+        id: "yellow-light",
+        fill: "#FEF08A",
+        color: "#1C1917",
+        stroke: "#FACC15",
+      },
+    },
+    showNodeToolbar: false,
+  },
+  selectable: false,
+  draggable: false,
+  style: {
+    width: 0,
+    height: 0,
   },
 };
 
