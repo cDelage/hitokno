@@ -14,9 +14,7 @@ import {
 } from "react";
 import { useDivClickOutside } from "../hooks/useDivClickOutside";
 
-const MenuToolbarStyled = styled.menu<
-  PositionObject & { $isDisplayBlock?: boolean }
->`
+const MenuToolbarStyled = styled.menu<PositionObject & { $isDisplayBlock?: boolean }>`
   background-color: var(--bg-element);
   border-radius: 4px;
   z-index: 100;
@@ -33,7 +31,9 @@ const MenuToolbarStyled = styled.menu<
   }}
 `;
 
-const ActionStyled = styled.div<BorderProps & ActionProps & { $theme?: string; $justifyCenter?: boolean }>`
+const ActionStyled = styled.div<
+  BorderProps & ActionProps & { $theme?: string; $justifyCenter?: boolean }
+>`
   cursor: pointer;
   flex-grow: 1;
   display: flex;
@@ -242,7 +242,7 @@ function MenuToolbar({
 
 function ActionLine({ children }: ChildrenProps): JSX.Element {
   return (
-    <Row $style={{alignItems: "stretch", flexGrow: 1}}>
+    <Row $style={{ alignItems: "stretch", flexGrow: 1, overflow: "hidden" }}>
       {children}
     </Row>
   );
@@ -250,7 +250,7 @@ function ActionLine({ children }: ChildrenProps): JSX.Element {
 
 function ActionColumn({ children }: ChildrenProps): JSX.Element {
   return (
-    <Column $style={{alignItems: "stretch"}}>
+    <Column $style={{ alignItems: "stretch", overflow: "hidden" }}>
       {children}
     </Column>
   );
@@ -282,7 +282,7 @@ function Action({
   }): JSX.Element {
   const { handleToggleSubMenu } = useMenuToolbarContext();
   const actionRef = useRef<HTMLDivElement>(null);
-  
+
   const handleClick = useCallback(
     (e: MouseEvent) => {
       onClick?.(e);
@@ -308,7 +308,7 @@ function Action({
       $theme={$theme}
       $justifyCenter={$justifyCenter}
     >
-      <Row $gap={2} $style={{alignItems: "center"}}>
+      <Row $gap={2} $style={{ alignItems: "center" }}>
         {children}
       </Row>
     </ActionStyled>

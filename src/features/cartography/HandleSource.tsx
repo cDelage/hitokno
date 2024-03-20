@@ -30,6 +30,7 @@ function HandleSource({
   useEffect(() => {
     function handleMouseUp() {
       createNewEdge();
+      console.log("MOUSEUP")
       document.removeEventListener("mouseup", handleMouseUp);
     }
 

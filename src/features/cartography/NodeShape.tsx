@@ -59,6 +59,7 @@ function NodeShape({
     sheet,
     shapeDescription,
   },
+  data,
   xPos,
   yPos,
 }: NodeProps<DataNode>): JSX.Element {
@@ -74,11 +75,13 @@ function NodeShape({
     movedNode,
     identicalWidthNodes,
     identicalHeightNodes,
+    getSelectedNodes,
   } = useCartography();
   const { zoom, x, y } = useViewport();
   const [isHover, setIsHover] = useState(false);
   const updateNodeInternals = useUpdateNodeInternals();
   const size = getNodeSize(id);
+  const selectedNodes = getSelectedNodes();
 
   const handleDoubleClick = useCallback(() => {
     if (mode !== "EDIT" && selected) {
@@ -153,12 +156,17 @@ function NodeShape({
           <Resizer selected={selected} id={id} />
         )}
 
-        <NodeText mode={mode} editorState={editorState} theme={theme} key={`nodetext-${id}`}>
+        <NodeText
+          mode={mode}
+          editorState={editorState}
+          theme={theme}
+          key={`nodetext-${id}`}
+        >
           <PluginReadEditMode mode={mode} />
           <PluginUpdateNodeText id={id} />
-          {mainToolbarActiveMenu !== "CREATION-EDGE" && (
-            <NodeToolbar id={id} mode={mode} />
-          )}
+          {mainToolbarActiveMenu !== "CREATION-EDGE" &&
+            selectedNodes.length === 1 &&
+            selected && <NodeToolbar id={id} mode={mode} data={data} />}
           <HistoryPlugin />
           <ListPlugin />
         </NodeText>

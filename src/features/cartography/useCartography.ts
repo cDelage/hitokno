@@ -101,7 +101,7 @@ const getGroupPositionGap = (
 };
 
 type UseCartographyStore = {
-  nodes: Node<DataNode>[];
+  nodes: (Node<DataNode>)[];
   edges: Edge[];
   mainToolbarActiveMenu: MainToolbarMode;
   panOnDragMode: PaneOnDragMode;
@@ -198,6 +198,7 @@ type UseCartographyStore = {
   ) => void;
   handleNodeDrag: (node: Node<DataNode>) => void;
   setNodeInGroup: (nodeId: string, groupId: string) => void;
+  getSelectedNodes: () => Node<DataNode>[];
 };
 
 const useCartography = create<UseCartographyStore>((set, get) => ({
@@ -240,6 +241,8 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
       targetNodeId,
       targetPosition,
     } = get().edgeCreationProps;
+
+    console.log(get().edgeCreationProps)
 
     if (
       isCreateEdge &&
@@ -965,7 +968,7 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
   },
 
   setNodesInside: (
-    id: string,
+    _id: string,
     minX: number,
     minY: number,
     maxX: number,
@@ -1009,6 +1012,9 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
         nodes: newList
       }
     })
+  },
+  getSelectedNodes : () => {
+    return get().nodes.filter(node => node.selected)
   }
 }));
 
