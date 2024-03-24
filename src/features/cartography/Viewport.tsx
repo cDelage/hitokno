@@ -16,8 +16,7 @@ import {
   NodeCustomsComponents,
   PX_UNIT_GAP,
 } from "./CartographyConstants";
-import useNodeToolbar from "./useNodeToolbar";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import MainToolbar from "./MainToolbar";
 import { useTabs } from "../home/useTabs";
 import { useParams, useSearchParams } from "react-router-dom";
@@ -29,12 +28,27 @@ import ViewportSyncWithDb from "./ViewportSyncWithDb";
 import PasteImage from "./PasteImage";
 import NodeControlSidebar from "./NodeControlSidebar";
 
-const ViewportContainer = styled.div`
+const ViewportContainer = styled.div<{
+  $handleSize: number;
+  $handleBorderSize: number;
+}>`
   flex-grow: 1;
   background-color: var(--color-gray-100);
   position: relative;
   .react-flow__node {
     z-index: -1 !important;
+  }
+
+  .handle_edge {
+    width: ${(props) => props.$handleSize}px;
+    height: ${(props) => props.$handleSize}px;
+    background-color: white;
+    outline: ${(props) => props.$handleBorderSize}px solid #159be9;
+
+    &:hover {
+      background-color: #159be9;
+      outline: ${(props) => props.$handleBorderSize}px solid white;
+    }
   }
 `;
 
@@ -54,18 +68,36 @@ function Viewport(): JSX.Element {
     handleDragStop: clearHelpers,
     addHelperLines,
     handleDeleteSelected,
-    handleNodeDrag
+    handleNodeDrag,
+    setModeUpdateHandle,
+    endModeUpdateHandle,
   } = useCartography();
   const { zoom } = useViewport();
-  const { clearPositionToolbar } = useNodeToolbar();
   const { fileId } = useParams();
   const { fileDetail } = useFindFileById(fileId as string);
   const { getCartographyMode } = useTabs();
-  const mode = getCartographyMode(fileId as string);
   const [searchParams] = useSearchParams();
 
-  const deckOpen = searchParams.get("deckOpen");
-  const sheetId = searchParams.get("sheetId");
+  const mode = useMemo(
+    () => getCartographyMode(fileId as string),
+    [fileId, getCartographyMode]
+  );
+
+  const handleSize = useMemo(() => {
+    return Math.round(12 / zoom);
+  }, [zoom]);
+
+  const handleBorderSize = useMemo(() => {
+    return Math.round(1 / zoom);
+  }, [zoom]);
+
+  const deckOpen = useMemo(() => {
+    return searchParams.get("deckOpen");
+  }, [searchParams]);
+
+  const sheetId = useMemo(() => {
+    return searchParams.get("sheetId");
+  }, [searchParams]);
 
   const handleNodeChange = useCallback(
     (change: NodeChange[]) => {
@@ -76,19 +108,25 @@ function Viewport(): JSX.Element {
     [onNodesChange, mode]
   );
 
+  const handleEventDuplicateNode = useCallback(
+    (e: KeyboardEvent) => {
+      const isCtrlPressed = e.ctrlKey || e.metaKey;
+      if (isCtrlPressed && (e.key === "d" || e.key === "D")) {
+        handleDuplicateNode();
+      }
+
+      if (e.key === "Delete") {
+        handleDeleteSelected();
+      }
+    },
+    [handleDuplicateNode, handleDeleteSelected]
+  );
+
   useEffect(() => {
     if (fileDetail?.file) {
       initCartography(fileDetail.file);
     }
   }, [fileDetail, initCartography]);
-
-  //Clear node toolbar when no nodes are selected
-  useEffect(() => {
-    const selectedNodes = nodes.filter((node) => node.selected);
-    if (selectedNodes.length === 0 || selectedNodes.length > 1) {
-      clearPositionToolbar();
-    }
-  }, [nodes, clearPositionToolbar]);
 
   /*
   Change when mainToolbarActiveMenu change
@@ -98,18 +136,17 @@ function Viewport(): JSX.Element {
   useEffect(() => {
     if (mainToolbarActiveMenu === "SELECT") {
       setPanOnDragMode([1, 2]);
-    } else if (mainToolbarActiveMenu === "CREATION-NODE" || mainToolbarActiveMenu === "CREATION-GROUP") {
+    } else if (
+      mainToolbarActiveMenu === "CREATION-NODE" ||
+      mainToolbarActiveMenu === "CREATION-GROUP"
+    ) {
       setPanOnDragMode([2]);
     } else {
       setPanOnDragMode(undefined);
     }
 
     setEdgeCreationProps(InitialEdgeCreationState);
-  }, [
-    mainToolbarActiveMenu,
-    setPanOnDragMode,
-    setEdgeCreationProps,
-  ]);
+  }, [mainToolbarActiveMenu, setPanOnDragMode, setEdgeCreationProps]);
 
   //Manage change between default & edit mode
   useEffect(() => {
@@ -119,21 +156,6 @@ function Viewport(): JSX.Element {
       setSelectionMode(true);
     }
   }, [mode, setSelectionMode]);
-
-  const handleEventDuplicateNode = useCallback(
-    (e: KeyboardEvent) => {
-      const isCtrlPressed = e.ctrlKey || e.metaKey;
-      if (isCtrlPressed && (e.key === "d" || e.key === "D")) {
-        handleDuplicateNode();
-      }
-
-      if(e.key === "Delete"){
-        handleDeleteSelected();
-      }
-
-    },
-    [handleDuplicateNode, handleDeleteSelected]
-  );
 
   useEffect(() => {
     if (!deckOpen && !sheetId) {
@@ -148,7 +170,10 @@ function Viewport(): JSX.Element {
   }, [handleEventDuplicateNode, deckOpen, sheetId]);
 
   return (
-    <ViewportContainer>
+    <ViewportContainer
+      $handleSize={handleSize}
+      $handleBorderSize={handleBorderSize}
+    >
       <PasteImage />
       <ViewportSyncWithDb />
       {mode === "EDIT" && (
@@ -157,25 +182,32 @@ function Viewport(): JSX.Element {
         </>
       )}
       <SheetContainer />
-      <NodeControlSidebar/>
+      <NodeControlSidebar />
       <ReactFlow
         nodes={nodes}
         edges={edges}
         id="viewport-container-reactflow"
         key={`viewport-${fileId}`}
+        nodeTypes={NodeCustomsComponents}
+        edgeTypes={EDGE_TYPE_COMPONENT as EdgeTypes}
         onNodesChange={handleNodeChange}
         onEdgesChange={onEdgesChange}
         onNodeDragStart={(_e, node) => addHelperLines(node.id)}
-        onNodeDragStop={clearHelpers}
         onNodeDrag={(_e, node) => handleNodeDrag(node)}
-        nodeTypes={NodeCustomsComponents}
-        edgeTypes={EDGE_TYPE_COMPONENT as EdgeTypes}
+        onNodeDragStop={clearHelpers}
+        onEdgeUpdate={() => {}}
+        onEdgeUpdateStart={(_e, edge, type) => {
+          setModeUpdateHandle({
+            edge,
+            type: type === "source" ? "target" : "source",
+          });
+        }}
+        onEdgeUpdateEnd={endModeUpdateHandle}
         defaultEdgeOptions={DEFAULT_EDGE_OPTIONS}
         connectionLineComponent={ConnectionEdgeCustom}
         snapToGrid={true}
         snapGrid={[8, 8]}
         panOnScroll
-        nodeDragThreshold={24}
         selectionOnDrag={!mainToolbarActiveMenu?.startsWith("CREATION")}
         panOnDrag={panOnDragMode}
         selectionMode={SelectionMode.Full}
@@ -183,7 +215,7 @@ function Viewport(): JSX.Element {
         style={{ userSelect: "auto" }}
         maxZoom={2.5}
         fitView
-        fitViewOptions={{minZoom: 1, maxZoom: 1, nodes}}
+        fitViewOptions={{ minZoom: 1, maxZoom: 1, nodes }}
       >
         <>
           {zoom < 1.5 && (

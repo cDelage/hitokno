@@ -3,7 +3,6 @@ import { DataNode } from "../../types/Cartography.type";
 import Label from "./Label";
 import Resizer from "./Resizer";
 import useCartography from "./useCartography";
-import useNodeToolbar from "./useNodeToolbar";
 
 function NodeImage({
   id,
@@ -15,7 +14,6 @@ function NodeImage({
   id: string;
 }) {
   const { mainToolbarActiveMenu, deleteNode } = useCartography();
-  const {clearPositionToolbar} = useNodeToolbar();
   const handleDeleteNode = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === "Delete" && selected) {
@@ -24,13 +22,6 @@ function NodeImage({
     },
     [deleteNode, selected, id]
   );
-
-  useEffect(() => {
-    if(selected){
-      clearPositionToolbar();
-
-    }
-  },[selected, clearPositionToolbar])
 
   useEffect(() => {
     document.addEventListener("keydown", handleDeleteNode);

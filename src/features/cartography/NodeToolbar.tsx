@@ -58,14 +58,13 @@ import {
   INSERT_UNORDERED_LIST_COMMAND,
   INSERT_ORDERED_LIST_COMMAND,
 } from "@lexical/list";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { $findMatchingParent } from "@lexical/utils";
 import TitleFormatToolbar from "./TitleFormatToolbar";
 import { useSearchParams } from "react-router-dom";
 import { IoClose } from "react-icons/io5";
 import { useReactFlow, useViewport } from "reactflow";
 import { getSelectedNode } from "../../utils/getSelectedNode";
-import CenterDivContainer from "../../ui/CenterDivContainer";
 
 const ShapeContainer = styled.div`
   height: 40px;
@@ -109,10 +108,16 @@ function NodeToolbar({
   id,
   mode,
   data,
+  xPos,
+  yPos,
+  width,
 }: {
   id: string;
   mode: NodeMode;
   data: DataNode;
+  xPos: number;
+  yPos: number;
+  width: number;
 }): JSX.Element | null {
   const { setNodeData, toggleEditMode, deleteNode, getNodeCenterCoordinate } =
     useCartography();
@@ -122,10 +127,24 @@ function NodeToolbar({
   const [isUnderline, setIsUnderline] = useState(false);
   const [currentNode, setCurrentNode] = useState<undefined | string>(undefined);
   const [searchParams, setSearchParams] = useSearchParams();
-  const { zoom } = useViewport();
+  const { zoom, x, y } = useViewport();
   const sheetId = searchParams.get("sheetId");
   const [elementFormat, setElementFormat] = useState("left");
-  const { setCenter } = useReactFlow();
+  const { setCenter, flowToScreenPosition } = useReactFlow();
+
+  const position = useMemo(() => {
+    if (zoom !== undefined && x !== undefined && y !== undefined) {
+      const pos = flowToScreenPosition({
+        x: xPos + width / 2,
+        y: yPos,
+      });
+
+      return {
+        top: pos.y,
+        left: pos.x,
+      };
+    }
+  }, [flowToScreenPosition, width, xPos, yPos, zoom, x, y]);
 
   const [currentStyle, setCurrentStyle] = useState<undefined | string>(
     undefined
@@ -347,371 +366,367 @@ function NodeToolbar({
   }
 
   return (
-    <CenterDivContainer>
-      <MenuToolbar
-        $position={{
-          top: 0,
-          left: 0,
-          transform: "translate(-50%,-120%)",
-        }}
-        underRelative={true}
-      >
+    <MenuToolbar
+      $position={{
+        ...position,
+        transform: "translate(-50%,-120%)",
+      }}
+    >
+      <MenuToolbar.ActionLine>
+        {/* Shapes (select rect, ellipse, triangle...) */}
+        <MenuToolbar.Action $padding="8px 4px 8px 8px" toggle="shape">
+          <ToolbarSmallIcon>
+            <ShapesIcon />
+          </ToolbarSmallIcon>
+          <HiChevronUp size={12} />
+        </MenuToolbar.Action>
+
+        {/* Color of the shape */}
+        <MenuToolbar.Action $padding="8px 4px 8px 8px" toggle="color">
+          <ToolbarSmallIcon>
+            <ColorNodeIcon fill={theme.fill} />
+          </ToolbarSmallIcon>
+          <HiChevronUp size={12} />
+        </MenuToolbar.Action>
+
+        {/* Stroke of the shape */}
+        <MenuToolbar.Action $padding="8px 4px 8px 8px" toggle="stroke">
+          <ToolbarSmallIcon>
+            <RxBorderAll size={"100%"} />
+          </ToolbarSmallIcon>
+          <HiChevronUp size={12} />
+        </MenuToolbar.Action>
+
+        {/* Shadow */}
+        <MenuToolbar.Action
+          border={MenuBorderRight}
+          $padding="8px 4px 8px 8px"
+          toggle="shadow"
+        >
+          <ToolbarSmallIcon>
+            <ShadowIcon />
+          </ToolbarSmallIcon>
+          <HiChevronUp size={12} />
+        </MenuToolbar.Action>
+
+        {/* Edit */}
+        <MenuToolbar.Action
+          onClick={() => {
+            toggleEditMode(id);
+          }}
+          $active={mode === "EDIT"}
+        >
+          <ToolbarSmallIcon>
+            <BiPen size={"100%"} />
+          </ToolbarSmallIcon>
+        </MenuToolbar.Action>
+
+        {/* Trash */}
+        <MenuToolbar.Action toggle="delete-node">
+          <ToolbarSmallIcon>
+            <BiTrash size={"100%"} />
+          </ToolbarSmallIcon>
+        </MenuToolbar.Action>
+
+        {mode === "EDIT" && (
+          <>
+            {/* Police */}
+            <MenuToolbar.Action toggle="font-family">
+              <FakeSelector fontFamily={currentPolice.fontCss}>
+                {currentPolice?.fontName} <HiChevronUp size={12} />
+              </FakeSelector>
+            </MenuToolbar.Action>
+
+            {/* Title */}
+            <MenuToolbar.Action toggle="type-node">
+              <FakeSelector>
+                <TitleFormatToolbar node={currentNode} />
+                <HiChevronUp size={12} />
+              </FakeSelector>
+            </MenuToolbar.Action>
+
+            {/* Bold */}
+            <MenuToolbar.Action onClick={handleSetBold} $active={isBold}>
+              <ToolbarSmallIcon>
+                <BiBold size={"100%"} />
+              </ToolbarSmallIcon>
+            </MenuToolbar.Action>
+
+            {/* Italic */}
+            <MenuToolbar.Action onClick={handleSetItalic} $active={isItalic}>
+              <ToolbarSmallIcon>
+                <BiItalic size={"100%"} />
+              </ToolbarSmallIcon>
+            </MenuToolbar.Action>
+
+            {/* Underline */}
+            <MenuToolbar.Action
+              onClick={handleSetUnderline}
+              $active={isUnderline}
+            >
+              <ToolbarSmallIcon>
+                <BiUnderline
+                  size={"100%"}
+                  style={{ transform: "translateY(1px) scale(1.2)" }}
+                />
+              </ToolbarSmallIcon>
+            </MenuToolbar.Action>
+            {/* Align */}
+            <MenuToolbar.Action
+              toggle="alignement"
+              border={MenuBorderRight}
+              $isAlignRight={true}
+              $justifyCenter={true}
+            >
+              <ToolbarSmallIcon>
+                {elementFormat === "right" ? (
+                  <BiAlignRight size={"100%"} />
+                ) : elementFormat === "center" ? (
+                  <BiAlignMiddle size={"100%"} />
+                ) : elementFormat === "justify" ? (
+                  <BiAlignJustify size={"100%"} />
+                ) : (
+                  <BiAlignLeft size={"100%"} />
+                )}
+              </ToolbarSmallIcon>
+              <HiChevronDown size={12} />
+            </MenuToolbar.Action>
+          </>
+        )}
+
+        {/* Open sheet */}
+        <MenuToolbar.Action onClick={sheetCallback}>
+          <IconContainerLarge>
+            <SheetIcon mode={sheetMode} />
+          </IconContainerLarge>
+        </MenuToolbar.Action>
+      </MenuToolbar.ActionLine>
+
+      {/*
+       * SUBMENUS
+       */}
+      <MenuToolbar.SubMenu name="color">
         <MenuToolbar.ActionLine>
-          {/* Shapes (select rect, ellipse, triangle...) */}
-          <MenuToolbar.Action $padding="8px 4px 8px 8px" toggle="shape">
-            <ToolbarSmallIcon>
-              <ShapesIcon />
-            </ToolbarSmallIcon>
-            <HiChevronUp size={12} />
-          </MenuToolbar.Action>
+          {ThemesDark.map((themeDark) => (
+            <MenuToolbar.Action
+              key={themeDark.fill}
+              $active={themeDark.id === theme.id}
+              onClick={() => handleSetTheme(themeDark)}
+            >
+              <ToolbarSmallIcon>
+                <ColorNodeIcon fill={themeDark.fill} />
+              </ToolbarSmallIcon>
+            </MenuToolbar.Action>
+          ))}
+        </MenuToolbar.ActionLine>
+        <MenuToolbar.ActionLine>
+          {ThemeLight.map((themeLight) => (
+            <MenuToolbar.Action
+              key={themeLight.fill}
+              $active={themeLight.id === theme.id}
+              onClick={() => handleSetTheme(themeLight)}
+            >
+              <ToolbarSmallIcon>
+                <ColorNodeIcon fill={themeLight.fill} />
+              </ToolbarSmallIcon>
+            </MenuToolbar.Action>
+          ))}
+        </MenuToolbar.ActionLine>
+      </MenuToolbar.SubMenu>
+      <MenuToolbar.SubMenu name="shadow">
+        <MenuToolbar.ActionLine>
+          {ShadowsMenu.map((shadowsMenu) => (
+            <MenuToolbar.Action
+              key={shadowsMenu.shadow}
+              $active={shadow === shadowsMenu.shadow}
+              onClick={() => handleSetShadow(shadowsMenu.shadow)}
+            >
+              <ToolbarSmallIcon>
+                <ShadowDiv shadow={shadowsMenu.shadowMenu} />
+              </ToolbarSmallIcon>
+            </MenuToolbar.Action>
+          ))}
+        </MenuToolbar.ActionLine>
+      </MenuToolbar.SubMenu>
 
-          {/* Color of the shape */}
-          <MenuToolbar.Action $padding="8px 4px 8px 8px" toggle="color">
-            <ToolbarSmallIcon>
-              <ColorNodeIcon fill={theme.fill} />
-            </ToolbarSmallIcon>
-            <HiChevronUp size={12} />
-          </MenuToolbar.Action>
+      <MenuToolbar.SubMenu name="shape">
+        <MenuToolbar.ActionLine>
+          {ShapeMenu.map((shapeMenu) => (
+            <MenuToolbar.Action
+              key={shapeMenu}
+              $active={shape === shapeMenu}
+              onClick={() => handleSetShape(shapeMenu)}
+            >
+              <ShapeContainer>
+                <ShapeDispatch
+                  shape={shapeMenu}
+                  fill={theme.fill}
+                  $shadow="var(--shadow-shape-menu-md)"
+                />
+              </ShapeContainer>
+            </MenuToolbar.Action>
+          ))}
+        </MenuToolbar.ActionLine>
+      </MenuToolbar.SubMenu>
 
-          {/* Stroke of the shape */}
-          <MenuToolbar.Action $padding="8px 4px 8px 8px" toggle="stroke">
+      <MenuToolbar.SubMenu name="stroke">
+        <MenuToolbar.ActionLine>
+          <MenuToolbar.Action
+            $active={!border}
+            onClick={() => handleSetBorder(false)}
+          >
+            <ToolbarSmallIcon>
+              <RxBorderNone size={"100%"} />
+            </ToolbarSmallIcon>
+          </MenuToolbar.Action>
+          <MenuToolbar.Action
+            $active={border}
+            onClick={() => handleSetBorder(true)}
+          >
             <ToolbarSmallIcon>
               <RxBorderAll size={"100%"} />
             </ToolbarSmallIcon>
-            <HiChevronUp size={12} />
-          </MenuToolbar.Action>
-
-          {/* Shadow */}
-          <MenuToolbar.Action
-            border={MenuBorderRight}
-            $padding="8px 4px 8px 8px"
-            toggle="shadow"
-          >
-            <ToolbarSmallIcon>
-              <ShadowIcon />
-            </ToolbarSmallIcon>
-            <HiChevronUp size={12} />
-          </MenuToolbar.Action>
-
-          {/* Edit */}
-          <MenuToolbar.Action
-            onClick={() => {
-              toggleEditMode(id);
-            }}
-            $active={mode === "EDIT"}
-          >
-            <ToolbarSmallIcon>
-              <BiPen size={"100%"} />
-            </ToolbarSmallIcon>
-          </MenuToolbar.Action>
-
-          {/* Trash */}
-          <MenuToolbar.Action toggle="delete-node">
-            <ToolbarSmallIcon>
-              <BiTrash size={"100%"} />
-            </ToolbarSmallIcon>
-          </MenuToolbar.Action>
-
-          {mode === "EDIT" && (
-            <>
-              {/* Police */}
-              <MenuToolbar.Action toggle="font-family">
-                <FakeSelector fontFamily={currentPolice.fontCss}>
-                  {currentPolice?.fontName} <HiChevronUp size={12} />
-                </FakeSelector>
-              </MenuToolbar.Action>
-
-              {/* Title */}
-              <MenuToolbar.Action toggle="type-node">
-                <FakeSelector>
-                  <TitleFormatToolbar node={currentNode} />
-                  <HiChevronUp size={12} />
-                </FakeSelector>
-              </MenuToolbar.Action>
-
-              {/* Bold */}
-              <MenuToolbar.Action onClick={handleSetBold} $active={isBold}>
-                <ToolbarSmallIcon>
-                  <BiBold size={"100%"} />
-                </ToolbarSmallIcon>
-              </MenuToolbar.Action>
-
-              {/* Italic */}
-              <MenuToolbar.Action onClick={handleSetItalic} $active={isItalic}>
-                <ToolbarSmallIcon>
-                  <BiItalic size={"100%"} />
-                </ToolbarSmallIcon>
-              </MenuToolbar.Action>
-
-              {/* Underline */}
-              <MenuToolbar.Action
-                onClick={handleSetUnderline}
-                $active={isUnderline}
-              >
-                <ToolbarSmallIcon>
-                  <BiUnderline
-                    size={"100%"}
-                    style={{ transform: "translateY(1px) scale(1.2)" }}
-                  />
-                </ToolbarSmallIcon>
-              </MenuToolbar.Action>
-              {/* Align */}
-              <MenuToolbar.Action
-                toggle="alignement"
-                border={MenuBorderRight}
-                $isAlignRight={true}
-                $justifyCenter={true}
-              >
-                <ToolbarSmallIcon>
-                  {elementFormat === "right" ? (
-                    <BiAlignRight size={"100%"} />
-                  ) : elementFormat === "center" ? (
-                    <BiAlignMiddle size={"100%"} />
-                  ) : elementFormat === "justify" ? (
-                    <BiAlignJustify size={"100%"} />
-                  ) : (
-                    <BiAlignLeft size={"100%"} />
-                  )}
-                </ToolbarSmallIcon>
-                <HiChevronDown size={12} />
-              </MenuToolbar.Action>
-            </>
-          )}
-
-          {/* Open sheet */}
-          <MenuToolbar.Action onClick={sheetCallback}>
-            <IconContainerLarge>
-              <SheetIcon mode={sheetMode} />
-            </IconContainerLarge>
           </MenuToolbar.Action>
         </MenuToolbar.ActionLine>
+      </MenuToolbar.SubMenu>
 
-        {/*
-         * SUBMENUS
-         */}
-        <MenuToolbar.SubMenu name="color">
-          <MenuToolbar.ActionLine>
-            {ThemesDark.map((themeDark) => (
-              <MenuToolbar.Action
-                key={themeDark.fill}
-                $active={themeDark.id === theme.id}
-                onClick={() => handleSetTheme(themeDark)}
-              >
-                <ToolbarSmallIcon>
-                  <ColorNodeIcon fill={themeDark.fill} />
-                </ToolbarSmallIcon>
-              </MenuToolbar.Action>
-            ))}
-          </MenuToolbar.ActionLine>
-          <MenuToolbar.ActionLine>
-            {ThemeLight.map((themeLight) => (
-              <MenuToolbar.Action
-                key={themeLight.fill}
-                $active={themeLight.id === theme.id}
-                onClick={() => handleSetTheme(themeLight)}
-              >
-                <ToolbarSmallIcon>
-                  <ColorNodeIcon fill={themeLight.fill} />
-                </ToolbarSmallIcon>
-              </MenuToolbar.Action>
-            ))}
-          </MenuToolbar.ActionLine>
-        </MenuToolbar.SubMenu>
-        <MenuToolbar.SubMenu name="shadow">
-          <MenuToolbar.ActionLine>
-            {ShadowsMenu.map((shadowsMenu) => (
-              <MenuToolbar.Action
-                key={shadowsMenu.shadow}
-                $active={shadow === shadowsMenu.shadow}
-                onClick={() => handleSetShadow(shadowsMenu.shadow)}
-              >
-                <ToolbarSmallIcon>
-                  <ShadowDiv shadow={shadowsMenu.shadowMenu} />
-                </ToolbarSmallIcon>
-              </MenuToolbar.Action>
-            ))}
-          </MenuToolbar.ActionLine>
-        </MenuToolbar.SubMenu>
-
-        <MenuToolbar.SubMenu name="shape">
-          <MenuToolbar.ActionLine>
-            {ShapeMenu.map((shapeMenu) => (
-              <MenuToolbar.Action
-                key={shapeMenu}
-                $active={shape === shapeMenu}
-                onClick={() => handleSetShape(shapeMenu)}
-              >
-                <ShapeContainer>
-                  <ShapeDispatch
-                    shape={shapeMenu}
-                    fill={theme.fill}
-                    $shadow="var(--shadow-shape-menu-md)"
-                  />
-                </ShapeContainer>
-              </MenuToolbar.Action>
-            ))}
-          </MenuToolbar.ActionLine>
-        </MenuToolbar.SubMenu>
-
-        <MenuToolbar.SubMenu name="stroke">
-          <MenuToolbar.ActionLine>
-            <MenuToolbar.Action
-              $active={!border}
-              onClick={() => handleSetBorder(false)}
-            >
-              <ToolbarSmallIcon>
-                <RxBorderNone size={"100%"} />
-              </ToolbarSmallIcon>
-            </MenuToolbar.Action>
-            <MenuToolbar.Action
-              $active={border}
-              onClick={() => handleSetBorder(true)}
-            >
-              <ToolbarSmallIcon>
-                <RxBorderAll size={"100%"} />
-              </ToolbarSmallIcon>
-            </MenuToolbar.Action>
-          </MenuToolbar.ActionLine>
-        </MenuToolbar.SubMenu>
-
-        <MenuToolbar.SubMenu name="type-node">
-          <div className="htk-theme-menu">
-            <MenuToolbar.ActionColumn>
-              <MenuToolbar.ActionLine>
-                <MenuToolbar.Action
-                  onClick={() => handleSetTextHeading("h1")}
-                  $active={currentNode === "h1"}
-                  border={MenuBorderRight}
-                >
-                  <TitleContainer>
-                    <h1>Heading 1</h1>
-                  </TitleContainer>
-                </MenuToolbar.Action>
-                <MenuToolbar.Action
-                  onClick={handleSetBulletList}
-                  $active={currentNode === "ul"}
-                >
-                  <TitleContainer>
-                    <ul>
-                      <li>Bullet list</li>
-                    </ul>
-                  </TitleContainer>
-                </MenuToolbar.Action>
-              </MenuToolbar.ActionLine>
-              <MenuToolbar.ActionLine>
-                <MenuToolbar.Action
-                  onClick={() => handleSetTextHeading("h2")}
-                  $active={currentNode === "h2"}
-                  border={MenuBorderRight}
-                >
-                  <TitleContainer>
-                    <h2>Heading 2</h2>
-                  </TitleContainer>
-                </MenuToolbar.Action>
-                <MenuToolbar.Action
-                  onClick={handleSetOrderedList}
-                  $active={currentNode === "ol"}
-                >
-                  <TitleContainer>
-                    <ol>
-                      <li>Order list</li>
-                    </ol>
-                  </TitleContainer>
-                </MenuToolbar.Action>
-              </MenuToolbar.ActionLine>
-              <MenuToolbar.ActionLine>
-                <MenuToolbar.Action
-                  onClick={() => handleSetTextHeading("h3")}
-                  $active={currentNode === "h3"}
-                  border={MenuBorderRight}
-                >
-                  <TitleContainer>
-                    <h3>Heading 3</h3>
-                  </TitleContainer>
-                </MenuToolbar.Action>
-                <MenuToolbar.Action
-                  onClick={handleSetTextParagraph}
-                  $active={currentNode === undefined}
-                >
-                  <TitleContainer>
-                    <p>Normal</p>
-                  </TitleContainer>
-                </MenuToolbar.Action>
-              </MenuToolbar.ActionLine>
-            </MenuToolbar.ActionColumn>
-          </div>
-        </MenuToolbar.SubMenu>
-        <MenuToolbar.SubMenu name="font-family">
+      <MenuToolbar.SubMenu name="type-node">
+        <div className="htk-theme-menu">
           <MenuToolbar.ActionColumn>
-            {fontFamilies.map((fontFamily) => (
+            <MenuToolbar.ActionLine>
               <MenuToolbar.Action
-                key={fontFamily.fontName}
-                onClick={() => handleSetFontFamily(fontFamily.fontCss)}
-                $active={currentPolice.fontCss === fontFamily.fontCss}
+                onClick={() => handleSetTextHeading("h1")}
+                $active={currentNode === "h1"}
+                border={MenuBorderRight}
               >
-                <FontFamilyStyled fontFamily={fontFamily.fontCss}>
-                  {fontFamily.fontName}
-                </FontFamilyStyled>
+                <TitleContainer>
+                  <h1>Heading 1</h1>
+                </TitleContainer>
               </MenuToolbar.Action>
-            ))}
+              <MenuToolbar.Action
+                onClick={handleSetBulletList}
+                $active={currentNode === "ul"}
+              >
+                <TitleContainer>
+                  <ul>
+                    <li>Bullet list</li>
+                  </ul>
+                </TitleContainer>
+              </MenuToolbar.Action>
+            </MenuToolbar.ActionLine>
+            <MenuToolbar.ActionLine>
+              <MenuToolbar.Action
+                onClick={() => handleSetTextHeading("h2")}
+                $active={currentNode === "h2"}
+                border={MenuBorderRight}
+              >
+                <TitleContainer>
+                  <h2>Heading 2</h2>
+                </TitleContainer>
+              </MenuToolbar.Action>
+              <MenuToolbar.Action
+                onClick={handleSetOrderedList}
+                $active={currentNode === "ol"}
+              >
+                <TitleContainer>
+                  <ol>
+                    <li>Order list</li>
+                  </ol>
+                </TitleContainer>
+              </MenuToolbar.Action>
+            </MenuToolbar.ActionLine>
+            <MenuToolbar.ActionLine>
+              <MenuToolbar.Action
+                onClick={() => handleSetTextHeading("h3")}
+                $active={currentNode === "h3"}
+                border={MenuBorderRight}
+              >
+                <TitleContainer>
+                  <h3>Heading 3</h3>
+                </TitleContainer>
+              </MenuToolbar.Action>
+              <MenuToolbar.Action
+                onClick={handleSetTextParagraph}
+                $active={currentNode === undefined}
+              >
+                <TitleContainer>
+                  <p>Normal</p>
+                </TitleContainer>
+              </MenuToolbar.Action>
+            </MenuToolbar.ActionLine>
           </MenuToolbar.ActionColumn>
-        </MenuToolbar.SubMenu>
-        <MenuToolbar.SubMenu name="delete-node">
-          <MenuToolbar.ActionColumn>
-            <MenuToolbar.Action $theme="danger" onClick={() => deleteNode(id)}>
-              <OptionContainer>
-                <BiTrash size={20} /> Delete
-              </OptionContainer>
-            </MenuToolbar.Action>
-            <MenuToolbar.Action>
-              <OptionContainer>
-                <IoClose size={20} /> Cancel
-              </OptionContainer>
-            </MenuToolbar.Action>
-          </MenuToolbar.ActionColumn>
-        </MenuToolbar.SubMenu>
-        <MenuToolbar.SubMenu
-          name="alignement"
-          $displayBottom={true}
-          $alignRight={true}
-        >
-          <MenuToolbar.ActionLine>
+        </div>
+      </MenuToolbar.SubMenu>
+      <MenuToolbar.SubMenu name="font-family">
+        <MenuToolbar.ActionColumn>
+          {fontFamilies.map((fontFamily) => (
             <MenuToolbar.Action
-              onClick={() => handleSetAlignement("left")}
-              $active={!["right", "center", "justify"].includes(elementFormat)}
+              key={fontFamily.fontName}
+              onClick={() => handleSetFontFamily(fontFamily.fontCss)}
+              $active={currentPolice.fontCss === fontFamily.fontCss}
             >
-              <ToolbarSmallIcon>
-                <BiAlignLeft size={"100%"} />
-              </ToolbarSmallIcon>
+              <FontFamilyStyled fontFamily={fontFamily.fontCss}>
+                {fontFamily.fontName}
+              </FontFamilyStyled>
             </MenuToolbar.Action>
-            <MenuToolbar.Action
-              onClick={() => handleSetAlignement("center")}
-              $active={elementFormat === "center"}
-            >
-              <ToolbarSmallIcon>
-                <BiAlignMiddle size={"100%"} />
-              </ToolbarSmallIcon>
-            </MenuToolbar.Action>
-            <MenuToolbar.Action
-              onClick={() => handleSetAlignement("right")}
-              $active={elementFormat === "right"}
-            >
-              <ToolbarSmallIcon>
-                <BiAlignRight size={"100%"} />
-              </ToolbarSmallIcon>
-            </MenuToolbar.Action>
-            <MenuToolbar.Action
-              onClick={() => handleSetAlignement("justify")}
-              $active={elementFormat === "justify"}
-            >
-              <ToolbarSmallIcon>
-                <BiAlignJustify size={"100%"} />
-              </ToolbarSmallIcon>
-            </MenuToolbar.Action>
-          </MenuToolbar.ActionLine>
-        </MenuToolbar.SubMenu>
-      </MenuToolbar>
-    </CenterDivContainer>
+          ))}
+        </MenuToolbar.ActionColumn>
+      </MenuToolbar.SubMenu>
+      <MenuToolbar.SubMenu name="delete-node">
+        <MenuToolbar.ActionColumn>
+          <MenuToolbar.Action $theme="danger" onClick={() => deleteNode(id)}>
+            <OptionContainer>
+              <BiTrash size={20} /> Delete
+            </OptionContainer>
+          </MenuToolbar.Action>
+          <MenuToolbar.Action>
+            <OptionContainer>
+              <IoClose size={20} /> Cancel
+            </OptionContainer>
+          </MenuToolbar.Action>
+        </MenuToolbar.ActionColumn>
+      </MenuToolbar.SubMenu>
+      <MenuToolbar.SubMenu
+        name="alignement"
+        $displayBottom={true}
+        $alignRight={true}
+      >
+        <MenuToolbar.ActionLine>
+          <MenuToolbar.Action
+            onClick={() => handleSetAlignement("left")}
+            $active={!["right", "center", "justify"].includes(elementFormat)}
+          >
+            <ToolbarSmallIcon>
+              <BiAlignLeft size={"100%"} />
+            </ToolbarSmallIcon>
+          </MenuToolbar.Action>
+          <MenuToolbar.Action
+            onClick={() => handleSetAlignement("center")}
+            $active={elementFormat === "center"}
+          >
+            <ToolbarSmallIcon>
+              <BiAlignMiddle size={"100%"} />
+            </ToolbarSmallIcon>
+          </MenuToolbar.Action>
+          <MenuToolbar.Action
+            onClick={() => handleSetAlignement("right")}
+            $active={elementFormat === "right"}
+          >
+            <ToolbarSmallIcon>
+              <BiAlignRight size={"100%"} />
+            </ToolbarSmallIcon>
+          </MenuToolbar.Action>
+          <MenuToolbar.Action
+            onClick={() => handleSetAlignement("justify")}
+            $active={elementFormat === "justify"}
+          >
+            <ToolbarSmallIcon>
+              <BiAlignJustify size={"100%"} />
+            </ToolbarSmallIcon>
+          </MenuToolbar.Action>
+        </MenuToolbar.ActionLine>
+      </MenuToolbar.SubMenu>
+    </MenuToolbar>
   );
 }
 

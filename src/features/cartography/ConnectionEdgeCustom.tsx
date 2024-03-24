@@ -1,11 +1,8 @@
-import { Position, getSmoothStepPath } from "reactflow";
+import { MarkerType, Position, getSmoothStepPath } from "reactflow";
 import useCartography from "./useCartography";
+import { CSSProperties } from "styled-components";
 
-const connectionLineStyle = {
-  strokeWidth: 1,
-  stroke: "black",
-  zIndex: 0,
-};
+const edgeStyle : CSSProperties = { strokeWidth: 3, stroke: "black" };
 
 function ConnectionEdgeCustom({
   fromX,
@@ -40,14 +37,11 @@ function ConnectionEdgeCustom({
 
   return (
     <g>
-      <path style={connectionLineStyle} fill="none" d={edgePath} />
-      <circle
-        cx={toX}
-        cy={toY}
-        fill="black"
-        r={3}
-        stroke="black"
-        strokeWidth={1.5}
+      <path
+        className="react-flow__edge-path"
+        d={edgePath}
+        markerEnd={MarkerType.ArrowClosed}
+        style={edgeStyle}
       />
     </g>
   );

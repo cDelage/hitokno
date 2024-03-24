@@ -25,6 +25,7 @@ import {
   NodeMode,
   PaneOnDragMode,
   ShapeDescription,
+  updateEdgePayload as UpdateEdgePayload,
 } from "../../types/Cartography.type";
 import { v4 as uuidv4 } from "uuid";
 import { FileHitokno } from "../../types/Repository.types";
@@ -101,7 +102,7 @@ const getGroupPositionGap = (
 };
 
 type UseCartographyStore = {
-  nodes: (Node<DataNode>)[];
+  nodes: Node<DataNode>[];
   edges: Edge[];
   mainToolbarActiveMenu: MainToolbarMode;
   panOnDragMode: PaneOnDragMode;
@@ -114,6 +115,7 @@ type UseCartographyStore = {
   identicalHeightNodes: string[];
   isInitViewport: boolean;
   isSaved: boolean;
+  updateEdgePayload: UpdateEdgePayload | undefined;
   setIsSaved: (isSaved: boolean) => void;
   addHandlesActive: (handles: string[]) => void;
   removeHandlesActive: (handles: string[]) => void;
@@ -135,7 +137,7 @@ type UseCartographyStore = {
   setCreateGroupMode: () => void;
   clearCreateNodeMode: () => void;
   clearCreateGroupMode: () => void;
-  getCreationNode:() => Node<DataNode>[];
+  getCreationNode: () => Node<DataNode>[];
   handleCreateNode: (
     xPos: number,
     yPos: number,
@@ -199,6 +201,9 @@ type UseCartographyStore = {
   handleNodeDrag: (node: Node<DataNode>) => void;
   setNodeInGroup: (nodeId: string, groupId: string) => void;
   getSelectedNodes: () => Node<DataNode>[];
+  setModeUpdateHandle: (updateEdgePayload: UpdateEdgePayload) => void;
+  endModeUpdateHandle: () => void;
+  setUpdateEdgePayload: (updateEdgePayload: UpdateEdgePayload) => void;
 };
 
 const useCartography = create<UseCartographyStore>((set, get) => ({
@@ -215,6 +220,7 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
   movedNode: undefined,
   isInitViewport: false,
   isSaved: true,
+  updateEdgePayload: undefined,
   addHandlesActive: (handles: string[]) => {
     set((state) => {
       return {
@@ -241,8 +247,6 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
       targetNodeId,
       targetPosition,
     } = get().edgeCreationProps;
-
-    console.log(get().edgeCreationProps)
 
     if (
       isCreateEdge &&
@@ -515,7 +519,9 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
     set((state) => {
       return {
         nodes: [
-          ...state.nodes.filter((node) => node.type !== "creation" && node.type !== "creation-group"),
+          ...state.nodes.filter(
+            (node) => node.type !== "creation" && node.type !== "creation-group"
+          ),
           NODE_CREATION,
         ],
       };
@@ -525,7 +531,9 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
     set((state) => {
       return {
         nodes: [
-          ...state.nodes.filter((node) => node.type !== "creation" && node.type !== "creation-group"),
+          ...state.nodes.filter(
+            (node) => node.type !== "creation" && node.type !== "creation-group"
+          ),
           GROUP_CREATION,
         ],
       };
@@ -534,7 +542,9 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
   clearCreateNodeMode: () => {
     set((state) => {
       return {
-        nodes: state.nodes.filter((node) => node.type !== "creation" && node.type !== "creation-group"),
+        nodes: state.nodes.filter(
+          (node) => node.type !== "creation" && node.type !== "creation-group"
+        ),
       };
     });
   },
@@ -546,7 +556,7 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
     });
   },
   getCreationNode: () => {
-    return get().nodes.filter(node => node.type?.startsWith("creation"));
+    return get().nodes.filter((node) => node.type?.startsWith("creation"));
   },
   handleCreateNode: (x, y, width, height) => {
     const countShape = get().nodes.filter(
@@ -558,7 +568,7 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
       return {
         mainToolbarActiveMenu: undefined,
         nodes: [
-          ...state.nodes.filter(node => !node.type?.startsWith("creation")),
+          ...state.nodes.filter((node) => !node.type?.startsWith("creation")),
           {
             id: uuidv4(),
             type: "shape",
@@ -583,15 +593,14 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
   },
   handleCreateGroup: (x, y, width, height) => {
     const countShape = get().nodes.filter(
-      (node) =>
-        node.type === "groupNode"
+      (node) => node.type === "groupNode"
     ).length;
 
     set((state) => {
       return {
         mainToolbarActiveMenu: undefined,
         nodes: [
-          ...state.nodes.filter(node => !node.type?.startsWith("creation")),
+          ...state.nodes.filter((node) => !node.type?.startsWith("creation")),
           {
             id: uuidv4(),
             type: "groupNode",
@@ -915,9 +924,9 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
           maxY + (isGrouped ? y : 0) <= groupMaxY
         );
       });
-    
-    if(groupAround){
-      get().setNodeInGroup(node.id, groupAround.id)
+
+    if (groupAround) {
+      get().setNodeInGroup(node.id, groupAround.id);
     }
 
     const definitiveGroup = storedGroup ? storedGroup : groupAround;
@@ -1001,21 +1010,114 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
       y + (height as number)
     );
   },
-  setNodeInGroup : (nodeId: string, groupId:string) => {
+  setNodeInGroup: (nodeId: string, groupId: string) => {
     set((state) => {
       const nodes = state.nodes;
-      const nodeIndex = nodes.findIndex(x => x.id === nodeId);
-      const targetGrouplist = nodes.filter(x => x.id === groupId || x.parentNode === groupId)
-      const targetIndex = nodes.findIndex(x => x.id === targetGrouplist[targetGrouplist.length-1].id) + 1;
+      const nodeIndex = nodes.findIndex((x) => x.id === nodeId);
+      const targetGrouplist = nodes.filter(
+        (x) => x.id === groupId || x.parentNode === groupId
+      );
+      const targetIndex =
+        nodes.findIndex(
+          (x) => x.id === targetGrouplist[targetGrouplist.length - 1].id
+        ) + 1;
       const newList = moveElement(nodes, nodeIndex, targetIndex);
       return {
-        nodes: newList
-      }
-    })
+        nodes: newList,
+      };
+    });
   },
-  getSelectedNodes : () => {
-    return get().nodes.filter(node => node.selected)
-  }
+  getSelectedNodes: () => {
+    return get().nodes.filter((node) => node.selected);
+  },
+  setModeUpdateHandle: (updateEdgePayload: UpdateEdgePayload) => {
+    const nodeId =
+      updateEdgePayload.type === "target"
+        ? updateEdgePayload.edge.source
+        : updateEdgePayload.edge.target;
+    const handleId =
+      updateEdgePayload.type === "target"
+        ? updateEdgePayload.edge.sourceHandle
+        : updateEdgePayload.edge.targetHandle;
+
+    const handle = get()
+      .nodes.find((node) => node.id === nodeId)
+      ?.data.handles.find((handle) => handle.handleId === handleId);
+
+    set({
+      updateEdgePayload,
+      mainToolbarActiveMenu: "CREATION-EDGE-UPDATE",
+      edgeCreationProps: {
+        sourcePosition: handle?.position,
+      },
+    });
+  },
+  endModeUpdateHandle: () => {
+    const payload = get().updateEdgePayload;
+    if (payload?.targetNodeId && payload.targetPosition) {
+      const handleId =
+        payload.type === "source"
+          ? payload.edge.sourceHandle
+          : payload.edge.targetHandle;
+
+      const newHandle: CreatedHandle = {
+        handleId: handleId as string,
+        position: payload.targetPosition,
+        type: payload.type,
+      };
+
+      set((state) => {
+        return {
+          nodes: state.nodes.map((node) => {
+            const handles = node.data.handles.filter(
+              (handle) => handle.handleId !== handleId
+            );
+
+            if (node.id === payload.targetNodeId) {
+              handles.push(newHandle);
+            }
+
+            return {
+              ...node,
+              data: {
+                ...node.data,
+                handles,
+              },
+            };
+          }),
+          edges: state.edges.map((e) => {
+            return {
+              ...e,
+              target:
+                e.id === payload.edge.id && payload.type === "target"
+                  ? (payload.targetNodeId as string)
+                  : e.target,
+              source:
+                e.id === payload.edge.id && payload.type === "source"
+                  ? (payload.targetNodeId as string)
+                  : e.source,
+            };
+          }),
+        };
+      });
+    }
+    set({
+      updateEdgePayload: undefined,
+      mainToolbarActiveMenu: "DEFAULT",
+      edgeCreationProps: undefined,
+    });
+  },
+  setUpdateEdgePayload: (updateEdgePayload: UpdateEdgePayload) => {
+    set((state) => {
+      return {
+        updateEdgePayload,
+        edgeCreationProps: {
+          ...state.edgeCreationProps,
+          targetPosition: updateEdgePayload.targetPosition,
+        },
+      };
+    });
+  },
 }));
 
 export default useCartography;

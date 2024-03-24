@@ -6,6 +6,7 @@ import styled, { css } from "styled-components";
 import { ChildrenProps } from "../../types/ChildrenProps.type";
 import { NodeTheme, initialNodeConfig } from "./CartographyConstants";
 import { Theme } from "../../types/Cartography.type";
+import { memo } from "react";
 
 type ContenteEditableStyledProps = {
   color: string;
@@ -80,7 +81,7 @@ const ContentEditableStyled = styled(
         `}
 `;
 
-function NodeText({
+const NodeText = memo(function NodeText({
   children,
   mode,
   theme,
@@ -114,6 +115,6 @@ function NodeText({
       {children}
     </LexicalComposer>
   );
-}
+});
 
 export default NodeText;

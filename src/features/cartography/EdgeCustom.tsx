@@ -2,7 +2,7 @@ import { CSSProperties, useEffect } from "react";
 import { Position, getSmoothStepPath, useKeyPress } from "reactflow";
 import useCartography from "./useCartography";
 
-const edgeStyle : CSSProperties = { strokeWidth: 3, stroke: "black", zIndex:2 };
+const edgeStyle : CSSProperties = { strokeWidth: 3, stroke: "black" };
 
 function EdgeCustom({
   sourceX,

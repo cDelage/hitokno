@@ -1,14 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
-import {
-  Handle,
-  NodeProps,
-  useReactFlow,
-  useUpdateNodeInternals,
-  useViewport,
-} from "reactflow";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { Handle, Node, NodeProps, useUpdateNodeInternals } from "reactflow";
 import styled from "styled-components";
-import { PositionAbsolute } from "../../types/Position.type";
-import useNodeToolbar from "./useNodeToolbar";
 import useCartography from "./useCartography";
 import ShapeDispatch from "./shapes/ShapeDispatch";
 import NodeToolbar from "./NodeToolbar";
@@ -25,6 +17,7 @@ import { DataNode, ShapeDescription } from "../../types/Cartography.type";
 import HelperLines from "./HelperLines";
 import IdenticalWidthSignifiant from "./IdenticalWidthSignifiant";
 import IdenticalHeightSignifiant from "./IdenticalHeightSignifiant";
+import HandlesUpdateEdge from "./HandlesUpdateEdge";
 
 const NodeShapeStyled = styled.div`
   height: 100%;
@@ -40,34 +33,18 @@ const TopContainer = styled.div`
 
 const StyledCreatedHandle = styled(Handle)<{ $active: boolean }>`
   visibility: ${(props) => (props.$active ? "visible" : "hidden")};
-  width: 12px;
-  height: 12px;
-  background-color: white;
-  border: #0284c7 1px solid;
-  box-shadow: var(--shadow-md);
 `;
 
-function NodeShape({
+const NodeShape = memo(function ({
   id,
   selected,
-  data: {
-    showNodeToolbar,
-    mode,
-    editorState,
-    handles,
-    label,
-    sheet,
-    shapeDescription,
-  },
+  data: { mode, editorState, handles, label, sheet, shapeDescription },
   data,
   xPos,
   yPos,
 }: NodeProps<DataNode>): JSX.Element {
   const { shape, shadow, theme, border } = shapeDescription as ShapeDescription;
-  const { flowToScreenPosition } = useReactFlow();
-  const { setSelectedNode } = useNodeToolbar();
   const {
-    nodes,
     getNodeSize,
     toggleEditMode,
     mainToolbarActiveMenu,
@@ -77,11 +54,30 @@ function NodeShape({
     identicalHeightNodes,
     getSelectedNodes,
   } = useCartography();
-  const { zoom, x, y } = useViewport();
   const [isHover, setIsHover] = useState(false);
   const updateNodeInternals = useUpdateNodeInternals();
-  const size = getNodeSize(id);
-  const selectedNodes = getSelectedNodes();
+  const [size, setSize] = useState(() => getNodeSize(id));
+
+  const handleSetHover = useCallback(
+    (isHover: boolean) => {
+      if (mainToolbarActiveMenu === "CREATION-EDGE" || mainToolbarActiveMenu === "CREATION-EDGE-UPDATE") {
+        setIsHover(isHover);
+      } else {
+        if (isHover) {
+          setIsHover(false);
+        }
+      }
+    },
+    [setIsHover, mainToolbarActiveMenu]
+  );
+
+  const selectedNodes = useMemo<Node<DataNode>[]>(() => {
+    if (selected) {
+      return getSelectedNodes();
+    } else {
+      return [];
+    }
+  }, [getSelectedNodes, selected]);
 
   const handleDoubleClick = useCallback(() => {
     if (mode !== "EDIT" && selected) {
@@ -89,33 +85,9 @@ function NodeShape({
     }
   }, [toggleEditMode, mode, selected, id]);
 
-  useEffect(() => {
-    if (showNodeToolbar && selected) {
-      const width = size.width as number;
-      const pos = flowToScreenPosition({
-        x: xPos,
-        y: yPos,
-      });
-      const toolbarPosition: PositionAbsolute = {
-        top: pos.y,
-        left: pos.x + (width * zoom) / 2,
-      };
-      setSelectedNode(id, toolbarPosition);
-    }
-  }, [
-    showNodeToolbar,
-    flowToScreenPosition,
-    setSelectedNode,
-    xPos,
-    yPos,
-    nodes,
-    selected,
-    size.width,
-    id,
-    zoom,
-    x,
-    y,
-  ]);
+  const handleUpdateSize = useCallback(() => {
+    setSize(getNodeSize(id));
+  }, [setSize, getNodeSize, id]);
 
   useEffect(() => {
     updateNodeInternals(id);
@@ -123,11 +95,15 @@ function NodeShape({
 
   return (
     <NodeShapeStyled
-      onMouseEnter={() => setIsHover(true)}
-      onMouseLeave={() => setIsHover(false)}
+      onMouseEnter={() => handleSetHover(true)}
+      onMouseLeave={() => handleSetHover(false)}
     >
       {sheet?.sheetId && (
-        <SheetSignifiantButton nodeSheetId={sheet.sheetId} nodeId={id} />
+        <SheetSignifiantButton
+          nodeSheetId={sheet.sheetId}
+          nodeId={id}
+          selected={selected && selectedNodes.length === 1}
+        />
       )}
       {identicalWidthNodes.includes(id) && <IdenticalWidthSignifiant />}
       {identicalHeightNodes.includes(id) && <IdenticalHeightSignifiant />}
@@ -149,11 +125,20 @@ function NodeShape({
         border={border ? theme.stroke : undefined}
       />
       <TopContainer onDoubleClick={handleDoubleClick}>
-        {mainToolbarActiveMenu === "CREATION-EDGE" && (
+        {mainToolbarActiveMenu === "CREATION-EDGE" && isHover && (
           <HandlesCreateEdge isHoverNode={isHover} nodeId={id} />
         )}
-        {mainToolbarActiveMenu !== "CREATION-EDGE" && (
-          <Resizer selected={selected} id={id} />
+        {
+          mainToolbarActiveMenu === "CREATION-EDGE-UPDATE" && isHover && (
+            <HandlesUpdateEdge id={id}/>
+          )
+        }
+        {(!mainToolbarActiveMenu?.startsWith("CREATION") && selected) && (
+          <Resizer
+            selected={selected}
+            id={id}
+            onResizeEvent={handleUpdateSize}
+          />
         )}
 
         <NodeText
@@ -166,7 +151,16 @@ function NodeShape({
           <PluginUpdateNodeText id={id} />
           {mainToolbarActiveMenu !== "CREATION-EDGE" &&
             selectedNodes.length === 1 &&
-            selected && <NodeToolbar id={id} mode={mode} data={data} />}
+            selected && (
+              <NodeToolbar
+                id={id}
+                mode={mode}
+                data={data}
+                xPos={xPos}
+                yPos={yPos}
+                width={size.width}
+              />
+            )}
           <HistoryPlugin />
           <ListPlugin />
         </NodeText>
@@ -179,11 +173,12 @@ function NodeShape({
             $active={handlesActive.includes(handleId)}
             isConnectableStart={false}
             isConnectableEnd={false}
+            className="handle_edge"
           />
         ))}
       </TopContainer>
     </NodeShapeStyled>
   );
-}
+});
 
 export default NodeShape;

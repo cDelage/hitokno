@@ -2,6 +2,7 @@ import { NodeResizer, useViewport } from "reactflow";
 import { CSSProperties } from "styled-components";
 import { PX_UNIT_GAP } from "./CartographyConstants";
 import useCartography from "./useCartography";
+import { memo } from "react";
 
 const ResizerHandleStyle: CSSProperties = {
   borderRadius: "2px",
@@ -18,17 +19,23 @@ const ResizerBorderStyle: CSSProperties = {
   boxSizing: "border-box",
 };
 
-function Resizer({
+const Resizer = memo(function Resizer({
   selected,
   keepAspectRatio,
   id,
+  onResizeEvent
 }: {
   selected: boolean;
   keepAspectRatio?: boolean;
   id: string;
+  onResizeEvent?: () => void;
 }) {
   const { zoom } = useViewport();
-  const { addSameSizeHelperLines, addHelperLines, handleDragStop: clearHelpers } = useCartography();
+  const {
+    addSameSizeHelperLines,
+    addHelperLines,
+    handleDragStop: clearHelpers,
+  } = useCartography();
   const NodeResizerStyle: CSSProperties = {
     ...ResizerHandleStyle,
     width: `${16 / zoom}px`,
@@ -43,16 +50,21 @@ function Resizer({
       lineStyle={ResizerBorderStyle}
       isVisible={selected}
       keepAspectRatio={keepAspectRatio}
-      onResizeStart={() => addHelperLines(id)}
-      onResize={(_e, resize) =>
+      onResizeStart={() => {
+        addHelperLines(id)
+      }}
+      onResize={(_e, resize) => {
         addSameSizeHelperLines(id, {
           width: resize.width,
           height: resize.height,
-        })
-      }
-      onResizeEnd={clearHelpers}
+        });
+        onResizeEvent?.()
+      }}
+      onResizeEnd={() => {
+        clearHelpers()
+      }}
     />
   );
-}
+});
 
 export default Resizer;

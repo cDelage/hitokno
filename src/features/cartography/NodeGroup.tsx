@@ -8,9 +8,10 @@ import SheetSignifiantButton from "./SheetSignifiantButton";
 import IdenticalWidthSignifiant from "./IdenticalWidthSignifiant";
 import IdenticalHeightSignifiant from "./IdenticalHeightSignifiant";
 import HelperLines from "./HelperLines";
-import { useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import HandlesCreateEdge from "./HandlesCreateEdge";
-import { Handle, useUpdateNodeInternals } from "reactflow";
+import { Handle, Node, useUpdateNodeInternals } from "reactflow";
+import HandlesUpdateEdge from "./HandlesUpdateEdge";
 
 const NodeGroupStyled = styled.div`
   height: 100%;
@@ -39,7 +40,7 @@ const NodeGroupBackground = styled.div<{ theme: Theme }>`
   border-radius: 8px;
 `;
 
-function NodeGroup({
+const NodeGroup = memo(function NodeGroup({
   id,
   selected,
   data,
@@ -52,6 +53,7 @@ function NodeGroup({
   xPos: number;
   yPos: number;
 }) {
+  const [isHover, setIsHover] = useState(false);
   const { shapeDescription, sheet, handles } = data;
   const {
     getSelectedNodes,
@@ -62,10 +64,22 @@ function NodeGroup({
     mainToolbarActiveMenu,
     handlesActive,
   } = useCartography();
-  const [isHover, setIsHover] = useState(false);
+  const [size, setSize] = useState(() => getNodeSize(id));
+
   const updateNodeInternals = useUpdateNodeInternals();
-  const selectedNodes = getSelectedNodes();
-  const size = getNodeSize(id);
+
+  const selectedNodes = useMemo<Node<DataNode>[]>(() => {
+    if (selected) {
+      return getSelectedNodes();
+    } else {
+      return [];
+    }
+  }, [getSelectedNodes, selected]);
+
+  const handleUpdateSize = useCallback(() => {
+    setSize(getNodeSize(id));
+  }, [setSize, getNodeSize, id]);
+
   useEffect(() => {
     updateNodeInternals(id);
   }, [handles, updateNodeInternals, id]);
@@ -90,17 +104,30 @@ function NodeGroup({
         />
       )}
       <LabelNodeGroup data={data} id={id} />
-      {mainToolbarActiveMenu === "CREATION-EDGE" && (
+      {mainToolbarActiveMenu === "CREATION-EDGE" && isHover && (
         <HandlesCreateEdge isHoverNode={isHover} nodeId={id} />
       )}
-      {mainToolbarActiveMenu !== "CREATION-EDGE" && (
-        <Resizer selected={selected} id={id} />
+      {mainToolbarActiveMenu === "CREATION-EDGE-UPDATE" && isHover && (
+        <HandlesUpdateEdge id={id} />
       )}
-      {(selected && selectedNodes.length) === 1 && (
-        <GroupToolbar data={data} nodeId={id} />
+      {!mainToolbarActiveMenu?.startsWith("CREATION") && selected && (
+        <Resizer selected={selected} id={id} onResizeEvent={handleUpdateSize} />
+      )}
+      {selected && selectedNodes.length === 1 && (
+        <GroupToolbar
+          data={data}
+          nodeId={id}
+          xPos={xPos}
+          yPos={yPos}
+          width={size.width}
+        />
       )}
       {sheet && (
-        <SheetSignifiantButton nodeId={id} nodeSheetId={sheet.sheetId} />
+        <SheetSignifiantButton
+          nodeId={id}
+          nodeSheetId={sheet.sheetId}
+          selected={selected && selectedNodes.length === 1}
+        />
       )}
       {handles.map(({ position, type, handleId }) => (
         <StyledCreatedHandle
@@ -111,10 +138,11 @@ function NodeGroup({
           $active={handlesActive.includes(handleId)}
           isConnectableStart={false}
           isConnectableEnd={false}
+          className="handle_edge"
         />
       ))}
     </NodeGroupStyled>
   );
-}
+});
 
 export default NodeGroup;

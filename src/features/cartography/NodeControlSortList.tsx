@@ -225,7 +225,6 @@ function NodeControlSortList() {
     [currentDragged, sortList, setNodes, setIsSyncWithDB]
   );
   const handleDragEnd = useCallback(() => {
-    console.log("dragend")
     setCurrentDragged(undefined);
     setCurrentDraggedGroup(undefined);
   }, [setCurrentDragged, setCurrentDraggedGroup]);

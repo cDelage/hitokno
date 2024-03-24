@@ -1,4 +1,4 @@
-import { Node, Position } from "reactflow";
+import { Edge, Node, Position } from "reactflow";
 import { PositionAbsolute } from "./Position.type";
 
 export type CartographyMode = "DEFAULT" | "EDIT";
@@ -10,6 +10,7 @@ export type MainToolbarMode =
   | "CREATION-NODE"
   | "CREATION-EDGE"
   | "CREATION-GROUP"
+  | "CREATION-EDGE-UPDATE"
   | "SELECT"
   | "UPDATE-SHAPE"
   | "UPDATE-COLOR"
@@ -143,7 +144,7 @@ export type CreatedHandle = HandleProps & {
 }
 
 export type EdgeCreationProps = {
-  isCreateEdge: boolean;
+  isCreateEdge?: boolean;
   sourceNodeId? : string;
   sourceHandleId? : string;
   sourcePosition? : Position;
@@ -160,4 +161,11 @@ export type HelperLine = {
   position : PositionAbsolute;
   width: number;
   height: number
+}
+
+export type updateEdgePayload = {
+  edge: Edge;
+  type: "source" | "target";
+  targetNodeId? : string;
+  targetPosition? : Position;
 }

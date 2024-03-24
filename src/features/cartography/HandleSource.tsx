@@ -1,14 +1,14 @@
 import { HandleProps } from "../../types/Cartography.type";
-import HandleStyled from "./HandleStyled";
 import useCartography from "./useCartography";
 import { useCallback, useEffect } from "react";
+import { Handle } from "reactflow";
+
 
 function HandleSource({
   handleId,
   position,
-  isHoverNode,
   nodeId,
-}: HandleProps & { nodeId: string; isHoverNode: boolean }) {
+}: HandleProps & { nodeId: string;}) {
   const {
     edgeCreationProps: { isCreateEdge, sourceNodeId, sourceHandleId },
     setEdgeCreationProps,
@@ -16,21 +16,20 @@ function HandleSource({
   } = useCartography();
 
   const isDisplay =
-    (isHoverNode && !isCreateEdge) ||
+    !isCreateEdge ||
     (isCreateEdge && sourceNodeId === nodeId && sourceHandleId === handleId);
   const handleClick = useCallback(() => {
     setEdgeCreationProps({
       isCreateEdge: true,
       sourceNodeId: nodeId,
       sourceHandleId: handleId,
-      sourcePosition: position
+      sourcePosition: position,
     });
   }, [setEdgeCreationProps, nodeId, handleId, position]);
 
   useEffect(() => {
     function handleMouseUp() {
       createNewEdge();
-      console.log("MOUSEUP")
       document.removeEventListener("mouseup", handleMouseUp);
     }
 
@@ -45,13 +44,14 @@ function HandleSource({
 
   if (!isDisplay) return null;
   return (
-    <HandleStyled
-      id={handleId}
-      onMouseDown={handleClick}
-      type="source"
-      position={position}
-      onClick={() => {}}
-    />
+      <Handle
+        id={handleId}
+        onMouseDown={handleClick}
+        type="source"
+        className="handle_edge"
+        position={position}
+        onClick={() => {}}
+      />
   );
 }
 

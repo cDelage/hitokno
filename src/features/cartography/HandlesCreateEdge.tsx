@@ -7,7 +7,6 @@ import HandleTarget from "./HandleTarget";
 
 function HandlesCreateEdge({
   nodeId,
-  isHoverNode,
 }: {
   nodeId: string;
   isHoverNode: boolean;
@@ -28,14 +27,12 @@ function HandlesCreateEdge({
           handleId={handleId}
           position={position}
           nodeId={nodeId}
-          isHoverNode={isHoverNode}
         />
       ))}
       {isCreateEdge && HandlesTargetList.map(({handleId, position}) => (
         <HandleTarget
           key={handleId}
           handleId={handleId}
-          isHoverNode={isHoverNode}
           nodeId={nodeId}
           position={position}
         />

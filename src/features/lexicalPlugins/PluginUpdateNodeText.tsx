@@ -1,8 +1,12 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import useCartography from "../cartography/useCartography";
-import { useEffect } from "react";
+import { memo, useEffect } from "react";
 
-function PluginUpdateNodeText({ id }: { id: string }) {
+const PluginUpdateNodeText = memo(function PluginUpdateNodeText({
+  id,
+}: {
+  id: string;
+}) {
   const [editor] = useLexicalComposerContext();
   const { getNodeData, setNodeData } = useCartography();
 
@@ -24,6 +28,6 @@ function PluginUpdateNodeText({ id }: { id: string }) {
   }, [editor, getNodeData, id, setNodeData]);
 
   return null;
-}
+});
 
 export default PluginUpdateNodeText;

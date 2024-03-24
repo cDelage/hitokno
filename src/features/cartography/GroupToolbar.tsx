@@ -10,33 +10,58 @@ import {
 import { HiChevronUp } from "react-icons/hi2";
 import { ThemeLight, ThemesDark } from "./CartographyConstants";
 import useCartography from "./useCartography";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useReactFlow, useViewport } from "reactflow";
 import { useSearchParams } from "react-router-dom";
 import styled from "styled-components";
 import SheetIcon from "../../ui/icons/SheetIcon";
-import CenterDivContainer from "../../ui/CenterDivContainer";
 
-function GroupToolbar({ data, nodeId }: { data: DataNode; nodeId: string }) {
+const IconContainerLarge = styled.div`
+  height: 28px;
+  width: 52px;
+  overflow: visible;
+  display: flex;
+  align-items: center;
+`;
+
+function GroupToolbar({
+  data,
+  nodeId,
+  xPos,
+  yPos,
+  width,
+}: {
+  data: DataNode;
+  nodeId: string;
+  xPos: number;
+  yPos: number;
+  width: number;
+}) {
   const { shapeDescription, sheet } = data;
   const { theme } = shapeDescription as ShapeDescription;
   const { setNodeData, getNodeCenterCoordinate } = useCartography();
-  const { zoom } = useViewport();
-  const { setCenter } = useReactFlow();
+  const { zoom, x, y } = useViewport();
+  const { setCenter, flowToScreenPosition } = useReactFlow();
   const [searchParams, setSearchParams] = useSearchParams();
   const sheetId = searchParams.get("sheetId");
-  const IconContainerLarge = styled.div`
-    height: 28px;
-    width: 52px;
-    overflow: visible;
-    display: flex;
-    align-items: center;
-  `;
+
+  const position = useMemo(() => {
+    if (zoom !== undefined && x !== undefined && y !== undefined) {
+      const pos = flowToScreenPosition({
+        x: xPos + width / 2,
+        y: yPos,
+      });
+
+      return {
+        top: pos.y,
+        left: pos.x,
+      };
+    }
+  }, [flowToScreenPosition, width, xPos, yPos, zoom, x, y]);
 
   const handleSetTheme = useCallback(
     (theme: Theme) => {
-      console.log("setTheme", theme);
       setNodeData(nodeId, {
         ...data,
         shapeDescription: {
@@ -100,59 +125,55 @@ function GroupToolbar({ data, nodeId }: { data: DataNode; nodeId: string }) {
   }
 
   return (
-    <CenterDivContainer>
-      <MenuToolbar
-        $position={{
-          top: 0,
-          left: 0,
-          transform: "translate(-50%,-120%)",
-        }}
-        underRelative={true}
-      >
+    <MenuToolbar
+      $position={{
+        ...position,
+        transform: "translate(-50%,-120%)",
+      }}
+    >
+      <MenuToolbar.ActionLine>
+        <MenuToolbar.Action $padding="8px 4px 8px 8px" toggle="color">
+          <ToolbarSmallIcon>
+            <ColorNodeIcon fill={theme.fill} />
+          </ToolbarSmallIcon>
+          <HiChevronUp size={12} />
+        </MenuToolbar.Action>
+        {/* Open sheet */}
+        <MenuToolbar.Action onClick={sheetCallback}>
+          <IconContainerLarge>
+            <SheetIcon mode={sheetMode} />
+          </IconContainerLarge>
+        </MenuToolbar.Action>
+      </MenuToolbar.ActionLine>
+      <MenuToolbar.SubMenu name="color">
         <MenuToolbar.ActionLine>
-          <MenuToolbar.Action $padding="8px 4px 8px 8px" toggle="color">
-            <ToolbarSmallIcon>
-              <ColorNodeIcon fill={theme.fill} />
-            </ToolbarSmallIcon>
-            <HiChevronUp size={12} />
-          </MenuToolbar.Action>
-          {/* Open sheet */}
-          <MenuToolbar.Action onClick={sheetCallback}>
-            <IconContainerLarge>
-              <SheetIcon mode={sheetMode} />
-            </IconContainerLarge>
-          </MenuToolbar.Action>
+          {ThemesDark.map((themeDark) => (
+            <MenuToolbar.Action
+              key={themeDark.fill}
+              $active={themeDark.id === theme.id}
+              onClick={() => handleSetTheme(themeDark)}
+            >
+              <ToolbarSmallIcon>
+                <ColorNodeIcon fill={themeDark.fill} />
+              </ToolbarSmallIcon>
+            </MenuToolbar.Action>
+          ))}
         </MenuToolbar.ActionLine>
-        <MenuToolbar.SubMenu name="color">
-          <MenuToolbar.ActionLine>
-            {ThemesDark.map((themeDark) => (
-              <MenuToolbar.Action
-                key={themeDark.fill}
-                $active={themeDark.id === theme.id}
-                onClick={() => handleSetTheme(themeDark)}
-              >
-                <ToolbarSmallIcon>
-                  <ColorNodeIcon fill={themeDark.fill} />
-                </ToolbarSmallIcon>
-              </MenuToolbar.Action>
-            ))}
-          </MenuToolbar.ActionLine>
-          <MenuToolbar.ActionLine>
-            {ThemeLight.map((themeLight) => (
-              <MenuToolbar.Action
-                key={themeLight.fill}
-                $active={themeLight.id === theme.id}
-                onClick={() => handleSetTheme(themeLight)}
-              >
-                <ToolbarSmallIcon>
-                  <ColorNodeIcon fill={themeLight.fill} />
-                </ToolbarSmallIcon>
-              </MenuToolbar.Action>
-            ))}
-          </MenuToolbar.ActionLine>
-        </MenuToolbar.SubMenu>
-      </MenuToolbar>
-    </CenterDivContainer>
+        <MenuToolbar.ActionLine>
+          {ThemeLight.map((themeLight) => (
+            <MenuToolbar.Action
+              key={themeLight.fill}
+              $active={themeLight.id === theme.id}
+              onClick={() => handleSetTheme(themeLight)}
+            >
+              <ToolbarSmallIcon>
+                <ColorNodeIcon fill={themeLight.fill} />
+              </ToolbarSmallIcon>
+            </MenuToolbar.Action>
+          ))}
+        </MenuToolbar.ActionLine>
+      </MenuToolbar.SubMenu>
+    </MenuToolbar>
   );
 }
 

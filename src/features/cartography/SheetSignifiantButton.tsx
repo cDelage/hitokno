@@ -4,7 +4,6 @@ import styled, { css } from "styled-components";
 import useCartography from "./useCartography";
 import { useReactFlow, useViewport } from "reactflow";
 import { useSearchParams } from "react-router-dom";
-import useNodeToolbar from "./useNodeToolbar";
 
 const SheetButton = styled.div<{ $isActive: boolean }>`
   position: absolute;
@@ -32,14 +31,15 @@ const SheetButton = styled.div<{ $isActive: boolean }>`
 function SheetSignifiantButton({
   nodeSheetId,
   nodeId,
+  selected
 }: {
   nodeSheetId: string;
   nodeId: string;
+  selected: boolean;
 }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const { zoom } = useViewport();
   const { setCenter } = useReactFlow();
-  const { selectedNodeId } = useNodeToolbar();
   const active = nodeSheetId === searchParams.get("sheetId");
 
   const { getNodeCenterCoordinate } = useCartography();
@@ -87,7 +87,7 @@ function SheetSignifiantButton({
   );
 
   useEffect(() => {
-    if (selectedNodeId === nodeId) {
+    if (selected) {
       document.addEventListener("keydown", handleKeydown);
     } else {
       document.removeEventListener("keydown", handleKeydown);
@@ -96,7 +96,7 @@ function SheetSignifiantButton({
     return () => {
       document.removeEventListener("keydown", handleKeydown);
     };
-  }, [selectedNodeId, handleKeydown, nodeId, active]);
+  }, [selected, handleKeydown, nodeId, active]);
 
   return (
     <SheetButton onClick={handleClick} $isActive={active}>

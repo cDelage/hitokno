@@ -370,6 +370,25 @@ export const HandlesTargetList: HandleProps[] = [
   },
 ];
 
+export const HandlesUpdateList: HandleProps[] = [
+  {
+    handleId: "handle-update-top",
+    position: Position.Top,
+  },
+  {
+    handleId: "handle-update-right",
+    position: Position.Right,
+  },
+  {
+    handleId: "handle-update-bottom",
+    position: Position.Bottom,
+  },
+  {
+    handleId: "handle-update-left",
+    position: Position.Left,
+  },
+];
+
 export const EDGE_DEFAULT_STYLE = { strokeWidth: 1.5, stroke: "black" };
 
 export const EDGE_TYPE = {
@@ -382,7 +401,7 @@ export const EDGE_TYPE_COMPONENT = {
 };
 
 export const DEFAULT_EDGE_OPTIONS = {
-  type: EDGE_TYPE.custom,
+  type: "custom",
   markerEnd: {
     type: MarkerType.ArrowClosed,
     color: "black",

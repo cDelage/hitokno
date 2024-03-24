@@ -1,9 +1,9 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import useLexicalEditable from "@lexical/react/useLexicalEditable";
 import { NodeMode } from "../../types/Cartography.type";
-import { useEffect } from "react";
+import { memo, useEffect } from "react";
 
-function PluginReadEditMode({ mode }: { mode: NodeMode }) {
+const PluginReadEditMode = memo(function PluginReadEditMode({ mode }: { mode: NodeMode }) {
   const [editor] = useLexicalComposerContext();
   const editable = useLexicalEditable();
   useEffect(() => {
@@ -23,6 +23,6 @@ function PluginReadEditMode({ mode }: { mode: NodeMode }) {
   }, [mode, editor]);
 
   return null;
-}
+})
 
 export default PluginReadEditMode;
