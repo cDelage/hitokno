@@ -18,11 +18,11 @@ import {
   BiAlignLeft,
 } from "react-icons/bi";
 import {
-  MenuBorderRight,
-  ShadowsMenu,
+  MENU_BORDER_RIGHT,
+  SHADOWS_MENU,
   ShapeMenu,
-  ThemeLight,
-  ThemesDark,
+  THEME_LIGHT,
+  THEMES_DARK,
   fontFamilies,
 } from "./CartographyConstants";
 import SheetIcon from "../../ui/icons/SheetIcon";
@@ -399,7 +399,7 @@ function NodeToolbar({
 
         {/* Shadow */}
         <MenuToolbar.Action
-          border={MenuBorderRight}
+          border={MENU_BORDER_RIGHT}
           $padding="8px 4px 8px 8px"
           toggle="shadow"
         >
@@ -474,7 +474,7 @@ function NodeToolbar({
             {/* Align */}
             <MenuToolbar.Action
               toggle="alignement"
-              border={MenuBorderRight}
+              border={MENU_BORDER_RIGHT}
               $isAlignRight={true}
               $justifyCenter={true}
             >
@@ -507,7 +507,7 @@ function NodeToolbar({
        */}
       <MenuToolbar.SubMenu name="color">
         <MenuToolbar.ActionLine>
-          {ThemesDark.map((themeDark) => (
+          {THEMES_DARK.map((themeDark) => (
             <MenuToolbar.Action
               key={themeDark.fill}
               $active={themeDark.id === theme.id}
@@ -520,7 +520,7 @@ function NodeToolbar({
           ))}
         </MenuToolbar.ActionLine>
         <MenuToolbar.ActionLine>
-          {ThemeLight.map((themeLight) => (
+          {THEME_LIGHT.map((themeLight) => (
             <MenuToolbar.Action
               key={themeLight.fill}
               $active={themeLight.id === theme.id}
@@ -535,7 +535,7 @@ function NodeToolbar({
       </MenuToolbar.SubMenu>
       <MenuToolbar.SubMenu name="shadow">
         <MenuToolbar.ActionLine>
-          {ShadowsMenu.map((shadowsMenu) => (
+          {SHADOWS_MENU.map((shadowsMenu) => (
             <MenuToolbar.Action
               key={shadowsMenu.shadow}
               $active={shadow === shadowsMenu.shadow}
@@ -597,7 +597,7 @@ function NodeToolbar({
               <MenuToolbar.Action
                 onClick={() => handleSetTextHeading("h1")}
                 $active={currentNode === "h1"}
-                border={MenuBorderRight}
+                border={MENU_BORDER_RIGHT}
               >
                 <TitleContainer>
                   <h1>Heading 1</h1>
@@ -618,7 +618,7 @@ function NodeToolbar({
               <MenuToolbar.Action
                 onClick={() => handleSetTextHeading("h2")}
                 $active={currentNode === "h2"}
-                border={MenuBorderRight}
+                border={MENU_BORDER_RIGHT}
               >
                 <TitleContainer>
                   <h2>Heading 2</h2>
@@ -639,7 +639,7 @@ function NodeToolbar({
               <MenuToolbar.Action
                 onClick={() => handleSetTextHeading("h3")}
                 $active={currentNode === "h3"}
-                border={MenuBorderRight}
+                border={MENU_BORDER_RIGHT}
               >
                 <TitleContainer>
                   <h3>Heading 3</h3>

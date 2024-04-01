@@ -5,11 +5,11 @@ import DeckIcon from "../../ui/icons/DeckIcon";
 import SidebarIcon from "../../ui/icons/SidebarIcon";
 import { IoArrowForward, IoArrowUp, IoAdd, IoArrowBack } from "react-icons/io5";
 import {
-  MenuBorderRight,
-  ShadowsMenu,
+  MENU_BORDER_RIGHT,
+  SHADOWS_MENU,
   ShapeMenu,
-  ThemeLight,
-  ThemesDark,
+  THEME_LIGHT,
+  THEMES_DARK,
 } from "./CartographyConstants";
 import ShapeDispatch from "./shapes/ShapeDispatch";
 import { HiChevronUp } from "react-icons/hi2";
@@ -168,7 +168,7 @@ function MainToolbar() {
           {/* Move viewport */}
           <MenuToolbar.ActionColumn>
             <MenuToolbar.Action
-              border={MenuBorderRight}
+              border={MENU_BORDER_RIGHT}
               $padding="8px 16px 8px 16px"
               $active={mainToolbarActiveMenu === undefined}
               onClick={() => setMainToolbarActiveMenu(undefined)}
@@ -180,7 +180,7 @@ function MainToolbar() {
             </MenuToolbar.Action>
 
             <MenuToolbar.Action
-              border={MenuBorderRight}
+              border={MENU_BORDER_RIGHT}
               $padding="8px 16px 8px 16px"
               $active={mainToolbarActiveMenu === "SELECT"}
               onClick={() => setMainToolbarActiveMenu("SELECT")}
@@ -212,7 +212,7 @@ function MainToolbar() {
           </MenuToolbar.Action>
 
           {/* Deck (to create and edit flashcards) */}
-          <MenuToolbar.Action border={MenuBorderRight} onClick={handleOpenDeck}>
+          <MenuToolbar.Action border={MENU_BORDER_RIGHT} onClick={handleOpenDeck}>
             <ToolbarAction>
               <ToolbarLargeIconContainer>
                 <DeckIcon />
@@ -372,7 +372,7 @@ function MainToolbar() {
 
         <MenuToolbar.SubMenu name="color">
           <MenuToolbar.ActionLine>
-            {ThemesDark.map((themeDark) => (
+            {THEMES_DARK.map((themeDark) => (
               <MenuToolbar.Action
                 key={themeDark.fill}
                 $active={fill === themeDark.fill}
@@ -390,7 +390,7 @@ function MainToolbar() {
             ))}
           </MenuToolbar.ActionLine>
           <MenuToolbar.ActionLine>
-            {ThemeLight.map((themeLight) => (
+            {THEME_LIGHT.map((themeLight) => (
               <MenuToolbar.Action
                 key={themeLight.fill}
                 $active={fill === themeLight.fill}
@@ -411,7 +411,7 @@ function MainToolbar() {
 
         <MenuToolbar.SubMenu name="shadow">
           <MenuToolbar.ActionLine>
-            {ShadowsMenu.map((shadowsMenu) => (
+            {SHADOWS_MENU.map((shadowsMenu) => (
               <MenuToolbar.Action
                 key={shadowsMenu.shadow}
                 $active={shadow === shadowsMenu.shadow}

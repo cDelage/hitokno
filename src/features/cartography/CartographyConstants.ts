@@ -1,8 +1,15 @@
 import { MarkerType, Node, Position } from "reactflow";
 import { Border } from "../../types/Border.type";
 import {
+  ArrowEndType,
   CreatedHandle,
+  DataEdge,
   DataNode,
+  EdgeCategoryType,
+  EdgeDashStyle,
+  EdgeDashType,
+  EdgeWeightStyle,
+  EdgeWeightType,
   FontMenu,
   HandleProps,
   Shadow,
@@ -29,17 +36,17 @@ import GroupCreation from "./GroupCreation";
 
 export const PX_UNIT_GAP = 8;
 
-export const NodeCustomsComponents = {
+export const NODE_CUSTOM_COMPONENTS = {
   shape: NodeShape,
   creation: NodeCreation,
   image: NodeImage,
   groupNode: NodeGroup,
-  creationGroup : GroupCreation
+  creationGroup: GroupCreation,
 };
 
-export const NodeToSave = ["shape","image","groupNode"];
+export const NODE_TO_SAVE = ["shape", "image", "groupNode"];
 
-export const DefaultShape: ShapeDescription = {
+export const DEFAULT_SHAPE: ShapeDescription = {
   shape: "rect" as Shape,
   border: false,
   shadow: "none" as Shadow,
@@ -47,11 +54,27 @@ export const DefaultShape: ShapeDescription = {
     id: "bleu-light",
     fill: "#BAE6FD",
     color: "#1C1917",
-    stroke: "#38BDF8",
+    stroke: "#075985",
+    selection:"#38BDF8"
   },
 };
 
-export const ShadowsMenu: ShadowMenu[] = [
+export const DEFAULT_DATA_EDGE: DataEdge = {
+  mode: "DEFAULT",
+  arrowEnd: "arrow-closed",
+  arrowStart: "none",
+  edgeCategory: "smooth-step",
+  fill: "#000000",
+  weight: "light",
+  dash: "none",
+  shapeDescription: {
+   ...DEFAULT_SHAPE,
+   height: 100,
+   width: 100
+  }
+};
+
+export const SHADOWS_MENU: ShadowMenu[] = [
   {
     shadow: "none",
     shadowMenu: "none",
@@ -63,6 +86,17 @@ export const ShadowsMenu: ShadowMenu[] = [
   {
     shadow: "var(--shadow-shape-lg)",
     shadowMenu: "var(--shadow-shape-menu-lg)",
+  },
+];
+
+export const EDGE_LABEL_SHADOWS_MENU: ShadowMenu[] = [
+  {
+    shadow: "none",
+    shadowMenu: "none",
+  },
+  {
+    shadow: "var(--shadow-shape-md)",
+    shadowMenu: "var(--shadow-shape-menu-md)",
   },
 ];
 
@@ -93,10 +127,11 @@ export const NODE_DEFAULT: Node<DataNode> = {
       border: false,
       shadow: "var(--shadow-shape-md)" as Shadow,
       theme: {
-        id: "yellow-light",
-        fill: "#FEF08A",
+        id: "bleu-light",
+        fill: "#BAE6FD",
         color: "#1C1917",
-        stroke: "#FACC15",
+        stroke: "#075985",
+        selection:"#38BDF8"
       },
     },
     showNodeToolbar: false,
@@ -122,10 +157,11 @@ export const NODE_CREATION: Node<DataNode> = {
       border: false,
       shadow: "var(--shadow-shape-md)" as Shadow,
       theme: {
-        id: "yellow-light",
-        fill: "#FEF08A",
+        id: "bleu-light",
+        fill: "#BAE6FD",
         color: "#1C1917",
-        stroke: "#FACC15",
+        stroke: "#075985",
+        selection:"#38BDF8"
       },
     },
     showNodeToolbar: false,
@@ -152,10 +188,11 @@ export const GROUP_CREATION: Node<DataNode> = {
       border: false,
       shadow: "var(--shadow-shape-md)" as Shadow,
       theme: {
-        id: "yellow-light",
-        fill: "#FEF08A",
+        id: "bleu-light",
+        fill: "#BAE6FD",
         color: "#1C1917",
-        stroke: "#FACC15",
+        stroke: "#075985",
+        selection:"#38BDF8"
       },
     },
     showNodeToolbar: false,
@@ -168,134 +205,245 @@ export const GROUP_CREATION: Node<DataNode> = {
   },
 };
 
-export const MenuBorderRight: Border = {
+export const MENU_BORDER_RIGHT: Border = {
   borderRight: "1px solid var(--color-gray-200)",
 };
 
-export const ThemesDark: Theme[] = [
+export const MENU_BORDER_LEFT: Border = {
+  borderLeft: "1px solid var(--color-gray-200)",
+};
+
+export const EDGE_COLORS: string[] = [
+  "#000000",
+  "#3b82f6",
+  "#0EA5E9",
+  "#a855f7",
+  "#22C55E",
+  "#EAB308",
+  "#F43F5E",
+  "#A8A29E",
+];
+
+export const THEMES_DARK: Theme[] = [
   {
     id: "black-dark",
     fill: "#000000",
     color: "#FFFFFF",
     stroke: "#57534E",
+    selection:"#78716c"
   },
   {
     id: "gray-dark",
     fill: "#57534E",
     color: "#FFFFFF",
     stroke: "#292524",
+    selection:"#292524"
   },
   {
     id: "blue-dark",
     fill: "#0284C7",
     color: "#FFFFFF",
     stroke: "#075985",
+    selection:"#0c4a6e"
   },
   {
     id: "purple-dark",
     fill: "#4F46E5",
     color: "#FFFFFF",
     stroke: "#3730A3",
+    selection:"#312e81"
   },
   {
     id: "violet-dark",
     fill: "#7C3AED",
     color: "#FFFFFF",
     stroke: "#5B21B6",
+    selection:"#4c1d95"
   },
   {
     id: "green-dark",
     fill: "#16A34A",
     color: "#1C1917",
     stroke: "#166534",
+    selection:"#166534"
   },
   {
     id: "yellow-dark",
     fill: "#CA8A04",
     color: "#1C1917",
     stroke: "#854D0E",
+    selection:"#854d0e"
   },
   {
     id: "orange-dark",
     fill: "#EA580C",
     color: "#1C1917",
     stroke: "#9A3412",
+    selection:"#9A3412"
   },
   {
     id: "rose-dark",
     fill: "#E11D48",
     color: "#FFFFFF",
     stroke: "#9F1239",
+    selection:"#881337"
   },
   {
     id: "red-dark",
     fill: "#DC2626",
     color: "#FFFFFF",
     stroke: "#991B1B",
+    selection:"#7f1d1d"
   },
 ];
 
-export const ThemeLight: Theme[] = [
+export const THEME_LIGHT: Theme[] = [
   {
     id: "white-light",
     fill: "#FFFFFF",
     color: "#1C1917",
-    stroke: "#D6D3D1",
+    stroke: "#292524",
+    selection:"#a8a29e"
   },
   {
     id: "gray-light",
     fill: "#E7E5E4",
     color: "#1C1917",
     stroke: "#A8A29E",
+    selection:"#a8a29e"
   },
   {
     id: "bleu-light",
     fill: "#BAE6FD",
     color: "#1C1917",
-    stroke: "#38BDF8",
+    stroke: "#075985",
+    selection:"#38BDF8"
   },
   {
     id: "purple-light",
     fill: "#C7D2FE",
     color: "#1C1917",
-    stroke: "#818CF8",
+    stroke: "#3730a3",
+    selection:"#818CF8"
   },
 
   {
     id: "violet-light",
     fill: "#DDD6FE",
     color: "#1C1917",
-    stroke: "#A78BFA",
+    stroke: "#5b21b6",
+    selection:"#A78BFA"
   },
   {
     id: "green-light",
     fill: "#BBF7D0",
     color: "#1C1917",
-    stroke: "#4ADE80",
+    stroke: "#166534",
+    selection:"#4ADE80"
   },
   {
     id: "yellow-light",
     fill: "#FEF08A",
     color: "#1C1917",
-    stroke: "#FACC15",
+    stroke: "#854d0e",
+    selection:"#FACC15"
   },
   {
     id: "orange-light",
     fill: "#FED7AA",
     color: "#1C1917",
-    stroke: "#FB923C",
+    stroke: "#9a3412",
+    selection:"#FB923C"
   },
   {
     id: "rose-light",
     fill: "#FECDD3",
     color: "#1C1917",
-    stroke: "#FB7185",
+    stroke: "#9f1239",
+    selection:"#FB7185"
   },
   {
     id: "red-light",
     fill: "#FECACA",
     color: "#1C1917",
-    stroke: "#F87171",
+    stroke: "#991b1b",
+    selection:"#F87171"
+  },
+];
+
+export const ThemeDarkEdgeLabel: Theme[] = [
+  {
+    id: "gray-dark",
+    fill: "#57534E",
+    color: "#FFFFFF",
+    stroke: "#292524",
+    selection:"#78716c"
+  },
+  {
+    id: "blue-dark",
+    fill: "#0284C7",
+    color: "#FFFFFF",
+    stroke: "#075985",
+    selection:"#0c4a6e"
+  },
+  {
+    id: "violet-dark",
+    fill: "#7C3AED",
+    color: "#FFFFFF",
+    stroke: "#5B21B6",
+    selection:"#4c1d95"
+  },
+  {
+    id: "green-dark",
+    fill: "#16A34A",
+    color: "#1C1917",
+    stroke: "#166534",
+    selection:"#166534"
+  },
+  {
+    id: "rose-dark",
+    fill: "#E11D48",
+    color: "#FFFFFF",
+    stroke: "#9F1239",
+    selection:"#881337"
+  },
+];
+
+export const ThemeLightEdgeLabel: Theme[] = [
+  {
+    id: "bleu-light",
+    fill: "#BAE6FD",
+    color: "#1C1917",
+    stroke: "#075985",
+    selection:"#38BDF8"
+  },
+  {
+    id: "green-light",
+    fill: "#BBF7D0",
+    color: "#1C1917",
+    stroke: "#166534",
+    selection:"#4ADE80"
+  },
+  {
+    id: "yellow-light",
+    fill: "#FEF08A",
+    color: "#1C1917",
+    stroke: "#854d0e",
+    selection:"#FACC15"
+  },
+  {
+    id: "orange-light",
+    fill: "#FED7AA",
+    color: "#1C1917",
+    stroke: "#9a3412",
+    selection:"#FB923C"
+  },
+  {
+    id: "rose-light",
+    fill: "#FECDD3",
+    color: "#1C1917",
+    stroke: "#9f1239",
+    selection:"#FB7185"
   },
 ];
 
@@ -583,3 +731,56 @@ export const ImageTypes = [
   "image/svg+xml",
   "image/webp",
 ];
+
+export const EdgeWeightArray: EdgeWeightType[] = [
+  "light",
+  "medium",
+  "bold",
+];
+
+export const ArrowEndArray: ArrowEndType[] = ["none","arrow-closed", "arrow", "circle", "rect"];
+
+export const EdgeCategoryArray: EdgeCategoryType[] = [
+  "bezier",
+  "smooth-step",
+  "straight",
+];
+
+export const EDGE_WEIGHT_STYLE_ARRAY : EdgeWeightStyle[]= [
+  {
+    edgeWeight: "light",
+    strokeSize: 3
+  },
+  {
+    edgeWeight: "medium",
+    strokeSize: 6
+  },
+  {
+    edgeWeight: "bold",
+    strokeSize: 12
+  }
+]
+
+
+export const EDGE_DASH_ARRAY : EdgeDashType[] = [
+  "none","light","medium","large"
+]
+
+export const EDGE_DASH_STYLE_ARRAY : EdgeDashStyle[] = [
+  {
+    edgeDash: "none",
+    dashStyle: "",
+  },
+  {
+    edgeDash: "light",
+    dashStyle: "8 8",
+  },
+  {
+    edgeDash: "medium",
+    dashStyle: "16 8",
+  },
+  {
+    edgeDash: "large",
+    dashStyle: "40 30",
+  },
+]

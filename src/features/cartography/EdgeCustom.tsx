@@ -1,8 +1,55 @@
-import { CSSProperties, useEffect } from "react";
-import { Position, getSmoothStepPath, useKeyPress } from "reactflow";
+import { CSSProperties, useEffect, useMemo } from "react";
+import {
+  BaseEdge,
+  Position,
+  getBezierPath,
+  getSmoothStepPath,
+  getStraightPath,
+  useKeyPress,
+} from "reactflow";
 import useCartography from "./useCartography";
+import EdgeToolbar from "./EdgeToolbar";
+import {
+  DataEdge,
+  EdgeDashStyle,
+  EdgeDashType,
+  EdgeWeightStyle,
+  EdgeWeightType,
+} from "../../types/Cartography.type";
+import MarkersCustom from "./MarkersCustom";
+import {
+  EDGE_DASH_STYLE_ARRAY,
+  EDGE_WEIGHT_STYLE_ARRAY,
+} from "./CartographyConstants";
+import EdgeLabel from "./EdgeLabel";
+import styled from "styled-components";
 
-const edgeStyle : CSSProperties = { strokeWidth: 3, stroke: "black" };
+const SvgContainer = styled.svg`
+  position: relative;
+`;
+
+const findWeight = (weight: EdgeWeightType): EdgeWeightStyle => {
+  const weightStyle = EDGE_WEIGHT_STYLE_ARRAY.find(
+    (x) => x.edgeWeight === weight
+  );
+  return weightStyle
+    ? weightStyle
+    : {
+        strokeSize: 3,
+        edgeWeight: "light",
+      };
+};
+
+const findDash = (dash?: EdgeDashType): EdgeDashStyle => {
+  const dashStyle = EDGE_DASH_STYLE_ARRAY.find((x) => x.edgeDash === dash);
+
+  return dashStyle
+    ? dashStyle
+    : {
+        dashStyle: "",
+        edgeDash: "light",
+      };
+};
 
 function EdgeCustom({
   sourceX,
@@ -10,12 +57,12 @@ function EdgeCustom({
   targetX,
   targetY,
   id,
-  markerEnd,
   sourcePosition,
   targetPosition,
   selected,
   sourceHandleId,
   targetHandleId,
+  data,
 }: {
   sourceX: number;
   sourceY: number;
@@ -31,27 +78,62 @@ function EdgeCustom({
   target: string;
   targetHandleId: string;
   style: CSSProperties;
+  data: DataEdge;
 }) {
   const { handlesActive, addHandlesActive, removeHandlesActive, deleteEdge } =
     useCartography();
-
+  const {
+    fill,
+    arrowEnd,
+    arrowStart,
+    edgeCategory,
+    weight,
+    dash,
+    label,
+    shapeDescription,
+  } = data;
+  const { height } = shapeDescription;
   const deleteEdgeAction = useKeyPress("Delete");
 
-  const [edgePath] = getSmoothStepPath({
+  const dashStyle = useMemo(() => {
+    return findDash(dash);
+  }, [dash]);
+
+  const weightStyle = useMemo(() => {
+    return findWeight(weight);
+  }, [weight]);
+
+  const edgeParams = {
     sourceX,
     sourceY,
     targetX,
     targetY,
     sourcePosition,
     targetPosition,
-    borderRadius: 3,
-  });
+    borderRadius: 8,
+  };
+
+  const [edgePath, labelX, labelY] =
+    edgeCategory === "bezier"
+      ? getBezierPath(edgeParams)
+      : edgeCategory === "smooth-step"
+      ? getSmoothStepPath(edgeParams)
+      : edgeCategory === "straight"
+      ? getStraightPath(edgeParams)
+      : getSmoothStepPath(edgeParams);
 
   useEffect(() => {
     if (deleteEdgeAction && selected) {
       deleteEdge(id, sourceHandleId, targetHandleId);
     }
-  }, [deleteEdgeAction, deleteEdge, selected, id, sourceHandleId, targetHandleId]);
+  }, [
+    deleteEdgeAction,
+    deleteEdge,
+    selected,
+    id,
+    sourceHandleId,
+    targetHandleId,
+  ]);
 
   useEffect(() => {
     if (selected && !handlesActive.includes(sourceHandleId)) {
@@ -71,22 +153,32 @@ function EdgeCustom({
   ]);
 
   return (
-    <>
-      <path
+    <SvgContainer>
+      <MarkersCustom fill={fill} />
+      <BaseEdge
+        path={edgePath}
         id={id}
-        className="react-flow__edge-path"
-        d={edgePath}
-        style={{ strokeWidth: 25, opacity: 0 }}
+        markerStart={arrowStart !== "none" ? `url(#${arrowStart}-${fill})` : ""}
+        markerEnd={arrowEnd !== "none" ? `url(#${arrowEnd}-${fill})` : ""}
+        style={{
+          strokeWidth: weightStyle.strokeSize,
+          stroke: fill,
+          strokeDasharray: dashStyle.dashStyle,
+        }}
       />
-
-      <path
-        id={id}
-        className="react-flow__edge-path"
-        d={edgePath}
-        markerEnd={markerEnd}
-        style={edgeStyle}
-      />
-    </>
+      {selected && (
+        <EdgeToolbar
+          labelX={labelX}
+          labelY={labelY}
+          data={data}
+          id={id}
+          height={label ? height : 0}
+        />
+      )}
+      {label !== undefined && (
+        <EdgeLabel id={id} data={data} labelX={labelX} labelY={labelY} />
+      )}
+    </SvgContainer>
   );
 }
 

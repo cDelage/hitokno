@@ -30,6 +30,44 @@ export async function createFolder(): Promise<Folder | null> {
   return result;
 }
 
+export async function migrateEdge() {
+  const folders = (await db.repository.find({})) as CompleteFolder[];
+  folders
+    .map((folder) => {
+      return {
+        ...folder,
+        files: folder.files.map((file) => {
+          return {
+            ...file,
+            edges: file.edges.map((x) => {
+              return {
+                ...x,
+                data: {
+                  mode: "DEFAULT",
+                  arrowEnd: "arrow-closed",
+                  arrowStart: "none",
+                  edgeCategory: "smooth-step",
+                  fill: "#000000",
+                  weight: "light"
+                },
+              };
+            }),
+          };
+        }),
+      };
+    })
+    .forEach((folder) => {
+      db.repository.update(
+        { _id: folder._id },
+        {
+          $set: {
+            files: folder.files,
+          },
+        }
+      );
+    });
+}
+
 export async function findRepository(): Promise<Folder[] | null> {
   const result = (await db.repository.find({})) as Folder[];
   return result;
@@ -164,7 +202,7 @@ export async function updateCartography({
   nodes,
   edges,
   fileName,
-  isSaved
+  isSaved,
 }: FileHitokno) {
   const folder = (await db.repository.findOne({
     "files._id": _id,
@@ -176,7 +214,7 @@ export async function updateCartography({
         ...file,
         nodes,
         edges,
-        isSaved
+        isSaved,
       };
     } else {
       return { ...file };
@@ -203,7 +241,7 @@ export async function updateFilepath({ _id, filePath, isSaved }: FileHitokno) {
       return {
         ...file,
         filePath,
-        isSaved
+        isSaved,
       };
     } else {
       return { ...file };

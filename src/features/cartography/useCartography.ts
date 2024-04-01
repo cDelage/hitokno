@@ -11,13 +11,15 @@ import {
 } from "reactflow";
 import { create } from "zustand";
 import {
-  DefaultShape,
+  DEFAULT_DATA_EDGE,
+  DEFAULT_SHAPE,
   GROUP_CREATION,
   NODE_CREATION,
-  NodeToSave,
+  NODE_TO_SAVE,
 } from "./CartographyConstants";
 import {
   CreatedHandle,
+  DataEdge,
   DataNode,
   EdgeCreationProps,
   MainToolbarMode,
@@ -36,9 +38,19 @@ const applyNodeMode = (node: Node<DataNode>, mode: NodeMode) => {
     ...node,
     data: {
       ...node.data,
-      mode: mode,
+      mode,
     },
-  };
+  } as Node<DataNode>;
+};
+
+const applyEdgeMode = (edge: Edge<DataEdge>, mode: NodeMode) => {
+  return {
+    ...edge,
+    data: {
+      ...edge.data,
+      mode,
+    },
+  } as Edge<DataEdge>;
 };
 
 const isInsideGroup = (
@@ -103,7 +115,7 @@ const getGroupPositionGap = (
 
 type UseCartographyStore = {
   nodes: Node<DataNode>[];
-  edges: Edge[];
+  edges: Edge<DataEdge>[];
   mainToolbarActiveMenu: MainToolbarMode;
   panOnDragMode: PaneOnDragMode;
   shapeCreationDesc: ShapeDescription;
@@ -122,11 +134,12 @@ type UseCartographyStore = {
   setEdgeCreationProps: (edgeCreationProps: EdgeCreationProps) => void;
   setIsSyncWithDB: (isSync: boolean) => void;
   getNodesForSave: () => Node[];
+  getEdgesForSave: () => Edge[];
   setShapeCreationDesc: (shapeDesc: ShapeDescription) => void;
   setPanOnDragMode: (panOnDragMode: PaneOnDragMode) => void;
   setMainToolbarActiveMenu: (mode: MainToolbarMode) => void;
   setNodes: (nds: Node[]) => void;
-  setEdges: (edg: Edge[]) => void;
+  setEdges: (edg: Edge<DataEdge>[]) => void;
   onNodesChange: (changes: NodeChange[]) => void;
   onEdgesChange: (changes: EdgeChange[]) => void;
   setShowNodeToolbar: (nodeId: string | undefined) => void;
@@ -204,6 +217,13 @@ type UseCartographyStore = {
   setModeUpdateHandle: (updateEdgePayload: UpdateEdgePayload) => void;
   endModeUpdateHandle: () => void;
   setUpdateEdgePayload: (updateEdgePayload: UpdateEdgePayload) => void;
+  getRelativePosition: (nodeId: string) => {
+    xPos: number;
+    yPos: number;
+    width: number;
+    height: number;
+  };
+  setEdgeData: (edgeId: string, data: DataEdge) => void;
 };
 
 const useCartography = create<UseCartographyStore>((set, get) => ({
@@ -211,7 +231,7 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
   edges: [],
   mainToolbarActiveMenu: undefined,
   panOnDragMode: undefined,
-  shapeCreationDesc: DefaultShape,
+  shapeCreationDesc: DEFAULT_SHAPE,
   isSyncWithDB: true,
   edgeCreationProps: {} as EdgeCreationProps,
   handlesActive: [],
@@ -269,13 +289,14 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
         type: "target",
       };
 
-      const newEdge: Edge = {
+      const newEdge: Edge<DataEdge> = {
         id: uuidv4(),
         source: sourceNodeId,
         target: targetNodeId,
         type: "custom",
         sourceHandle: newSourceHandle.handleId,
         targetHandle: newTargetHandle.handleId,
+        data: DEFAULT_DATA_EDGE,
       };
 
       set((state) => {
@@ -381,7 +402,7 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
   },
   getNodesForSave: () => {
     return get()
-      .nodes.filter((node) => NodeToSave.includes(node.type as string))
+      .nodes.filter((node) => NODE_TO_SAVE.includes(node.type as string))
       .map((node) => {
         return {
           ...node,
@@ -391,15 +412,27 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
             ...node.data,
             mode: "DEFAULT",
           },
-        };
+        } as Node<DataNode>;
       });
+  },
+  getEdgesForSave : () => {
+    return get().edges.map(edge => {
+      return {
+        ...edge,
+        selected: false,
+        data: {
+          ...edge.data,
+          mode: "DEFAULT"
+        }
+      } as Edge<DataEdge>
+    })
   },
   setNodes: (nds: Node<DataNode>[]) => {
     set({
       nodes: nds,
     });
   },
-  setEdges: (edg: Edge[]) => {
+  setEdges: (edg: Edge<DataEdge>[]) => {
     set({
       edges: edg,
     });
@@ -647,16 +680,22 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
             return applyNodeMode(node, "DEFAULT");
           }
         }),
+        edges: state.edges.map((edge) => {
+          if (edge.id === nodeId) {
+            const newMode = edge.data?.mode === "EDIT" ? "DEFAULT" : "EDIT";
+            return applyEdgeMode(edge, newMode);
+          } else {
+            return applyEdgeMode(edge, "DEFAULT");
+          }
+        }),
       };
     });
   },
   getNodeCenterCoordinate: (nodeId: string) => {
-    const node = get().findNodeById(nodeId);
-    const centerX = node.position.x + (node.style?.width as number) / 2;
-    const centerY = node.position.y + (node.style?.height as number) / 2;
+    const pos = get().getRelativePosition(nodeId);
     return {
-      x: centerX,
-      y: centerY,
+      x: pos.xPos + pos.width / 2,
+      y: pos.yPos + pos.height / 2,
     };
   },
   findSheetData: (sheetId: string) => {
@@ -1115,6 +1154,48 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
           ...state.edgeCreationProps,
           targetPosition: updateEdgePayload.targetPosition,
         },
+      };
+    });
+  },
+  getRelativePosition: (nodeId: string) => {
+    let xPos = 0;
+    let yPos = 0;
+    let width = 0;
+    let height = 0;
+    const node = get().nodes.find((node) => node.id === nodeId);
+    if (node) {
+      xPos = node.position.x;
+      yPos = node.position.y;
+      width = node.width ? node.width : 0;
+      height = node.height ? node.height : 0;
+
+      if (node.parentNode) {
+        const parentNode = get().nodes.find(
+          (parent) => parent.id === node.parentNode
+        );
+        if (parentNode) {
+          xPos += parentNode.position.x;
+          yPos += parentNode.position.y;
+        }
+      }
+    }
+    return {
+      xPos,
+      yPos,
+      width,
+      height,
+    };
+  },
+  setEdgeData: (edgeId: string, data: DataEdge) => {
+    set((state) => {
+      return {
+        isSyncWithDB: false,
+        edges: state.edges.map((edge) => {
+          return {
+            ...edge,
+            data: edgeId === edge.id ? data : edge.data,
+          };
+        }),
       };
     });
   },

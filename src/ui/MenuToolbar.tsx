@@ -1,4 +1,4 @@
-import styled, { css } from "styled-components";
+import styled, { CSSProp, css } from "styled-components";
 import { ChildrenProps } from "../types/ChildrenProps.type";
 import { createPortal } from "react-dom";
 import { PositionAbsolute, PositionObject } from "../types/Position.type";
@@ -240,17 +240,21 @@ function MenuToolbar({
   );
 }
 
+const ActionLineStyle : CSSProp = { alignItems: "stretch", flexGrow: 1, overflow: "hidden", borderRadius: "4px" }
+
 function ActionLine({ children }: ChildrenProps): JSX.Element {
   return (
-    <Row $style={{ alignItems: "stretch", flexGrow: 1, overflow: "hidden" }}>
+    <Row $style={ActionLineStyle}>
       {children}
     </Row>
   );
 }
 
+const ActionColumnStyle : CSSProp = { alignItems: "stretch", overflow: "hidden" }
+
 function ActionColumn({ children }: ChildrenProps): JSX.Element {
   return (
-    <Column $style={{ alignItems: "stretch", overflow: "hidden" }}>
+    <Column $style={ActionColumnStyle}>
       {children}
     </Column>
   );

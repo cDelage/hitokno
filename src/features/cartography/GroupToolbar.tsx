@@ -8,7 +8,7 @@ import {
   Theme,
 } from "../../types/Cartography.type";
 import { HiChevronUp } from "react-icons/hi2";
-import { ThemeLight, ThemesDark } from "./CartographyConstants";
+import { THEME_LIGHT, THEMES_DARK } from "./CartographyConstants";
 import useCartography from "./useCartography";
 import { useCallback, useMemo } from "react";
 import { v4 as uuidv4 } from "uuid";
@@ -147,7 +147,7 @@ function GroupToolbar({
       </MenuToolbar.ActionLine>
       <MenuToolbar.SubMenu name="color">
         <MenuToolbar.ActionLine>
-          {ThemesDark.map((themeDark) => (
+          {THEMES_DARK.map((themeDark) => (
             <MenuToolbar.Action
               key={themeDark.fill}
               $active={themeDark.id === theme.id}
@@ -160,7 +160,7 @@ function GroupToolbar({
           ))}
         </MenuToolbar.ActionLine>
         <MenuToolbar.ActionLine>
-          {ThemeLight.map((themeLight) => (
+          {THEME_LIGHT.map((themeLight) => (
             <MenuToolbar.Action
               key={themeLight.fill}
               $active={themeLight.id === theme.id}

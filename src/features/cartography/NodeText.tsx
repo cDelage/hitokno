@@ -104,7 +104,7 @@ const NodeText = memo(function NodeText({
               mode === "EDIT" ? "nodrag htk-theme-node" : "htk-theme-node"
             }
             color={theme.color}
-            $selectedColor={theme.stroke}
+            $selectedColor={theme.selection}
             $active={mode === "EDIT"}
           />
         }

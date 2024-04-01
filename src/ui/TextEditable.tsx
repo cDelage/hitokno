@@ -1,4 +1,4 @@
-import { ChangeEvent, MouseEvent, useEffect } from "react";
+import { ChangeEvent, MouseEvent, Ref, useEffect } from "react";
 import styled, { CSSProperties, css } from "styled-components";
 import { TextEditMode } from "../types/TextEditMode.type";
 import { useInputOutsideDoubleClick } from "../hooks/useInputOutsideClick";
@@ -13,6 +13,7 @@ type TextEditableProps = {
   fontWeigth?: string;
   lockSelection?: boolean;
   fontSize?: string;
+  areaRef? : Ref<HTMLTextAreaElement>
 };
 
 type InputProps = {

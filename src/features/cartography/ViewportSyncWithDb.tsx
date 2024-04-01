@@ -8,9 +8,9 @@ import { useQueryClient } from "@tanstack/react-query";
 function ViewportSyncWithDb() {
   const [isTimeoutActive, setIsTimeoutActive] = useState<boolean>(false);
   const {
-    edges,
     mainToolbarActiveMenu,
     getNodesForSave,
+    getEdgesForSave,
     isSyncWithDB,
     setIsSyncWithDB,
     isSaved,
@@ -30,19 +30,20 @@ function ViewportSyncWithDb() {
    */
   useEffect(() => {
     const nodesToSave = getNodesForSave();
+    const edgesToSave = getEdgesForSave();
     if (
       !isSyncWithDB &&
       !isTimeoutActive &&
       !isUpdateCartographyPending &&
       fileDetail &&
       !mainToolbarActiveMenu?.startsWith("CREATION") &&
-      (nodesToSave.length != 0 || edges.length != 0)
+      (nodesToSave.length != 0 || edgesToSave.length != 0)
     ) {
       updateCartography(
         {
           ...fileDetail.file,
           nodes: nodesToSave,
-          edges,
+          edges: edgesToSave,
           isSaved: false,
         },
         {
@@ -67,7 +68,7 @@ function ViewportSyncWithDb() {
     isTimeoutActive,
     isUpdateCartographyPending,
     fileDetail,
-    edges,
+    getEdgesForSave,
     getNodesForSave,
     mainToolbarActiveMenu,
     queryClient,

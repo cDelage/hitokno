@@ -61,6 +61,7 @@ export type Theme = {
   fill: string;
   color: string;
   stroke: string;
+  selection: string;
 };
 
 export type ThemeHighlight = {
@@ -72,8 +73,7 @@ export type ThemeHighlight = {
 export type ThemeText = {
   id: string;
   color: string;
-}
-
+};
 
 export type ShapeProps = {
   shape?: Shape | undefined;
@@ -89,6 +89,11 @@ export type ShapeDescription = {
   theme: Theme;
 };
 
+export type ShapeDescriptionEdgeLabel = ShapeDescription & {
+  width: number;
+  height: number;
+}
+
 export type NodeMode = "DEFAULT" | "EDIT";
 
 export type DataNode = {
@@ -97,27 +102,39 @@ export type DataNode = {
   showNodeToolbar?: boolean;
   shapeDescription?: ShapeDescription;
   handles: CreatedHandle[];
-  sheet?: Sheet
+  sheet?: Sheet;
   src?: string;
   label: string;
   isGrouped?: boolean;
   parentIdStored?: string | undefined;
 };
 
-export type NodeSortListItem = {
-  node : Node<DataNode>;
-  childs : NodeSortListItem [];
+export type DataEdge = {
+  mode: NodeMode;
+  shapeDescription: ShapeDescriptionEdgeLabel;
+  label?: string;
+  fill: string;
+  weight: EdgeWeightType;
+  arrowStart: ArrowEndType;
+  arrowEnd: ArrowEndType;
+  edgeCategory: EdgeCategoryType;
+  dash?: EdgeDashType;
 }
+
+export type NodeSortListItem = {
+  node: Node<DataNode>;
+  childs: NodeSortListItem[];
+};
 
 export type Sheet = {
   sheetId: string;
   body?: string;
-}
+};
 
 export type SheetDetail = {
   nodeId: string;
   sheet: Sheet;
-}
+};
 
 export type Fill = {
   fill: string;
@@ -133,39 +150,55 @@ export type HandleSourceCreateEdge = {
   handleId: string;
 };
 
-
 export type HandleProps = {
   handleId: string;
   position: Position;
-}
+};
 
 export type CreatedHandle = HandleProps & {
-  type : "source" | "target",
-}
+  type: "source" | "target";
+};
 
 export type EdgeCreationProps = {
   isCreateEdge?: boolean;
-  sourceNodeId? : string;
-  sourceHandleId? : string;
-  sourcePosition? : Position;
-  targetNodeId? : string;
-  targetHandleId? : string;
-  targetPosition? : Position;
-}
+  sourceNodeId?: string;
+  sourceHandleId?: string;
+  sourcePosition?: Position;
+  targetNodeId?: string;
+  targetHandleId?: string;
+  targetPosition?: Position;
+};
 
 export type NodeAlignement = "left" | "right" | "top" | "bottom";
 
-
 export type HelperLine = {
   id: NodeAlignement;
-  position : PositionAbsolute;
+  position: PositionAbsolute;
   width: number;
-  height: number
-}
+  height: number;
+};
 
 export type updateEdgePayload = {
   edge: Edge;
   type: "source" | "target";
-  targetNodeId? : string;
-  targetPosition? : Position;
+  targetNodeId?: string;
+  targetPosition?: Position;
+};
+
+export type EdgeWeightType = "bold" | "medium" | "light";
+
+export type EdgeDashType = "none" | "light" | "medium" | "large"
+
+export type ArrowEndType = "none" | "arrow" | "arrow-closed" | "circle" | "rect";
+
+export type EdgeCategoryType = "bezier" | "straight" | "smooth-step";
+
+export type EdgeWeightStyle = {
+  edgeWeight : EdgeWeightType;
+  strokeSize: number;
+}
+
+export type EdgeDashStyle = {
+  edgeDash : EdgeDashType;
+  dashStyle : string;
 }

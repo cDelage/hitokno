@@ -15,7 +15,7 @@ import TitleFormatToolbar from "../cartography/TitleFormatToolbar";
 import styled from "styled-components";
 import HighlightColorIcon from "../../ui/icons/HighlightColorIcon";
 import {
-  MenuBorderRight,
+  MENU_BORDER_RIGHT,
   TextThemesFirstLine,
   TextThemesSecondLine,
   ThemeHighlightFirstLine,
@@ -307,7 +307,7 @@ function SheetToolbar({ nodeId }: { nodeId: string }) {
         {/* Align */}
         <MenuToolbar.Action
           toggle="alignement"
-          border={MenuBorderRight}
+          border={MENU_BORDER_RIGHT}
           $isAlignRight={true}
           $justifyCenter={true}
         >
@@ -325,7 +325,7 @@ function SheetToolbar({ nodeId }: { nodeId: string }) {
           <HiChevronDown size={12} />
         </MenuToolbar.Action>
         <MenuToolbar.Action
-          border={MenuBorderRight}
+          border={MENU_BORDER_RIGHT}
           toggle="pen-color"
           $isAlignRight={true}
           $justifyCenter={true}
@@ -336,7 +336,7 @@ function SheetToolbar({ nodeId }: { nodeId: string }) {
           <HiChevronDown size={12} />
         </MenuToolbar.Action>
         <MenuToolbar.Action
-          border={MenuBorderRight}
+          border={MENU_BORDER_RIGHT}
           toggle="highlight-color"
           $isAlignRight={true}
           $justifyCenter={true}
@@ -355,7 +355,7 @@ function SheetToolbar({ nodeId }: { nodeId: string }) {
               <MenuToolbar.Action
                 onClick={() => handleSetTextHeading("h1")}
                 $active={currentNode === "h1"}
-                border={MenuBorderRight}
+                border={MENU_BORDER_RIGHT}
                 $justifyCenter={true}
               >
                 <TitleContainer>
@@ -378,7 +378,7 @@ function SheetToolbar({ nodeId }: { nodeId: string }) {
               <MenuToolbar.Action
                 onClick={() => handleSetTextHeading("h2")}
                 $active={currentNode === "h2"}
-                border={MenuBorderRight}
+                border={MENU_BORDER_RIGHT}
                 $justifyCenter={true}
               >
                 <TitleContainer>
@@ -401,7 +401,7 @@ function SheetToolbar({ nodeId }: { nodeId: string }) {
               <MenuToolbar.Action
                 onClick={() => handleSetTextHeading("h3")}
                 $active={currentNode === "h3"}
-                border={MenuBorderRight}
+                border={MENU_BORDER_RIGHT}
                 $justifyCenter={true}
               >
                 <TitleContainer>

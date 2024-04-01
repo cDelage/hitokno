@@ -8,9 +8,11 @@ type TextAreaProps = {
   onEdit: (e: ChangeEvent<HTMLTextAreaElement>) => void;
   placeholder?: string;
   selectOnEdit?: boolean;
+  overflow?: string;
+  padding?: string;
 };
 
-const TextArea = styled.textarea`
+const TextArea = styled.textarea<{$overflow?:string, $padding?: string}>`
   font-family: inherit;
   font-size: inherit;
   color: inherit;
@@ -24,7 +26,8 @@ const TextArea = styled.textarea`
   margin: 0;
   resize: none;
   outline: none;
-
+  overflow: ${(props) => props.$overflow};
+  padding: ${(props) => props.$padding ? props.$padding + "px" : ""};
   &:read-only {
     cursor: inherit;
   }
@@ -36,6 +39,8 @@ function TextAreaEditable({
   onEdit,
   placeholder,
   selectOnEdit,
+  overflow,
+  padding
 }: TextAreaProps): JSX.Element {
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const handleClick = useCallback(
@@ -64,6 +69,8 @@ function TextAreaEditable({
       readOnly={mode === "DEFAULT"}
       onClick={handleClick}
       ref={textAreaRef}
+      $overflow={overflow}
+      $padding={padding}
     />
   );
 }

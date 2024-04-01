@@ -13,7 +13,7 @@ import {
   DEFAULT_EDGE_OPTIONS,
   EDGE_TYPE_COMPONENT,
   InitialEdgeCreationState,
-  NodeCustomsComponents,
+  NODE_CUSTOM_COMPONENTS,
   PX_UNIT_GAP,
 } from "./CartographyConstants";
 import { useCallback, useEffect, useMemo } from "react";
@@ -28,10 +28,7 @@ import ViewportSyncWithDb from "./ViewportSyncWithDb";
 import PasteImage from "./PasteImage";
 import NodeControlSidebar from "./NodeControlSidebar";
 
-const ViewportContainer = styled.div<{
-  $handleSize: number;
-  $handleBorderSize: number;
-}>`
+const ViewportContainer = styled.div<{$handleSize: number; $handleBorderSize: number;}>`
   flex-grow: 1;
   background-color: var(--color-gray-100);
   position: relative;
@@ -183,12 +180,13 @@ function Viewport(): JSX.Element {
       )}
       <SheetContainer />
       <NodeControlSidebar />
+      
       <ReactFlow
         nodes={nodes}
         edges={edges}
         id="viewport-container-reactflow"
         key={`viewport-${fileId}`}
-        nodeTypes={NodeCustomsComponents}
+        nodeTypes={NODE_CUSTOM_COMPONENTS}
         edgeTypes={EDGE_TYPE_COMPONENT as EdgeTypes}
         onNodesChange={handleNodeChange}
         onEdgesChange={onEdgesChange}
