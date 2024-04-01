@@ -12,6 +12,7 @@ import {
   updateDeck,
   RemoveFile,
   moveFile,
+  migrateEdge,
 } from "./services/apiRepository";
 import {
   FileHitokno,
@@ -77,7 +78,7 @@ function createWindow() {
     );
   }
 
-  //migrateEdge();
+  migrateEdge();
 
   ipcMain.on("maximize", () => {
     win?.maximize();

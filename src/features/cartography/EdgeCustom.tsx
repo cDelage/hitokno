@@ -22,11 +22,6 @@ import {
   EDGE_WEIGHT_STYLE_ARRAY,
 } from "./CartographyConstants";
 import EdgeLabel from "./EdgeLabel";
-import styled from "styled-components";
-
-const SvgContainer = styled.svg`
-  position: relative;
-`;
 
 const findWeight = (weight: EdgeWeightType): EdgeWeightStyle => {
   const weightStyle = EDGE_WEIGHT_STYLE_ARRAY.find(
@@ -153,7 +148,7 @@ function EdgeCustom({
   ]);
 
   return (
-    <SvgContainer>
+    <>
       <MarkersCustom fill={fill} />
       <BaseEdge
         path={edgePath}
@@ -176,9 +171,15 @@ function EdgeCustom({
         />
       )}
       {label !== undefined && (
-        <EdgeLabel id={id} data={data} labelX={labelX} labelY={labelY} />
+        <EdgeLabel
+          id={id}
+          data={data}
+          labelX={labelX}
+          labelY={labelY}
+          selected={selected}
+        />
       )}
-    </SvgContainer>
+    </>
   );
 }
 

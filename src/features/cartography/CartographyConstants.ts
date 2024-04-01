@@ -108,6 +108,10 @@ export const ShapeMenu: Shape[] = [
   "cylinder",
 ];
 
+export const ShapeEdge : Shape[] = [
+  "rect","ellipse"
+]
+
 export const NODE_SIZE_DEFAULT = {
   width: PX_UNIT_GAP * 16,
   height: PX_UNIT_GAP * 8,

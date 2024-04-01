@@ -14,6 +14,7 @@ const LabelContainer = styled.div<{
   $width: number;
   $height: number;
   $zoom: number;
+  $selected: boolean
 }>`
   width: ${(props) => props.$width}px;
   height: ${(props) => props.$height}px;
@@ -25,6 +26,12 @@ const LabelContainer = styled.div<{
   ${(props) => {
     return { ...props.$position };
   }};
+
+  ${(props) => props.$selected && css`
+    border: 1px solid #0284C7;
+    overflow: hidden;
+  `};
+  
 `;
 
 const TopContainer = styled.div<{
@@ -43,6 +50,7 @@ const TopContainer = styled.div<{
 
   ::selection {
     background-color: ${(props) => props.$selectionColor};
+    color: ${(props) => props.$color};
   }
 `;
 
@@ -51,11 +59,13 @@ function EdgeLabel({
   data,
   labelX,
   labelY,
+  selected
 }: {
   id: string;
   data: DataEdge;
   labelX: number;
   labelY: number;
+  selected: boolean
 }) {
   const { flowToScreenPosition } = useReactFlow();
   const { setEdgeData, toggleEditMode } = useCartography();
@@ -88,13 +98,13 @@ function EdgeLabel({
 
   const updateEdgeDataLabel = useCallback(
     async (label: string) => {
-      const {height, width} = measureText(label)
+      const { height, width } = measureText(label);
       setEdgeData(id, {
         ...data,
         label,
         shapeDescription: {
           ...data.shapeDescription,
-          width ,
+          width,
           height,
         },
       });
@@ -105,9 +115,7 @@ function EdgeLabel({
   const updateLabel = useCallback(
     (e: ChangeEvent<HTMLTextAreaElement>) => {
       setLabelCopy(e.target.value);
-      updateEdgeDataLabel(
-        e.target.value,
-      );
+      updateEdgeDataLabel(e.target.value);
     },
     [setLabelCopy, updateEdgeDataLabel]
   );
@@ -118,6 +126,7 @@ function EdgeLabel({
       $height={height}
       $width={width}
       $zoom={zoom}
+      $selected={selected}
     >
       <ShapeDispatch
         shape={shape}

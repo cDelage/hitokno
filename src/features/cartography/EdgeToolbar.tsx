@@ -15,6 +15,7 @@ import {
   EdgeWeightArray,
   MENU_BORDER_LEFT,
   MENU_BORDER_RIGHT,
+  ShapeEdge,
   ThemeDarkEdgeLabel,
   ThemeLightEdgeLabel,
 } from "./CartographyConstants";
@@ -23,19 +24,23 @@ import ArrowEndIcon from "../../ui/icons/ArrowEndIcon";
 import EdgeCategoryIcon from "../../ui/icons/EdgeCategoryIcon";
 import styled from "styled-components";
 import { RxBorderAll, RxBorderNone } from "react-icons/rx";
-import { BiTrash } from "react-icons/bi";
+import { BiPen, BiTrash } from "react-icons/bi";
 import {
   ArrowEndType,
   DataEdge,
   EdgeCategoryType,
   EdgeDashType,
   EdgeWeightType,
+  Shadow,
+  Shape,
+  Theme,
 } from "../../types/Cartography.type";
 import useCartography from "./useCartography";
 import DashIcon from "../../ui/icons/DashIcon";
 import WeightIcon from "../../ui/icons/WeightIcon";
 import EdgeDashIcon from "../../ui/icons/EdgeDashIcon";
 import { IoMdAdd } from "react-icons/io";
+import ShapeDispatch from "./shapes/ShapeDispatch";
 
 const ShadowDiv = styled.div<{ shadow?: string }>`
   height: 24px;
@@ -45,6 +50,14 @@ const ShadowDiv = styled.div<{ shadow?: string }>`
   border: solid 2px var(--color-gray-300);
   box-shadow: ${(props) => props.shadow};
 `;
+
+const ShapeContainer = styled.div`
+  height: 20px;
+  width: 20px;
+  overflow: visible;
+  position: relative;
+`;
+
 
 function EdgeToolbar({
   labelX,
@@ -61,9 +74,20 @@ function EdgeToolbar({
 }) {
   const { zoom, x, y } = useViewport();
   const { flowToScreenPosition } = useReactFlow();
-  const { setEdgeData } = useCartography();
-  const { fill, arrowEnd, arrowStart, edgeCategory, weight, dash, label } =
-    data;
+  const { setEdgeData, toggleEditMode } = useCartography();
+  const {
+    fill,
+    arrowEnd,
+    arrowStart,
+    edgeCategory,
+    weight,
+    dash,
+    label,
+    shapeDescription,
+    mode
+  } = data;
+
+  const { theme, border, shadow, shape } = shapeDescription;
 
   const position = useMemo<PositionAbsolute>(() => {
     if (zoom !== undefined && x !== undefined && y !== undefined) {
@@ -145,6 +169,11 @@ function EdgeToolbar({
     setEdgeData(id, {
       ...data,
       label: "LABEL",
+      shapeDescription: {
+        ...data.shapeDescription,
+        width: 80,
+        height: 40
+      }
     });
   }, [setEdgeData, id, data]);
 
@@ -154,6 +183,58 @@ function EdgeToolbar({
       label: undefined,
     });
   }, [setEdgeData, id, data]);
+
+  const handleSetLabelTheme = useCallback(
+    (theme: Theme) => {
+      setEdgeData(id, {
+        ...data,
+        shapeDescription: {
+          ...data.shapeDescription,
+          theme,
+        },
+      });
+    },
+    [setEdgeData, id, data]
+  );
+
+  const handleSetLabelBorder = useCallback(
+    (border: boolean) => {
+      setEdgeData(id, {
+        ...data,
+        shapeDescription: {
+          ...data.shapeDescription,
+          border,
+        },
+      });
+    },
+    [setEdgeData, id, data]
+  );
+
+  const handleSetLabelShadow = useCallback(
+    (shadow: Shadow) => {
+      setEdgeData(id, {
+        ...data,
+        shapeDescription: {
+          ...data.shapeDescription,
+          shadow,
+        },
+      });
+    },
+    [setEdgeData, id, data]
+  );
+  
+  const handleSetLabelShape = useCallback(
+    (shape: Shape) => {
+      setEdgeData(id, {
+        ...data,
+        shapeDescription: {
+          ...data.shapeDescription,
+          shape,
+        },
+      });
+    },
+    [setEdgeData, id, data]
+  );
 
   return (
     <MenuToolbar $position={position}>
@@ -198,6 +279,18 @@ function EdgeToolbar({
           </ToolbarSmallIcon>
           <HiChevronUp size={12} />
         </MenuToolbar.Action>
+        {label && (
+          <MenuToolbar.Action
+          onClick={() => {
+            toggleEditMode(id);
+          }}
+          $active={mode === "EDIT"}
+        >
+          <ToolbarSmallIcon>
+            <BiPen size={"100%"} />
+          </ToolbarSmallIcon>
+        </MenuToolbar.Action>
+        )}
         {!label && (
           <MenuToolbar.Action $isAlignRight={true} onClick={handleCreateLabel}>
             <ToolbarSmallIcon>
@@ -285,42 +378,83 @@ function EdgeToolbar({
           <MenuToolbar.ActionColumn>
             <MenuToolbar.ActionLine>
               {ThemeDarkEdgeLabel.map((themeDark) => (
-                <MenuToolbar.Action key={themeDark.fill}>
+                <MenuToolbar.Action
+                  key={themeDark.fill}
+                  $active={theme.id === themeDark.id}
+                  onClick={() => handleSetLabelTheme(themeDark)}
+                >
                   <ToolbarSmallIcon>
                     <ColorNodeIcon fill={themeDark.fill} />
                   </ToolbarSmallIcon>
                 </MenuToolbar.Action>
               ))}
-              <MenuToolbar.Action border={MENU_BORDER_LEFT}>
-                <ToolbarSmallIcon>
-                  <RxBorderNone size={"100%"} />
-                </ToolbarSmallIcon>
-              </MenuToolbar.Action>
-              <MenuToolbar.Action>
-                <ToolbarSmallIcon>
-                  <RxBorderAll size={"100%"} />
-                </ToolbarSmallIcon>
-              </MenuToolbar.Action>
             </MenuToolbar.ActionLine>
             <MenuToolbar.ActionLine>
               {ThemeLightEdgeLabel.map((themeLight) => (
-                <MenuToolbar.Action key={themeLight.fill}>
+                <MenuToolbar.Action
+                  key={themeLight.fill}
+                  $active={theme.id === themeLight.id}
+                  onClick={() => handleSetLabelTheme(themeLight)}
+                >
                   <ToolbarSmallIcon>
                     <ColorNodeIcon fill={themeLight.fill} />
                   </ToolbarSmallIcon>
                 </MenuToolbar.Action>
               ))}
-              {EDGE_LABEL_SHADOWS_MENU.map((shadow, index) => (
-                <MenuToolbar.Action
-                  key={shadow.shadow}
-                  border={index === 0 ? MENU_BORDER_LEFT : {}}
-                >
-                  <ToolbarSmallIcon>
-                    <ShadowDiv shadow={shadow.shadowMenu} />
-                  </ToolbarSmallIcon>
-                </MenuToolbar.Action>
-              ))}
             </MenuToolbar.ActionLine>
+          </MenuToolbar.ActionColumn>
+
+          <MenuToolbar.ActionColumn>
+            <MenuToolbar.Action
+              border={MENU_BORDER_LEFT}
+              onClick={() => handleSetLabelBorder(false)}
+              $active={!border}
+            >
+              <ToolbarSmallIcon>
+                <RxBorderNone size={"100%"} />
+              </ToolbarSmallIcon>
+            </MenuToolbar.Action>
+            <MenuToolbar.Action
+              onClick={() => handleSetLabelBorder(true)}
+              $active={border}
+              border={MENU_BORDER_LEFT}
+            >
+              <ToolbarSmallIcon>
+                <RxBorderAll size={"100%"} />
+              </ToolbarSmallIcon>
+            </MenuToolbar.Action>
+          </MenuToolbar.ActionColumn>
+
+          <MenuToolbar.ActionColumn>
+            {EDGE_LABEL_SHADOWS_MENU.map((shadowItem) => (
+              <MenuToolbar.Action
+                key={shadowItem.shadow}
+                border={MENU_BORDER_LEFT}
+                $active={shadow === shadowItem.shadow}
+                onClick={() => handleSetLabelShadow(shadowItem.shadow)}
+              >
+                <ToolbarSmallIcon>
+                  <ShadowDiv shadow={shadowItem.shadowMenu} />
+                </ToolbarSmallIcon>
+              </MenuToolbar.Action>
+            ))}
+          </MenuToolbar.ActionColumn>
+          <MenuToolbar.ActionColumn>
+          {ShapeEdge.map((shapeMenu) => (
+            <MenuToolbar.Action
+              key={shapeMenu}
+              $active={shape === shapeMenu}
+              onClick={() => handleSetLabelShape(shapeMenu)}
+            >
+              <ShapeContainer>
+                <ShapeDispatch
+                  shape={shapeMenu}
+                  fill="var(--color-gray-400"
+                  $shadow="var(--shadow-shape-menu-md)"
+                />
+              </ShapeContainer>
+            </MenuToolbar.Action>
+          ))}
           </MenuToolbar.ActionColumn>
           <MenuToolbar.Action onClick={handleRemoveLabel} toggle="label">
             <BiTrash size={28} />

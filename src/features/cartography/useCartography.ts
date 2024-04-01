@@ -415,17 +415,17 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
         } as Node<DataNode>;
       });
   },
-  getEdgesForSave : () => {
-    return get().edges.map(edge => {
+  getEdgesForSave: () => {
+    return get().edges.map((edge) => {
       return {
         ...edge,
         selected: false,
         data: {
           ...edge.data,
-          mode: "DEFAULT"
-        }
-      } as Edge<DataEdge>
-    })
+          mode: "DEFAULT",
+        },
+      } as Edge<DataEdge>;
+    });
   },
   setNodes: (nds: Node<DataNode>[]) => {
     set({
@@ -479,6 +479,7 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
       set((state) => {
         return {
           nodes: state.nodes.map((node) => applyNodeMode(node, "DEFAULT")),
+          edges: state.edges.map((edge) => applyEdgeMode(edge, "DEFAULT")),
         };
       });
     } else if (beforeSelected) {
@@ -488,11 +489,26 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
     }
   },
   onEdgesChange: (changes: EdgeChange[]) => {
+    const beforeSelectedEdges = get().edges.find((edge) => edge.selected);
+
     set((state) => {
       return {
         edges: applyEdgeChanges(changes, state.edges),
       };
     });
+    const afterSelectedEdge = get().edges.find((edge) => edge.selected);
+
+    if (
+      beforeSelectedEdges &&
+      beforeSelectedEdges.id !== afterSelectedEdge?.id
+    ) {
+      set((state) => {
+        return {
+          nodes: state.nodes.map((node) => applyNodeMode(node, "DEFAULT")),
+          edges: state.edges.map((edge) => applyEdgeMode(edge, "DEFAULT")),
+        };
+      });
+    }
   },
   setPanOnDragMode: (panOnDragMode: PaneOnDragMode) => {
     set({
