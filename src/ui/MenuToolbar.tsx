@@ -32,7 +32,7 @@ const MenuToolbarStyled = styled.menu<PositionObject & { $isDisplayBlock?: boole
 `;
 
 const ActionStyled = styled.div<
-  BorderProps & ActionProps & { $theme?: string; $justifyCenter?: boolean }
+  BorderProps & ActionProps & { $theme?: string; $justifyCenter?: boolean; $backgroundShadow?:boolean }
 >`
   cursor: pointer;
   flex-grow: 1;
@@ -76,6 +76,13 @@ const ActionStyled = styled.div<
     css`
       justify-content: center;
     `}
+  
+  ${(props) =>
+    props.$backgroundShadow &&
+    css`
+      background: radial-gradient(rgba(68, 64, 60, 0.10) 10%, rgba(170, 160, 150, 0));
+    `}
+  
 `;
 
 const SubMenuStyled = styled.menu<SubMenuStyledProps & { $displayBottom?: boolean; $alignRight?: boolean }>`
@@ -276,6 +283,7 @@ function Action({
   toggle,
   $isAlignRight,
   $justifyCenter,
+  $backgroundShadow
 }: ChildrenProps &
   BorderProps &
   ActionProps & {
@@ -283,6 +291,7 @@ function Action({
     toggle?: string;
     $isAlignRight?: boolean;
     $justifyCenter?: boolean;
+    $backgroundShadow?: boolean;
   }): JSX.Element {
   const { handleToggleSubMenu } = useMenuToolbarContext();
   const actionRef = useRef<HTMLDivElement>(null);
@@ -311,6 +320,7 @@ function Action({
       $padding={$padding}
       $theme={$theme}
       $justifyCenter={$justifyCenter}
+      $backgroundShadow={$backgroundShadow}
     >
       <Row $gap={2} $style={{ alignItems: "center" }}>
         {children}

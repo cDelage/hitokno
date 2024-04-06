@@ -201,4 +201,5 @@ export type EdgeWeightStyle = {
 export type EdgeDashStyle = {
   edgeDash : EdgeDashType;
   dashStyle : string;
+  dashStyleMenu: string;
 }

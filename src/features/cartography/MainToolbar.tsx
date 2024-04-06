@@ -5,6 +5,12 @@ import DeckIcon from "../../ui/icons/DeckIcon";
 import SidebarIcon from "../../ui/icons/SidebarIcon";
 import { IoArrowForward, IoArrowUp, IoAdd, IoArrowBack } from "react-icons/io5";
 import {
+  ArrowEndArray,
+  EDGE_COLORS,
+  EDGE_DASH_ARRAY,
+  EdgeCategoryArray,
+  EdgeWeightArray,
+  MENU_BORDER_LEFT,
   MENU_BORDER_RIGHT,
   SHADOWS_MENU,
   ShapeMenu,
@@ -20,15 +26,38 @@ import ShadowIcon from "../../ui/icons/ShadowIcon";
 import EdgeIcon from "../../ui/icons/EdgeIcon";
 import GroupIcon from "../../ui/icons/GroupIcon";
 import { RxBorderAll, RxBorderNone, RxMove, RxGroup } from "react-icons/rx";
-import { ShadowProps } from "../../types/Cartography.type";
+import {
+  ArrowEndType,
+  EdgeCategoryType,
+  EdgeDashType,
+  EdgeWeightType,
+  ShadowProps,
+} from "../../types/Cartography.type";
 import { useCallback, useEffect } from "react";
 import useCartography from "./useCartography";
 import { useSearchParams } from "react-router-dom";
 import { CSSTransition } from "react-transition-group";
+import EdgeCategoryIcon from "../../ui/icons/EdgeCategoryIcon";
+import EdgeDoubleEndIcon from "../../ui/icons/EdgeDoubleEndIcon";
+import EdgeWeightDashIcon from "../../ui/icons/EdgeWeightDashIcon";
+import ArrowEndIcon from "../../ui/icons/ArrowEndIcon";
+import EdgeDashIcon from "../../ui/icons/EdgeDashIcon";
+import EdgeWeightIcon from "../../ui/icons/EdgeWeightIcon";
 
 const ToolbarLargeIconContainer = styled.div`
   width: 72px;
   height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+`;
+
+const EdgeIconContainer = styled.div`
+  width: 50px;
+  height: 54px;
+  padding-bottom: 16px;
+  padding-right: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -68,9 +97,12 @@ function MainToolbar() {
     setMainToolbarActiveMenu,
     shapeCreationDesc,
     setShapeCreationDesc,
+    menuDataEdge,
+    setMenuDataEdge,
   } = useCartography();
   const {
     theme: { id: themeId, fill, stroke },
+    theme,
     shape,
     shadow,
     border,
@@ -79,6 +111,14 @@ function MainToolbar() {
   const [searchParams, setSearchParams] = useSearchParams();
   const sheetId = searchParams.get("sheetId");
   const nodeControlSidebarOpen = searchParams.get("nodeControlSidebar");
+  const {
+    arrowEnd: edgeMarkerEnd,
+    arrowStart: edgeMarkerStart,
+    edgeCategory,
+    fill: edgeFill,
+    weight: edgeWeight,
+    dash: edgeDash,
+  } = menuDataEdge;
 
   const handleOpenNodeControlSidebar = useCallback(() => {
     searchParams.delete("sheetId");
@@ -117,6 +157,66 @@ function MainToolbar() {
       }
     },
     [handleOpenDeck, handleOpenNodeControlSidebar]
+  );
+
+  const setEdgeFill = useCallback(
+    (fillEdge: string) => {
+      setMenuDataEdge({
+        ...menuDataEdge,
+        fill: fillEdge,
+      });
+    },
+    [menuDataEdge, setMenuDataEdge]
+  );
+
+  const setEdgeMarkerEnd = useCallback(
+    (arrow: ArrowEndType) => {
+      setMenuDataEdge({
+        ...menuDataEdge,
+        arrowEnd: arrow,
+      });
+    },
+    [menuDataEdge, setMenuDataEdge]
+  );
+
+  const setEdgeMarkerStart = useCallback(
+    (arrow: ArrowEndType) => {
+      setMenuDataEdge({
+        ...menuDataEdge,
+        arrowStart: arrow,
+      });
+    },
+    [menuDataEdge, setMenuDataEdge]
+  );
+
+  const setEdgeCategory = useCallback(
+    (newEdgeCategory: EdgeCategoryType) => {
+      setMenuDataEdge({
+        ...menuDataEdge,
+        edgeCategory: newEdgeCategory,
+      });
+    },
+    [menuDataEdge, setMenuDataEdge]
+  );
+
+  const setEdgeWeight = useCallback(
+    (weightEdge: EdgeWeightType) => {
+      setMenuDataEdge({
+        ...menuDataEdge,
+        weight: weightEdge,
+      });
+    },
+    [menuDataEdge, setMenuDataEdge]
+  );
+
+  const setEdgeDash = useCallback(
+    (dashEdge: EdgeDashType) => {
+      setMenuDataEdge({
+        ...menuDataEdge,
+        dash: dashEdge,
+      });
+    },
+    [menuDataEdge, setMenuDataEdge]
   );
 
   useEffect(() => {
@@ -193,7 +293,10 @@ function MainToolbar() {
           </MenuToolbar.ActionColumn>
 
           {/* Sidebar (to list all nodes) */}
-          <MenuToolbar.Action onClick={handleOpenNodeControlSidebar}>
+          <MenuToolbar.Action
+            onClick={handleOpenNodeControlSidebar}
+            $backgroundShadow={true}
+          >
             <ToolbarAction>
               <ToolbarLargeIconContainer>
                 <SidebarIcon />
@@ -212,7 +315,11 @@ function MainToolbar() {
           </MenuToolbar.Action>
 
           {/* Deck (to create and edit flashcards) */}
-          <MenuToolbar.Action border={MENU_BORDER_RIGHT} onClick={handleOpenDeck}>
+          <MenuToolbar.Action
+            border={MENU_BORDER_RIGHT}
+            onClick={handleOpenDeck}
+            $backgroundShadow={true}
+          >
             <ToolbarAction>
               <ToolbarLargeIconContainer>
                 <DeckIcon />
@@ -286,6 +393,7 @@ function MainToolbar() {
             onClick={() => setMainToolbarActiveMenu("CREATION-NODE")}
             $active={mainToolbarActiveMenu === "CREATION-NODE"}
             toggle=""
+            $backgroundShadow={true}
           >
             <ToolbarAction>
               <ToolbarLargeIconContainer>
@@ -306,16 +414,20 @@ function MainToolbar() {
             </ToolbarAction>
           </MenuToolbar.Action>
 
-          {/* Create new edge */}
+          {/* Create new group */}
           <MenuToolbar.Action
-            onClick={() => setMainToolbarActiveMenu("CREATION-EDGE")}
-            $active={mainToolbarActiveMenu === "CREATION-EDGE"}
+            onClick={() => {
+              setMainToolbarActiveMenu("CREATION-GROUP");
+            }}
+            $active={mainToolbarActiveMenu === "CREATION-GROUP"}
             toggle=""
+            border={MENU_BORDER_RIGHT}
+            $backgroundShadow={true}
           >
             <ToolbarAction>
               <ToolbarLargeIconContainer>
                 <ToolbarMediumIconContainer>
-                  <EdgeIcon />
+                  <GroupIcon theme={theme} />
                 </ToolbarMediumIconContainer>
               </ToolbarLargeIconContainer>
               <ToolbarAction.ActionButton $hoverTransform="scale(1.2)">
@@ -324,20 +436,58 @@ function MainToolbar() {
             </ToolbarAction>
           </MenuToolbar.Action>
 
-          {/* Create new group */}
+          <MenuToolbar.ActionColumn>
+            {/* Color of the shape */}
+            <MenuToolbar.Action
+              toggle="edge-color"
+              $isAlignRight={true}
+              $padding="8px 8px 8px 16px"
+            >
+              <ToolbarSmallIcon>
+                <ColorNodeIcon fill={edgeFill} />
+              </ToolbarSmallIcon>
+              <HiChevronUp size={12} />
+            </MenuToolbar.Action>
+            <MenuToolbar.Action
+              toggle="edge-category"
+              $isAlignRight={true}
+              $padding="8px 8px 8px 16px"
+            >
+              <ToolbarSmallIcon>
+                <EdgeCategoryIcon edgeCategory={edgeCategory} />
+              </ToolbarSmallIcon>
+              <HiChevronUp size={12} />
+            </MenuToolbar.Action>
+          </MenuToolbar.ActionColumn>
+
+          <MenuToolbar.ActionColumn>
+            <MenuToolbar.Action toggle="edge-marker" $isAlignRight={true}>
+              <ToolbarSmallIcon>
+                <EdgeDoubleEndIcon />
+              </ToolbarSmallIcon>
+              <HiChevronUp size={12} />
+            </MenuToolbar.Action>
+            <MenuToolbar.Action toggle="edge-weight-dash" $isAlignRight={true}>
+              <ToolbarSmallIcon>
+                <EdgeWeightDashIcon />
+              </ToolbarSmallIcon>
+              <HiChevronUp size={12} />
+            </MenuToolbar.Action>
+          </MenuToolbar.ActionColumn>
+
+          {/* Create new edge */}
           <MenuToolbar.Action
-            onClick={() => {
-              setMainToolbarActiveMenu("CREATION-GROUP");
-            }}
-            $active={mainToolbarActiveMenu === "CREATION-GROUP"}
+            onClick={() => setMainToolbarActiveMenu("CREATION-EDGE")}
+            $active={mainToolbarActiveMenu === "CREATION-EDGE"}
             toggle=""
+            $backgroundShadow={true}
           >
             <ToolbarAction>
-              <ToolbarLargeIconContainer>
+              <EdgeIconContainer>
                 <ToolbarMediumIconContainer>
-                  <GroupIcon />
+                  <EdgeIcon edgeCategory={edgeCategory} fill={edgeFill} markerStart={edgeMarkerStart} markerEnd={edgeMarkerEnd} edgeDash={edgeDash as EdgeDashType}/>
                 </ToolbarMediumIconContainer>
-              </ToolbarLargeIconContainer>
+              </EdgeIconContainer>
               <ToolbarAction.ActionButton $hoverTransform="scale(1.2)">
                 <IoAdd size={24} />
               </ToolbarAction.ActionButton>
@@ -458,6 +608,94 @@ function MainToolbar() {
                 <RxBorderAll size={"100%"} />
               </ToolbarSmallIcon>
             </MenuToolbar.Action>
+          </MenuToolbar.ActionLine>
+        </MenuToolbar.SubMenu>
+
+        <MenuToolbar.SubMenu name="edge-color" $alignRight={true}>
+          <MenuToolbar.ActionLine>
+            {EDGE_COLORS.map((fillEdge) => (
+              <MenuToolbar.Action
+                key={fillEdge}
+                $active={fillEdge === edgeFill}
+                onClick={() => setEdgeFill(fillEdge)}
+              >
+                <ToolbarSmallIcon>
+                  <ColorNodeIcon fill={fillEdge} />
+                </ToolbarSmallIcon>
+              </MenuToolbar.Action>
+            ))}
+          </MenuToolbar.ActionLine>
+        </MenuToolbar.SubMenu>
+
+        <MenuToolbar.SubMenu name="edge-category" $alignRight={true}>
+          <MenuToolbar.ActionLine>
+            {EdgeCategoryArray.map((cat) => (
+              <MenuToolbar.Action
+                key={cat}
+                $active={edgeCategory === cat}
+                onClick={() => setEdgeCategory(cat)}
+              >
+                <ToolbarSmallIcon>
+                  <EdgeCategoryIcon edgeCategory={cat} />
+                </ToolbarSmallIcon>
+              </MenuToolbar.Action>
+            ))}
+          </MenuToolbar.ActionLine>
+        </MenuToolbar.SubMenu>
+
+        <MenuToolbar.SubMenu name="edge-marker" $alignRight={true}>
+          <MenuToolbar.ActionLine>
+            {ArrowEndArray.map((arrow) => (
+              <MenuToolbar.Action
+                key={arrow}
+                $active={arrow === edgeMarkerStart}
+                onClick={() => setEdgeMarkerStart(arrow)}
+              >
+                <ToolbarSmallIcon>
+                  <ArrowEndIcon arrow={arrow} flip={true} />
+                </ToolbarSmallIcon>
+              </MenuToolbar.Action>
+            ))}
+            {ArrowEndArray.reverse().map((arrow, index) => (
+              <MenuToolbar.Action
+                key={arrow}
+                border={index === 0 ? MENU_BORDER_LEFT : {}}
+                $active={arrow === edgeMarkerEnd}
+                onClick={() => setEdgeMarkerEnd(arrow)}
+              >
+                <ToolbarSmallIcon>
+                  <ArrowEndIcon arrow={arrow} />
+                </ToolbarSmallIcon>
+              </MenuToolbar.Action>
+            ))}
+          </MenuToolbar.ActionLine>
+        </MenuToolbar.SubMenu>
+
+        <MenuToolbar.SubMenu name="edge-weight-dash" $alignRight={true}>
+          <MenuToolbar.ActionLine>
+            {EdgeWeightArray.map((strokeWeight) => (
+              <MenuToolbar.Action
+                key={strokeWeight}
+                $active={edgeWeight === strokeWeight}
+                onClick={() => setEdgeWeight(strokeWeight)}
+              >
+                <ToolbarSmallIcon>
+                  <EdgeWeightIcon weight={strokeWeight} />
+                </ToolbarSmallIcon>
+              </MenuToolbar.Action>
+            ))}
+            {EDGE_DASH_ARRAY.map((dashEdge, index) => (
+              <MenuToolbar.Action
+                key={dashEdge}
+                border={index === 0 ? MENU_BORDER_LEFT : {}}
+                $active={edgeDash === dashEdge}
+                onClick={() => setEdgeDash(dashEdge)}
+              >
+                <ToolbarSmallIcon>
+                  <EdgeDashIcon dash={dashEdge} />
+                </ToolbarSmallIcon>
+              </MenuToolbar.Action>
+            ))}
           </MenuToolbar.ActionLine>
         </MenuToolbar.SubMenu>
       </MenuToolbar>

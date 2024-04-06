@@ -78,7 +78,7 @@ function createWindow() {
     );
   }
 
-  migrateEdge();
+  //migrateEdge();
 
   ipcMain.on("maximize", () => {
     win?.maximize();

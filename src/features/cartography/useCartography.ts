@@ -31,7 +31,7 @@ import {
 } from "../../types/Cartography.type";
 import { v4 as uuidv4 } from "uuid";
 import { FileHitokno } from "../../types/Repository.types";
-import moveElement from "../../utils/moveElement";
+import moveElement from "../../utils/MoveElement";
 
 const applyNodeMode = (node: Node<DataNode>, mode: NodeMode) => {
   return {
@@ -128,6 +128,8 @@ type UseCartographyStore = {
   isInitViewport: boolean;
   isSaved: boolean;
   updateEdgePayload: UpdateEdgePayload | undefined;
+  menuDataEdge: DataEdge;
+  setMenuDataEdge: (menuDataEdge: DataEdge) => void;
   setIsSaved: (isSaved: boolean) => void;
   addHandlesActive: (handles: string[]) => void;
   removeHandlesActive: (handles: string[]) => void;
@@ -241,6 +243,7 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
   isInitViewport: false,
   isSaved: true,
   updateEdgePayload: undefined,
+  menuDataEdge: DEFAULT_DATA_EDGE,
   addHandlesActive: (handles: string[]) => {
     set((state) => {
       return {
@@ -296,7 +299,7 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
         type: "custom",
         sourceHandle: newSourceHandle.handleId,
         targetHandle: newTargetHandle.handleId,
-        data: DEFAULT_DATA_EDGE,
+        data: get().menuDataEdge,
       };
 
       set((state) => {
@@ -1214,6 +1217,9 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
         }),
       };
     });
+  },
+  setMenuDataEdge: (menuDataEdge: DataEdge) => {
+    set({ menuDataEdge });
   },
 }));
 

@@ -1,17 +1,88 @@
-function EdgeIcon() {
+import { findDash } from "../../features/cartography/CartographyConstants";
+import MarkersCustomToolbar from "../../features/cartography/MarkersCustomToolbar";
+import { ArrowEndType, EdgeCategoryType, EdgeDashType } from "../../types/Cartography.type";
+
+function EdgeIcon({
+  edgeCategory,
+  fill,
+  markerStart,
+  markerEnd,
+  edgeDash
+}: {
+  edgeCategory: EdgeCategoryType;
+  fill: string;
+  markerStart: ArrowEndType;
+  markerEnd: ArrowEndType;
+  edgeDash: EdgeDashType
+}) {
+
+  const dash = findDash(edgeDash)
+
+  if (edgeCategory === "smooth-step") {
+    return (
+      <svg
+        width="62"
+        height="62"
+        viewBox="0 0 62 62"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <MarkersCustomToolbar fill={fill} />
+        <path
+          d="M12 49L28.9411 48.966C29.6396 48.966 30.4778 48.966 30.4778 47.6139C30.4778 45.1159 30.3871 24.8776 30.3871 15.7551C30.3048 14.8367 30.5598 13 32.2377 13C33.9157 13 44.8593 13 50 13"
+          stroke={fill}
+          stroke-width="2.8"
+          strokeDasharray={dash.dashStyleMenu}
+          markerEnd={`url(#${markerEnd}-${fill})`}
+          markerStart={`url(#${markerStart}-${fill})`}
+        />
+      </svg>
+    );
+  }
+
+  if (edgeCategory === "bezier") {
+    return (
+      <svg
+        width="62"
+        height="62"
+        viewBox="0 0 62 62"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <MarkersCustomToolbar fill={fill} />
+        <path
+          d="M49.8653 13.3843L41.0326 13.4189C36.647 13.4361 32.9123 16.6119 32.1906 20.9378L30.7614 29.5038L29.3374 39.6591C28.5718 45.1187 23.8828 49.1684 18.3699 49.1313L12.6839 49.093"
+          stroke={fill}
+          stroke-width="2.8"
+          stroke-linejoin="bevel"
+          strokeDasharray={dash.dashStyleMenu}
+          markerEnd={`url(#${markerStart}-${fill})`}
+          markerStart={`url(#${markerEnd}-${fill})`}
+        />
+      </svg>
+    );
+  }
+
   return (
     <svg
-      width="100%"
-      height="100%"
-      viewBox="0 0 41 42"
+      width="62"
+      height="62"
+      viewBox="0 0 62 62"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <path
-        d="M20.7232 6.03022L20.7247 7.03022H20.7232V6.03022ZM41 6L31.0086 11.7884L30.9914 0.241404L41 6ZM19.3532 35.551L18.3578 35.646L18.3532 35.5986V35.551H19.3532ZM17.6 38V39V38ZM20.7217 5.03022L31.9985 5.01341L32.0015 7.01341L20.7247 7.03021L20.7217 5.03022ZM20.7232 7.03022C20.5478 7.03022 20.4305 7.03128 20.3279 7.04277C20.2279 7.05399 20.2049 7.06964 20.2182 7.0625C20.2495 7.0458 20.2825 7.0117 20.2956 6.98566C20.3005 6.97574 20.2673 7.0357 20.2673 7.23209H18.2673C18.2673 6.82754 18.3333 6.4368 18.5079 6.08885C18.6905 5.72478 18.9634 5.46534 19.2759 5.2984C19.8205 5.0075 20.4601 5.03021 20.7232 5.03021V7.03022ZM20.2673 7.23209C20.2673 8.33982 20.2888 13.3884 20.3103 19.1797C20.3318 24.9679 20.3532 31.4944 20.3532 35.551H18.3532C18.3532 31.4988 18.3318 24.9761 18.3103 19.1871C18.2888 13.4012 18.2673 8.34476 18.2673 7.23209H20.2673ZM20.3487 35.456C20.3989 35.9821 20.3555 36.7942 20.0004 37.5207C19.8164 37.8972 19.5353 38.2765 19.1161 38.5603C18.69 38.8487 18.1775 39 17.6 39V37C17.8173 37 17.9311 36.9473 17.995 36.904C18.0657 36.8562 18.1382 36.7763 18.2035 36.6425C18.3471 36.3487 18.3855 35.9363 18.3578 35.646L20.3487 35.456ZM17.6 39L5 39L5 37L17.6 37V39Z"
-        fill="#44403C"
+      <MarkersCustomToolbar fill={fill} />
+      <line
+        x1="11.2929"
+        y1="49.2929"
+        x2="49.2929"
+        y2="11.2929"
+        stroke={fill}
+        stroke-width="2.8"
+        strokeDasharray={dash.dashStyleMenu}
+        markerEnd={`url(#${markerEnd}-${fill})`}
+        markerStart={`url(#${markerStart}-${fill})`}
       />
-      <rect y="34" width="8" height="8" rx="4" fill="#44403C" />
     </svg>
   );
 }

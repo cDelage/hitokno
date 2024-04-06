@@ -1,8 +1,8 @@
-import { MarkerType, Position, getSmoothStepPath } from "reactflow";
+import { BaseEdge, Position, getBezierPath, getSmoothStepPath, getStraightPath } from "reactflow";
 import useCartography from "./useCartography";
-import { CSSProperties } from "styled-components";
-
-const edgeStyle : CSSProperties = { strokeWidth: 3, stroke: "black" };
+import { useMemo } from "react";
+import { findDash, findWeight } from "./CartographyConstants";
+import MarkersCustom from "./MarkersCustom";
 
 function ConnectionEdgeCustom({
   fromX,
@@ -20,30 +20,62 @@ function ConnectionEdgeCustom({
   toPosition: Position;
 }) {
   const {
-    edgeCreationProps: { sourcePosition, targetPosition },
+    edgeCreationProps: { sourcePosition, targetPosition }, menuDataEdge
   } = useCartography();
 
-  const [edgePath] = getSmoothStepPath({
+  const {
+    fill,
+    arrowEnd,
+    arrowStart,
+    edgeCategory,
+    weight,
+    dash,
+  } = menuDataEdge;
+
+  const dashStyle = useMemo(() => {
+    return findDash(dash);
+  }, [dash]);
+
+  const weightStyle = useMemo(() => {
+    return findWeight(weight);
+  }, [weight]);
+
+  const edgeParams = {
     sourceX: fromX,
     sourceY: fromY,
     targetX: toX,
     targetY: toY,
-    offset: 0,
-    sourcePosition: sourcePosition ? sourcePosition : fromPosition,
-    targetPosition: targetPosition ? targetPosition : toPosition,
+    borderRadius: 8,
     centerX: 0,
     centerY: 0,
-  });
+    sourcePosition: sourcePosition ? sourcePosition : fromPosition,
+    targetPosition: targetPosition ? targetPosition : toPosition,
+  };
+
+  const [edgePath] =
+  edgeCategory === "bezier"
+    ? getBezierPath(edgeParams)
+    : edgeCategory === "smooth-step"
+    ? getSmoothStepPath(edgeParams)
+    : edgeCategory === "straight"
+    ? getStraightPath(edgeParams)
+    : getSmoothStepPath(edgeParams);
 
   return (
-    <g>
-      <path
-        className="react-flow__edge-path"
-        d={edgePath}
-        markerEnd={MarkerType.ArrowClosed}
-        style={edgeStyle}
+    <>
+    <MarkersCustom fill={fill} />
+      <BaseEdge
+        path={edgePath}
+        id={"EDGE_CREATION"}
+        markerStart={arrowStart !== "none" ? `url(#${arrowStart}-${fill})` : ""}
+        markerEnd={arrowEnd !== "none" ? `url(#${arrowEnd}-${fill})` : ""}
+        style={{
+          strokeWidth: weightStyle.strokeSize,
+          stroke: fill,
+          strokeDasharray: dashStyle.dashStyle,
+        }}
       />
-    </g>
+    </>
   );
 }
 

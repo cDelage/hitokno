@@ -4,8 +4,8 @@ import { useTabs } from "../features/home/useTabs";
 import TabFile from "./TabFile";
 import TabTest from "./TabTest";
 import { DragEvent, Fragment, useCallback, useState } from "react";
-import moveElement from "../utils/moveElement";
 import { HeaderTab } from "../types/Tabs.types";
+import moveElement from "../utils/MoveElement";
 
 const HeaderTabsStyled = styled.div`
   -webkit-app-region: no-drag;

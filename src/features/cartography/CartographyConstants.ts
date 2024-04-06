@@ -774,17 +774,45 @@ export const EDGE_DASH_STYLE_ARRAY : EdgeDashStyle[] = [
   {
     edgeDash: "none",
     dashStyle: "",
+    dashStyleMenu: ""
   },
   {
     edgeDash: "light",
     dashStyle: "8 8",
+    dashStyleMenu: "4 4"
   },
   {
     edgeDash: "medium",
     dashStyle: "16 8",
+    dashStyleMenu: "8 4"
   },
   {
     edgeDash: "large",
     dashStyle: "40 30",
+    dashStyleMenu: "20 7"
   },
 ]
+
+export const findDash = (dash?: EdgeDashType): EdgeDashStyle => {
+  const dashStyle = EDGE_DASH_STYLE_ARRAY.find((x) => x.edgeDash === dash);
+
+  return dashStyle
+    ? dashStyle
+    : {
+        dashStyle: "",
+        edgeDash: "light",
+        dashStyleMenu: ""
+      };
+};
+
+export const findWeight = (weight: EdgeWeightType): EdgeWeightStyle => {
+  const weightStyle = EDGE_WEIGHT_STYLE_ARRAY.find(
+    (x) => x.edgeWeight === weight
+  );
+  return weightStyle
+    ? weightStyle
+    : {
+        strokeSize: 3,
+        edgeWeight: "light",
+      };
+};

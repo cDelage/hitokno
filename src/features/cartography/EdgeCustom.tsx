@@ -11,40 +11,13 @@ import useCartography from "./useCartography";
 import EdgeToolbar from "./EdgeToolbar";
 import {
   DataEdge,
-  EdgeDashStyle,
-  EdgeDashType,
-  EdgeWeightStyle,
-  EdgeWeightType,
 } from "../../types/Cartography.type";
 import MarkersCustom from "./MarkersCustom";
 import {
-  EDGE_DASH_STYLE_ARRAY,
-  EDGE_WEIGHT_STYLE_ARRAY,
+  findDash,
+  findWeight,
 } from "./CartographyConstants";
 import EdgeLabel from "./EdgeLabel";
-
-const findWeight = (weight: EdgeWeightType): EdgeWeightStyle => {
-  const weightStyle = EDGE_WEIGHT_STYLE_ARRAY.find(
-    (x) => x.edgeWeight === weight
-  );
-  return weightStyle
-    ? weightStyle
-    : {
-        strokeSize: 3,
-        edgeWeight: "light",
-      };
-};
-
-const findDash = (dash?: EdgeDashType): EdgeDashStyle => {
-  const dashStyle = EDGE_DASH_STYLE_ARRAY.find((x) => x.edgeDash === dash);
-
-  return dashStyle
-    ? dashStyle
-    : {
-        dashStyle: "",
-        edgeDash: "light",
-      };
-};
 
 function EdgeCustom({
   sourceX,
@@ -87,7 +60,7 @@ function EdgeCustom({
     label,
     shapeDescription,
   } = data;
-  const { height } = shapeDescription;
+  const height = shapeDescription?.height ?? 0;
   const deleteEdgeAction = useKeyPress("Delete");
 
   const dashStyle = useMemo(() => {
