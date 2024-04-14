@@ -9,9 +9,16 @@ import {
   RenameFolderParams,
 } from "../../src/types/Repository.types";
 import { generateUUID } from "./generateUUID";
-import { DataNode, SheetDetail } from "../../src/types/Cartography.type";
+import {
+  DataNode,
+  Shadow,
+  Shape,
+  SheetDetail,
+} from "../../src/types/Cartography.type";
 import { Edge, Node } from "reactflow";
 import { FlashCard } from "../../src/types/Flashcard.type";
+import { BrowserWindow, dialog } from "electron";
+import fs from "fs";
 
 const newFolder = {
   folderName: "new folder",
@@ -48,7 +55,20 @@ export async function migrateEdge() {
                   arrowStart: "none",
                   edgeCategory: "smooth-step",
                   fill: "#000000",
-                  weight: "light"
+                  weight: "light",
+                  dash: "none",
+                  shapeDescription: {
+                    shape: "rect" as Shape,
+                    border: false,
+                    shadow: "none" as Shadow,
+                    theme: {
+                      id: "bleu-light",
+                      fill: "#BAE6FD",
+                      color: "#1C1917",
+                      stroke: "#075985",
+                      selection: "#38BDF8",
+                    },
+                  },
                 },
               };
             }),
@@ -70,6 +90,83 @@ export async function migrateEdge() {
 
 export async function findRepository(): Promise<Folder[] | null> {
   const result = (await db.repository.find({})) as Folder[];
+  return result;
+}
+
+export async function updateMiniature(win: BrowserWindow, fileId: string) {
+  const { canceled, filePaths } = await dialog.showOpenDialog(win, {
+    title: "Select an image",
+    properties: ["openFile"],
+    filters: [
+      { name: "Images", extensions: ["jpg", "jpeg", "png", "gif", "bmp"] },
+    ],
+  });
+
+  if (!canceled && filePaths[0]) {
+    const imagePath = filePaths[0];
+
+    await fs.readFile(imagePath, async (err, data) => {
+      if (err) {
+        console.error("Erreur lors de la lecture du fichier :", err);
+        return;
+      }
+
+      const base64Image = Buffer.from(data).toString("base64");
+      const folder = await db.repository.findOne(
+        {
+          "files._id": fileId,
+        },
+        { files: 1, folderName: 1 }
+      );
+      const files = folder?.files as FileHitokno[];
+      const file = files.find((e) => e._id === fileId);
+      if (folder && file) {
+        file.miniature = base64Image;
+        const newFiles: FileHitokno[] = [
+          ...files.filter((file) => file._id !== fileId),
+          file,
+        ];
+        const result = await db.repository.updateOne(
+          { "files._id": fileId },
+          { $set: { files: newFiles } }
+        );
+
+        if (!result) throw new Error("Fail to update cartography");
+        return {
+          payload: "success",
+        };
+      }
+    });
+  } else {
+    return {
+      payload: "cancelled",
+    };
+  }
+}
+
+export async function removeMiniature(fileId: string){
+  const folder = await db.repository.findOne(
+    {
+      "files._id": fileId,
+    },
+    { files: 1, folderName: 1 }
+  );
+  const files = folder?.files as FileHitokno[];
+  const newFiles = files.map(file => {
+    if(file._id === fileId){
+      return {
+        ...file,
+        miniature: undefined
+      }
+    }else {
+      return file
+    }
+  })
+  const result = await db.repository.updateOne(
+    { "files._id": fileId },
+    { $set: { files: newFiles } }
+  );
+
   return result;
 }
 

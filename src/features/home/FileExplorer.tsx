@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { MouseEvent } from "react";
 import { useTabs } from "./useTabs";
 import { useRepositoryContext } from "./useRepositoryContext";
+import ImageFit from "../../ui/ImageFit";
 
 type FileExplorerProps = {
   file: FileShort;
@@ -66,7 +67,7 @@ const BottomContainer = styled.div`
 `;
 
 function FileExplorer({
-  file: { fileName, _id },
+  file: { fileName, _id, miniature },
 }: FileExplorerProps): JSX.Element {
   const navigate = useNavigate();
   const { fileId } = useParams();
@@ -96,7 +97,8 @@ function FileExplorer({
       onDragEnd={dragEnd}
     >
       <IconContainer>
-        <HitoknoFile />
+        {!miniature && <HitoknoFile />}
+        {miniature && <ImageFit src={`data:image/png;base64, ${miniature}`}/>}
       </IconContainer>
       <BottomContainer>{fileName}</BottomContainer>
     </FileExplorerStyled>

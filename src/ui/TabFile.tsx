@@ -4,9 +4,10 @@ import { IoDocumentOutline, IoClose, IoDocument } from "react-icons/io5";
 import { DragEvent, useCallback, useState } from "react";
 import { useTabs } from "../features/home/useTabs";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useQueryClient } from "@tanstack/react-query";
 import { HeaderTab } from "../types/Tabs.types";
 import { CloseButton, TabStyled, TextContainer } from "./TabStyled";
+import { useNavigateToCartography } from "../features/cartography/useNavigateToCartography";
+import ImageFit from "./ImageFit";
 
 const IconContainer = styled.div`
   height: 20px;
@@ -32,7 +33,7 @@ function TabFile({
   const [isHover, setIsHover] = useState<boolean>(false);
   const { closeTab } = useTabs();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
+  const { navigateToCartography } = useNavigateToCartography({ fileId: tabId });
 
   const location = useLocation();
 
@@ -54,22 +55,9 @@ function TabFile({
   const handleClick = useCallback(
     (e: MouseEvent) => {
       e.stopPropagation();
-      if (!tabActive) {
-        queryClient
-          .invalidateQueries({ queryKey: ["test"] })
-          .then(() => {
-            queryClient
-              .invalidateQueries({ queryKey: ["file"], exact: false })
-              .then(() => {
-                navigate(`/cartography/${tabId}`);
-              });
-          })
-          .catch((error: Error) => {
-            console.log("Fail to navigate : ", error);
-          });
-      }
+      navigateToCartography();
     },
-    [tabActive, queryClient, navigate, tabId]
+    [navigateToCartography]
   );
 
   if (isFileLoading || !fileDetail) return null;
@@ -86,7 +74,9 @@ function TabFile({
       onDragEnd={(e: DragEvent<HTMLDivElement>) => dragEnd?.(e, index)}
     >
       <IconContainer>
-        {tabActive ? (
+        {fileDetail.file.miniature ? (
+          <ImageFit src={`data:image/png;base64, ${fileDetail.file.miniature}`}/>
+        ) : tabActive ? (
           <IoDocument size={"100%"} />
         ) : (
           <IoDocumentOutline size={"100%"} />

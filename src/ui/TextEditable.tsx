@@ -14,6 +14,7 @@ type TextEditableProps = {
   lockSelection?: boolean;
   fontSize?: string;
   areaRef? : Ref<HTMLTextAreaElement>
+  onBlur? : () => void;
 };
 
 type InputProps = {
@@ -77,7 +78,8 @@ function TextEditable({
   resizable,
   fontWeigth,
   lockSelection,
-  fontSize
+  fontSize,
+  onBlur
 }: TextEditableProps): JSX.Element {
   const ref = useInputOutsideDoubleClick(() => {
     if (mode === "EDIT") {
@@ -106,6 +108,7 @@ function TextEditable({
       value={value}
       readOnly={mode === "DEFAULT"}
       onClick={handleClick}
+      onBlur={onBlur}
       $resizable={resizable as boolean}
       $fontWeigth={fontWeigth}
       $fontSize={fontSize}

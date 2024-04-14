@@ -28,6 +28,7 @@ const TabStyled = styled.button`
   width: 100%;
   display: flex;
   justify-content: left;
+  align-items: center;
   gap: 8px;
   background-color: transparent;
   border: none;

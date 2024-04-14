@@ -3,14 +3,15 @@ import FilePreview from "./FilePreview";
 import styled, { CSSProp, css } from "styled-components";
 import useFindFile from "./useFindFile";
 import TextEditable from "../../ui/TextEditable";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { TextEditMode } from "../../types/TextEditMode.type";
-import { ChangeEvent, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRenameFile } from "./useRenameFile";
 import { useTabs } from "./useTabs";
 import useCreateTest from "../tests/useCreateTest";
 import Row from "../../ui/Row";
 import FileMenuActions from "./FileMenuActions";
+import { useNavigateToCartography } from "../cartography/useNavigateToCartography";
 
 const FileSelectedStyled = styled.div`
   color: var(--text-main-dark);
@@ -34,19 +35,22 @@ const FileName = styled.span<FileNameProps>`
     `}
 `;
 
-const titleStyle : CSSProp = { justifyContent: "space-between", flexGrow: 1 }
+const titleStyle: CSSProp = { justifyContent: "space-between", flexGrow: 1 };
 
 function FileSelected(): JSX.Element | null {
   const { isLoadingFile, fileDetail } = useFindFile();
   const [searchParams, setSearchParams] = useSearchParams();
-  const navigate = useNavigate();
   const { renameFile } = useRenameFile();
   const { openTab } = useTabs();
   const [isMounted, setIsMounted] = useState(false);
   const { createTest } = useCreateTest();
+  const { navigateToCartography } = useNavigateToCartography({
+    fileId: fileDetail?.file._id,
+  });
 
   const paramsMode = searchParams.get("mode");
   const mode = paramsMode ? paramsMode : "DEFAULT";
+  const [filenameCopy, setFilenameCopy] = useState("");
 
   function switchModeEditFilename() {
     setSearchParams({
@@ -60,11 +64,11 @@ function FileSelected(): JSX.Element | null {
     });
   }
 
-  function handleRenameFile(e: ChangeEvent<HTMLInputElement>) {
+  function handleRenameFile() {
     if (fileDetail) {
       renameFile({
         fileId: fileDetail.file._id,
-        filename: e.target.value,
+        filename: filenameCopy,
       });
     }
   }
@@ -72,14 +76,14 @@ function FileSelected(): JSX.Element | null {
   function handleDisplayFile() {
     if (fileDetail?.file._id) {
       openTab(fileDetail.file._id, "DEFAULT", "FILE");
-      navigate(`/cartography/${fileDetail.file._id}`);
+      navigateToCartography();
     }
   }
 
   function handleEditFile() {
     if (fileDetail?.file._id) {
       openTab(fileDetail.file._id, "EDIT", "FILE");
-      navigate(`/cartography/${fileDetail.file._id}`);
+      navigateToCartography();
     }
   }
 
@@ -104,6 +108,12 @@ function FileSelected(): JSX.Element | null {
       setIsMounted(false);
     };
   }, [setIsMounted]);
+
+  useEffect(() => {
+    if (!isLoadingFile && fileDetail) {
+      setFilenameCopy(fileDetail.file.fileName);
+    }
+  }, [isLoadingFile, fileDetail]);
 
   if (!fileDetail || !isMounted) return null;
 
@@ -133,17 +143,16 @@ function FileSelected(): JSX.Element | null {
                 >
                   <TextEditable
                     mode={mode as TextEditMode}
-                    onEdit={handleRenameFile}
+                    onEdit={(e) => setFilenameCopy(e.target.value)}
+                    onBlur={handleRenameFile}
                     resizable={true}
                     fontWeigth="600"
                     onClickOutside={switchModeDefaultFilename}
-                    value={
-                      fileDetail?.file.fileName ? fileDetail.file.fileName : ""
-                    }
+                    value={filenameCopy}
                   />
                 </FileName>
               </span>
-                <FileMenuActions file={fileDetail.file} />
+              <FileMenuActions file={fileDetail.file} />
             </Row>
           }
         >

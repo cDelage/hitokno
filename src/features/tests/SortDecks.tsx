@@ -2,7 +2,7 @@ import { DragEvent, useCallback, useEffect, useState } from "react";
 import { FileShort } from "../../types/Repository.types";
 import DeckSortable from "./DeckSortable";
 import { Column } from "../../ui/Row";
-import moveElement from "../../utils/moveElement";
+import moveElement from "../../utils/MoveElement";
 import { DeckTestConfig } from "../../types/Test.type";
 import useTestStore from "./useTestStore";
 
@@ -57,30 +57,37 @@ function SortDecks({
         (file) =>
           test.decks.find((deck) => deck.fileId === file._id) as DeckTestConfig
       );
-      updateTest({
-        ...test,
-        decks,
-      }, true);
+      updateTest(
+        {
+          ...test,
+          decks,
+        },
+        true
+      );
     }
   }, [test, selectedFilesCopy, updateTest]);
 
   useEffect(() => {
-    setSelectedFilesCopy(selectedFiles)
-  },[selectedFiles])
+    setSelectedFilesCopy(selectedFiles);
+  }, [selectedFiles]);
 
   return (
     <>
       <Column $gap={4}>
         {selectedFilesCopy.map((file, index) => (
-          <DeckSortable
-            file={file}
-            id={file._id}
-            index={index}
-            key={file._id}
-            dragStart={handleDragStart}
-            dragEnter={handleDragEnter}
-            dragEnd={handleDrop}
-          />
+          <>
+            {file && (
+              <DeckSortable
+                file={file}
+                id={file._id}
+                index={index}
+                key={file._id}
+                dragStart={handleDragStart}
+                dragEnter={handleDragEnter}
+                dragEnd={handleDrop}
+              />
+            )}
+          </>
         ))}
       </Column>
     </>

@@ -12,7 +12,8 @@ import {
   updateDeck,
   RemoveFile,
   moveFile,
-  migrateEdge,
+  updateMiniature,
+  removeMiniature,
 } from "./services/apiRepository";
 import {
   FileHitokno,
@@ -63,7 +64,6 @@ function createWindow() {
     },
   });
 
-
   // Test active push message to Renderer-process.
   win.webContents.on("did-finish-load", () => {
     win?.webContents.send("main-process-message", new Date().toLocaleString());
@@ -77,8 +77,6 @@ function createWindow() {
       ...createFileRoute(path.join(process.env.DIST, "index.html"), "main")
     );
   }
-
-  //migrateEdge();
 
   ipcMain.on("maximize", () => {
     win?.maximize();
@@ -155,7 +153,8 @@ function createWindow() {
 
   ipcMain.handle(
     "update-deck",
-    async (_event: IpcMainInvokeEvent, file: FileHitokno) => await updateDeck(file)
+    async (_event: IpcMainInvokeEvent, file: FileHitokno) =>
+      await updateDeck(file)
   );
 
   ipcMain.handle(
@@ -197,19 +196,33 @@ function createWindow() {
   );
 
   ipcMain.handle(
-    "save-file", 
+    "save-file",
     async (_event: IpcMainInvokeEvent, params: SaveParams) =>
       await saveFile(params)
-  )
+  );
 
   ipcMain.handle(
     "import-file",
-    async (_event: IpcMainInvokeEvent, folderId: string) =>{
-      if(win){
-        return await importFile(win, folderId)
+    async (_event: IpcMainInvokeEvent, folderId: string) => {
+      if (win) {
+        return await importFile(win, folderId);
       }
     }
-  )
+  );
+
+  ipcMain.handle(
+    "update-miniature",
+    async (_event: IpcMainInvokeEvent, fileId: string) => {
+      if (win) {
+        return await updateMiniature(win, fileId);
+      }
+    }
+  );
+  ipcMain.handle(
+    "remove-miniature",
+    async (_event: IpcMainInvokeEvent, fileId: string) =>
+      await removeMiniature(fileId)
+  );
 }
 
 // Quit when all windows are closed, except on macOS. There, it's common

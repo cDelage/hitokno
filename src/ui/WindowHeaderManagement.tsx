@@ -67,14 +67,14 @@ function WindowHeaderManagement(): JSX.Element {
         onClick={isMaximizedWindow ? unmaximize : maximize}
       >
         {!isMaximizedWindow && <VscChromeMaximize size={20} />}
-        {isMaximizedWindow && <VscChromeRestore size={20} />}
+        {isMaximizedWindow && <VscChromeRestore size={16} />}
       </WindowHeaderButton>
       <WindowHeaderButton
         hoverBgColor="--bg-close"
         hoverColor="--text-close"
         onClick={voidTemp}
       >
-        <VscChromeClose onClick={close} size={24} />
+        <VscChromeClose onClick={close} size={16} />
       </WindowHeaderButton>
     </WindowIconContainer>
   );

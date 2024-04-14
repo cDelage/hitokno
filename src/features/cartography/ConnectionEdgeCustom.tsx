@@ -1,4 +1,10 @@
-import { BaseEdge, Position, getBezierPath, getSmoothStepPath, getStraightPath } from "reactflow";
+import {
+  BaseEdge,
+  Position,
+  getBezierPath,
+  getSmoothStepPath,
+  getStraightPath,
+} from "reactflow";
 import useCartography from "./useCartography";
 import { useMemo } from "react";
 import { findDash, findWeight } from "./CartographyConstants";
@@ -20,17 +26,14 @@ function ConnectionEdgeCustom({
   toPosition: Position;
 }) {
   const {
-    edgeCreationProps: { sourcePosition, targetPosition }, menuDataEdge
+    edgeCreationProps: { sourcePosition, targetPosition },
+    menuDataEdge,
+    tempDataEdge,
+    updateEdgePayload,
   } = useCartography();
 
-  const {
-    fill,
-    arrowEnd,
-    arrowStart,
-    edgeCategory,
-    weight,
-    dash,
-  } = menuDataEdge;
+  const { fill, arrowEnd, arrowStart, edgeCategory, weight, dash } =
+    tempDataEdge ? tempDataEdge : menuDataEdge;
 
   const dashStyle = useMemo(() => {
     return findDash(dash);
@@ -39,6 +42,25 @@ function ConnectionEdgeCustom({
   const weightStyle = useMemo(() => {
     return findWeight(weight);
   }, [weight]);
+
+  const markers = useMemo(() => {
+    if (tempDataEdge && updateEdgePayload) {
+      return updateEdgePayload.type === "source"
+        ? {
+            start: arrowEnd,
+            end: arrowStart,
+          }
+        : {
+            start: arrowStart,
+            end: arrowEnd,
+          };
+    } else {
+      return {
+        start: arrowStart,
+        end: arrowEnd,
+      };
+    }
+  }, [updateEdgePayload, tempDataEdge, arrowStart, arrowEnd]);
 
   const edgeParams = {
     sourceX: fromX,
@@ -53,22 +75,24 @@ function ConnectionEdgeCustom({
   };
 
   const [edgePath] =
-  edgeCategory === "bezier"
-    ? getBezierPath(edgeParams)
-    : edgeCategory === "smooth-step"
-    ? getSmoothStepPath(edgeParams)
-    : edgeCategory === "straight"
-    ? getStraightPath(edgeParams)
-    : getSmoothStepPath(edgeParams);
+    edgeCategory === "bezier"
+      ? getBezierPath(edgeParams)
+      : edgeCategory === "smooth-step"
+      ? getSmoothStepPath(edgeParams)
+      : edgeCategory === "straight"
+      ? getStraightPath(edgeParams)
+      : getSmoothStepPath(edgeParams);
 
   return (
     <>
-    <MarkersCustom fill={fill} />
+      <MarkersCustom fill={fill} />
       <BaseEdge
         path={edgePath}
         id={"EDGE_CREATION"}
-        markerStart={arrowStart !== "none" ? `url(#${arrowStart}-${fill})` : ""}
-        markerEnd={arrowEnd !== "none" ? `url(#${arrowEnd}-${fill})` : ""}
+        markerStart={
+          markers.start !== "none" ? `url(#${markers.start}-${fill})` : ""
+        }
+        markerEnd={markers.end !== "none" ? `url(#${markers.end}-${fill})` : ""}
         style={{
           strokeWidth: weightStyle.strokeSize,
           stroke: fill,

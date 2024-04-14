@@ -16,19 +16,23 @@ export const TabStyled = styled.div<TabStyledProps>`
   box-sizing: border-box;
   max-width: 200px;
   
-  color: var(--text-layout);
   font-size: 1rem;
   cursor: pointer;
   user-select: none;
+  color: var(--text-main-medium);
 
   &:hover {
     background-color: var(--bg-white);
+    color: var(--text-layout);
   }
 
   ${(props) =>
     props.$active &&
     css`
       background-color: var(--bg-white);
+      color: var(--text-layout);
+      border-left: 1px solid var(--color-gray-200);
+      border-right: 1px solid var(--color-gray-200);
     `}
 `;
 

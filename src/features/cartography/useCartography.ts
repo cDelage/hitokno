@@ -129,6 +129,8 @@ type UseCartographyStore = {
   isSaved: boolean;
   updateEdgePayload: UpdateEdgePayload | undefined;
   menuDataEdge: DataEdge;
+  tempDataEdge: DataEdge | undefined;
+  nodesUndeletableByKeyboard: string[];
   setMenuDataEdge: (menuDataEdge: DataEdge) => void;
   setIsSaved: (isSaved: boolean) => void;
   addHandlesActive: (handles: string[]) => void;
@@ -244,6 +246,8 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
   isSaved: true,
   updateEdgePayload: undefined,
   menuDataEdge: DEFAULT_DATA_EDGE,
+  tempDataEdge: undefined,
+  nodesUndeletableByKeyboard: [],
   addHandlesActive: (handles: string[]) => {
     set((state) => {
       return {
@@ -905,6 +909,9 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
       set((state) => {
         return {
           isSyncWithDB: false,
+          nodesUndeletableByKeyboard: state.nodes
+            .filter((node) => node.selected && node.data.sheet)
+            .map((node) => node.id),
           nodes: state.nodes
             .filter((node) => !node.selected || node.data.sheet)
             .map((node) => {
@@ -918,6 +925,11 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
             }),
         };
       });
+      setTimeout(() => {
+        set({
+          nodesUndeletableByKeyboard: [],
+        });
+      }, 5000);
     }
   },
   selectNode: (id: string) => {
@@ -1108,6 +1120,7 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
       edgeCreationProps: {
         sourcePosition: handle?.position,
       },
+      tempDataEdge: updateEdgePayload.edge.data,
     });
   },
   endModeUpdateHandle: () => {
@@ -1156,6 +1169,7 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
                   : e.source,
             };
           }),
+          tempDataEdge: undefined,
         };
       });
     }

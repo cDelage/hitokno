@@ -65,21 +65,21 @@ const GlobalStyle = createGlobalStyle`
   --color-negative-900: #881337;
   --color-negative-950: #4C0519;
 
-  --color-gray-50: #FAFAF9;
-  --color-gray-100: #F5F5F4;
-  --color-gray-200: #E7E5E4;
-  --color-gray-300: #D6D3D1;
-  --color-gray-400: #A8A29E;
-  --color-gray-500: #78716C;
-  --color-gray-600: #57534E;
-  --color-gray-700: #44403C;
-  --color-gray-800: #292524;
-  --color-gray-900: #1C1917;
-  --color-gray-950: #0C0A09;
+  --color-gray-50: #F8FAFC;
+  --color-gray-100: #F1F5F9;
+  --color-gray-200: #E2E8F0;
+  --color-gray-300: #CBD5E1;
+  --color-gray-400: #94A3B8;
+  --color-gray-500: #64748B;
+  --color-gray-600: #475569;
+  --color-gray-700: #334155;
+  --color-gray-800: #1E293B;
+  --color-gray-900: #0F172A;
+  --color-gray-950: #020617;
   --color-white: #ffffff;
 
-  --bg-main: var(--color-primary-50);
-  --bg-layout: var(--color-primary-100);
+  --bg-main: var(--color-gray-50);
+  --bg-layout: var(--color-gray-100);
   --bg-close : var(--color-negative-600);
   --bg-white: var(--color-white);
   --bg-element: var(--color-white);

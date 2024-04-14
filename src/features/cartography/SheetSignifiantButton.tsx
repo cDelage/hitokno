@@ -1,11 +1,11 @@
-import { MouseEvent, useCallback, useEffect } from "react";
+import { MouseEvent, useCallback, useEffect, useMemo } from "react";
 import { BiDetail } from "react-icons/bi";
 import styled, { css } from "styled-components";
 import useCartography from "./useCartography";
 import { useReactFlow, useViewport } from "reactflow";
 import { useSearchParams } from "react-router-dom";
 
-const SheetButton = styled.div<{ $isActive: boolean }>`
+const SheetButton = styled.div<{ $isActive: boolean; $isUndeletable: boolean }>`
   position: absolute;
   z-index: 1000;
   top: 8px;
@@ -26,12 +26,18 @@ const SheetButton = styled.div<{ $isActive: boolean }>`
       : css`
           padding: 4px 8px 4px 2px;
         `}
+
+  ${(props) =>
+    props.$isUndeletable &&
+    css`
+      background-color: rgba(225, 29, 72, 0.8);
+    `}
 `;
 
 function SheetSignifiantButton({
   nodeSheetId,
   nodeId,
-  selected
+  selected,
 }: {
   nodeSheetId: string;
   nodeId: string;
@@ -42,7 +48,13 @@ function SheetSignifiantButton({
   const { setCenter } = useReactFlow();
   const active = nodeSheetId === searchParams.get("sheetId");
 
-  const { getNodeCenterCoordinate } = useCartography();
+  const { getNodeCenterCoordinate, nodesUndeletableByKeyboard } =
+    useCartography();
+
+  const isUndeletable = useMemo(() => {
+    return nodesUndeletableByKeyboard.includes(nodeId);
+  }, [nodesUndeletableByKeyboard, nodeId]);
+
   const handleOpenSheet = useCallback(() => {
     if (!active) {
       const centerNode = getNodeCenterCoordinate(nodeId);
@@ -79,7 +91,7 @@ function SheetSignifiantButton({
   const handleKeydown = useCallback(
     (e: KeyboardEvent) => {
       const isCtrlPressed = e.ctrlKey || e.metaKey;
-      if (isCtrlPressed && (e.key === "O"||e.key === "o")) {
+      if (isCtrlPressed && (e.key === "O" || e.key === "o")) {
         handleOpenSheet();
       }
     },
@@ -99,7 +111,7 @@ function SheetSignifiantButton({
   }, [selected, handleKeydown, nodeId, active]);
 
   return (
-    <SheetButton onClick={handleClick} $isActive={active}>
+    <SheetButton onClick={handleClick} $isActive={active} $isUndeletable={isUndeletable}>
       <BiDetail size={`20px`} />
     </SheetButton>
   );

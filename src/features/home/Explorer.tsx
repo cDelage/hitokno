@@ -4,12 +4,12 @@ import { device } from "../../Medias";
 import CreationButton from "../../ui/CreationButton";
 import { IoAdd } from "react-icons/io5";
 import { useCreateFolder } from "./useCreateFolder";
-import Spinner from "../../ui/Spinner";
 import FolderExplorer from "./FolderExplorer";
 import { useFindRepository } from "./useFindRepository";
 import { createContext, useCallback, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import useMoveFile from "./useMoveFile";
+import Loader from "../../ui/Loader";
 
 const ExplorerStyled = styled.div`
   box-sizing: border-box;
@@ -128,7 +128,7 @@ function Explorer(): JSX.Element {
         </ExplorerHeader>
         <ExplorerMain>
           {isRepositoryLoading ? (
-            <Spinner />
+            <Loader />
           ) : (
             <>
               {repository?.map((folder) => (

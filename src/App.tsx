@@ -19,10 +19,14 @@ import { SearchCriterias } from "./types/SearchCriteria.type";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Router, Route } from "electron-router-dom";
 import { SaveParams } from "./types/Save.type";
-import { Suspense, lazy } from "react";
+import { Suspense } from "react";
 import FileDisabled from "./features/home/FileDisabled";
 import Home from "./pages/Home";
 import FileSelected from "./features/home/FileSelected";
+import Cartography from "./pages/Cartography";
+import Test from "./pages/Test";
+import FallbackComponent from "./ui/FallbackComponent";
+import { ErrorBoundary } from "react-error-boundary";
 
 /**
  * When i add it into a file .d.ts, then typescript not recognize the interface.
@@ -51,6 +55,8 @@ declare global {
       moveFile: (params: MoveFile) => Promise<void>;
       saveFile: (params: SaveParams) => Promise<void>;
       importFile: (fileId: string) => Promise<FileHitokno>;
+      updateMiniature: (fileId: string) => Promise<{payload: string}>;
+      removeMiniature: (fileId:string) => Promise<string>;
     };
     tests: {
       createTest: (params: CreateTestProps) => Promise<TestType>;
@@ -73,9 +79,6 @@ const queryClient = new QueryClient({
   },
 });
 
-const Cartography = lazy(() => import("./pages/Cartography"));
-const Test = lazy(() => import("./pages/Test"));
-
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -84,7 +87,11 @@ function App() {
       <Router
         main={
           <Route
-            element={<AppLayout />}
+            element={
+              <ErrorBoundary FallbackComponent={FallbackComponent}>
+                <AppLayout />
+              </ErrorBoundary>
+            }
             path={"/"}
             children={
               <>

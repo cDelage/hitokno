@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 type HoverBgColor = "--bg-white" | "--bg-close";
-type HoverColor = "--text-layout" | "--text-close";
+type HoverColor = "--text-layout" | "--text-close" | "--text-main-medium";
 
 type WindowIconProps = {
   children: React.ReactNode;
@@ -22,7 +22,7 @@ const WindowIconButtonStyled = styled.button<WindowIconButtonStyledProps>`
   background-color: transparent;
   border: none;
   padding: 0px 12px;
-  color: var(--text-layout);
+  color: var(--text-main-medium);
   &:hover {
     background-color: var(${(props) => props.$hoverBgColor});
     color: var(${(props) => props.$hoverColor});

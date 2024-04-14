@@ -30,7 +30,7 @@ function FilePreview({ children }: ChildrenProps): JSX.Element {
 function Title({ children }: ChildrenProps): JSX.Element {
   const navigate = useNavigate();
   const location = useLocation();
-
+  
   const closable = location.pathname !== "/explorer";
 
   return (

@@ -28,14 +28,15 @@ import GroupIcon from "../../ui/icons/GroupIcon";
 import { RxBorderAll, RxBorderNone, RxMove, RxGroup } from "react-icons/rx";
 import {
   ArrowEndType,
+  CartographyMode,
   EdgeCategoryType,
   EdgeDashType,
   EdgeWeightType,
   ShadowProps,
 } from "../../types/Cartography.type";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import useCartography from "./useCartography";
-import { useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { CSSTransition } from "react-transition-group";
 import EdgeCategoryIcon from "../../ui/icons/EdgeCategoryIcon";
 import EdgeDoubleEndIcon from "../../ui/icons/EdgeDoubleEndIcon";
@@ -43,6 +44,7 @@ import EdgeWeightDashIcon from "../../ui/icons/EdgeWeightDashIcon";
 import ArrowEndIcon from "../../ui/icons/ArrowEndIcon";
 import EdgeDashIcon from "../../ui/icons/EdgeDashIcon";
 import EdgeWeightIcon from "../../ui/icons/EdgeWeightIcon";
+import { useTabs } from "../home/useTabs";
 
 const ToolbarLargeIconContainer = styled.div`
   width: 72px;
@@ -119,6 +121,13 @@ function MainToolbar() {
     weight: edgeWeight,
     dash: edgeDash,
   } = menuDataEdge;
+  const {tabs, getCartographyMode} = useTabs();
+  const { fileId } = useParams();
+
+  const mode = useMemo<CartographyMode>(
+    () => (tabs ? getCartographyMode(fileId as string) : "DEFAULT"),
+    [fileId, getCartographyMode, tabs]
+  );
 
   const handleOpenNodeControlSidebar = useCallback(() => {
     searchParams.delete("sheetId");
@@ -252,7 +261,7 @@ function MainToolbar() {
 
   return (
     <CSSTransition
-      in={sheetId === null}
+      in={sheetId === null && mode !== "DEFAULT"}
       timeout={200}
       classNames={"main-toolbar"}
       unmountOnExit
@@ -293,10 +302,7 @@ function MainToolbar() {
           </MenuToolbar.ActionColumn>
 
           {/* Sidebar (to list all nodes) */}
-          <MenuToolbar.Action
-            onClick={handleOpenNodeControlSidebar}
-            $backgroundShadow={true}
-          >
+          <MenuToolbar.Action onClick={handleOpenNodeControlSidebar}>
             <ToolbarAction>
               <ToolbarLargeIconContainer>
                 <SidebarIcon />
@@ -318,7 +324,6 @@ function MainToolbar() {
           <MenuToolbar.Action
             border={MENU_BORDER_RIGHT}
             onClick={handleOpenDeck}
-            $backgroundShadow={true}
           >
             <ToolbarAction>
               <ToolbarLargeIconContainer>
@@ -393,7 +398,6 @@ function MainToolbar() {
             onClick={() => setMainToolbarActiveMenu("CREATION-NODE")}
             $active={mainToolbarActiveMenu === "CREATION-NODE"}
             toggle=""
-            $backgroundShadow={true}
           >
             <ToolbarAction>
               <ToolbarLargeIconContainer>
@@ -422,7 +426,6 @@ function MainToolbar() {
             $active={mainToolbarActiveMenu === "CREATION-GROUP"}
             toggle=""
             border={MENU_BORDER_RIGHT}
-            $backgroundShadow={true}
           >
             <ToolbarAction>
               <ToolbarLargeIconContainer>
@@ -480,12 +483,17 @@ function MainToolbar() {
             onClick={() => setMainToolbarActiveMenu("CREATION-EDGE")}
             $active={mainToolbarActiveMenu === "CREATION-EDGE"}
             toggle=""
-            $backgroundShadow={true}
           >
             <ToolbarAction>
               <EdgeIconContainer>
                 <ToolbarMediumIconContainer>
-                  <EdgeIcon edgeCategory={edgeCategory} fill={edgeFill} markerStart={edgeMarkerStart} markerEnd={edgeMarkerEnd} edgeDash={edgeDash as EdgeDashType}/>
+                  <EdgeIcon
+                    edgeCategory={edgeCategory}
+                    fill={edgeFill}
+                    markerStart={edgeMarkerStart}
+                    markerEnd={edgeMarkerEnd}
+                    edgeDash={edgeDash as EdgeDashType}
+                  />
                 </ToolbarMediumIconContainer>
               </EdgeIconContainer>
               <ToolbarAction.ActionButton $hoverTransform="scale(1.2)">

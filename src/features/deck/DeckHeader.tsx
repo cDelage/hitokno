@@ -73,7 +73,7 @@ function DeckHeader() {
             >
               <IoAdd size={16} /> New flash-card
             </Button>
-            <Button type="primary" $icon={true} onClick={handleCreateTest}>
+            <Button type="primary" $icon={true} onClick={handleCreateTest} disabled={!deck.length}>
               <IoPlay size={16} /> Play test
             </Button>
           </Row>

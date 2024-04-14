@@ -179,7 +179,7 @@ export type HelperLine = {
 };
 
 export type updateEdgePayload = {
-  edge: Edge;
+  edge: Edge<DataEdge>;
   type: "source" | "target";
   targetNodeId?: string;
   targetPosition?: Position;

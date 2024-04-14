@@ -14,7 +14,7 @@ const HomeHeaderButtonStyled = styled.button<HomeHeaderButtonStyledProps>`
   border: none;
   padding: 0px 12px;
   cursor: pointer;
-  color: var(--text-layout);
+  color: var(--text-main-medium);
 
   ${(props) =>
     props.$tabState === "default"
@@ -22,11 +22,14 @@ const HomeHeaderButtonStyled = styled.button<HomeHeaderButtonStyledProps>`
           background-color: transparent;
 
           &:hover {
+            color: var(--text-layout);
             background-color: var(--bg-white);
           }
         `
       : css`
+          color: var(--text-layout);
           background-color: white;
+      border-right: 1px solid var(--color-gray-200);
         `}
 `;
 
@@ -67,7 +70,7 @@ function HomeHeaderButton() {
       $tabState={isHomeActive ? "active" : "default"}
       onClick={goToHome}
     >
-      {isHomeActive ? <IoHome size={24} /> : <IoHomeOutline size={24} />}
+      {isHomeActive ? <IoHome size={20} style={{paddingTop: "4px"}}/> : <IoHomeOutline size={20} style={{paddingTop: "4px"}}/>}
     </HomeHeaderButtonStyled>
   );
 }

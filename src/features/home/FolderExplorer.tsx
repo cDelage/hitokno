@@ -101,6 +101,8 @@ function FolderExplorer({ folder }: FolderProps): JSX.Element {
   const navigate = useNavigate();
   const { dragEnter, draggedEnterId } = useRepositoryContext();
 
+  const [folderNameCopy, setFolderNameCopy] = useState(folderName);
+
   const folderNameMode: TextEditMode = folderId === _id ? "EDIT" : "DEFAULT";
 
   const active: boolean = folderNameMode === "EDIT";
@@ -114,7 +116,7 @@ function FolderExplorer({ folder }: FolderProps): JSX.Element {
   }
 
   function handleEditFolderName(e: ChangeEvent<HTMLInputElement>) {
-    renameFolder({ folderId: _id, name: e.target.value });
+    setFolderNameCopy(e.target.value);
   }
 
   function handleNameOutsideClick() {
@@ -135,7 +137,10 @@ function FolderExplorer({ folder }: FolderProps): JSX.Element {
               mode={folderNameMode}
               onEdit={handleEditFolderName}
               onClickOutside={handleNameOutsideClick}
-              value={folderName}
+              onBlur={() =>
+                renameFolder({ folderId: _id, name: folderNameCopy })
+              }
+              value={folderNameCopy}
             />
           </FolderName>
         </FolderLeftContainer>

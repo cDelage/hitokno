@@ -3,6 +3,7 @@ import ReactFlow, {
   BackgroundVariant,
   EdgeTypes,
   MiniMap,
+  Node,
   NodeChange,
   SelectionMode,
   useViewport,
@@ -16,7 +17,7 @@ import {
   NODE_CUSTOM_COMPONENTS,
   PX_UNIT_GAP,
 } from "./CartographyConstants";
-import { useCallback, useEffect, useMemo } from "react";
+import { Suspense, useCallback, useEffect, useMemo } from "react";
 import MainToolbar from "./MainToolbar";
 import { useTabs } from "../home/useTabs";
 import { useParams, useSearchParams } from "react-router-dom";
@@ -27,10 +28,15 @@ import DeckContainer from "../deck/DeckContainer";
 import ViewportSyncWithDb from "./ViewportSyncWithDb";
 import PasteImage from "./PasteImage";
 import NodeControlSidebar from "./NodeControlSidebar";
+import { CartographyMode, DataNode } from "../../types/Cartography.type";
+import Loader from "../../ui/Loader";
 
-const ViewportContainer = styled.div<{$handleSize: number; $handleBorderSize: number;}>`
+const ViewportContainer = styled.div<{
+  $handleSize: number;
+  $handleBorderSize: number;
+}>`
   flex-grow: 1;
-  background-color: var(--color-gray-100);
+  background-color: var(--color-white);
   position: relative;
   .react-flow__node {
     z-index: -1 !important;
@@ -46,6 +52,10 @@ const ViewportContainer = styled.div<{$handleSize: number; $handleBorderSize: nu
       background-color: #159be9;
       outline: ${(props) => props.$handleBorderSize}px solid white;
     }
+  }
+
+  .react-flow__attribution {
+    color: white;
   }
 `;
 
@@ -71,13 +81,13 @@ function Viewport(): JSX.Element {
   } = useCartography();
   const { zoom } = useViewport();
   const { fileId } = useParams();
-  const { fileDetail } = useFindFileById(fileId as string);
-  const { getCartographyMode } = useTabs();
+  const { fileDetail, isFileLoading } = useFindFileById(fileId as string);
   const [searchParams] = useSearchParams();
+  const { getCartographyMode, tabs } = useTabs();
 
-  const mode = useMemo(
-    () => getCartographyMode(fileId as string),
-    [fileId, getCartographyMode]
+  const mode = useMemo<CartographyMode>(
+    () => (tabs ? getCartographyMode(fileId as string) : "DEFAULT"),
+    [fileId, getCartographyMode, tabs]
   );
 
   const handleSize = useMemo(() => {
@@ -166,79 +176,103 @@ function Viewport(): JSX.Element {
     };
   }, [handleEventDuplicateNode, deckOpen, sheetId]);
 
+  const handleNodeDragStart = useCallback(
+    (node: Node<DataNode>) => {
+      if (mode === "EDIT") {
+        addHelperLines(node.id);
+      }
+    },
+    [addHelperLines, mode]
+  );
+
+  const handleNodeDragEvent = useCallback(
+    (node: Node<DataNode>) => {
+      if (mode === "EDIT") {
+        handleNodeDrag(node);
+      }
+    },
+    [handleNodeDrag, mode]
+  );
+
+  if(isFileLoading) return <Loader/>;
+
   return (
-    <ViewportContainer
-      $handleSize={handleSize}
-      $handleBorderSize={handleBorderSize}
-    >
-      <PasteImage />
-      <ViewportSyncWithDb />
-      {mode === "EDIT" && (
-        <>
-          <MainToolbar />
-        </>
-      )}
-      <SheetContainer />
-      <NodeControlSidebar />
-      
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        id="viewport-container-reactflow"
-        key={`viewport-${fileId}`}
-        nodeTypes={NODE_CUSTOM_COMPONENTS}
-        edgeTypes={EDGE_TYPE_COMPONENT as EdgeTypes}
-        onNodesChange={handleNodeChange}
-        onEdgesChange={onEdgesChange}
-        onNodeDragStart={(_e, node) => addHelperLines(node.id)}
-        onNodeDrag={(_e, node) => handleNodeDrag(node)}
-        onNodeDragStop={clearHelpers}
-        onEdgeUpdate={() => {}}
-        onEdgeUpdateStart={(_e, edge, type) => {
-          setModeUpdateHandle({
-            edge,
-            type: type === "source" ? "target" : "source",
-          });
-        }}
-        onEdgeUpdateEnd={endModeUpdateHandle}
-        defaultEdgeOptions={DEFAULT_EDGE_OPTIONS}
-        connectionLineComponent={ConnectionEdgeCustom}
-        snapToGrid={true}
-        snapGrid={[8, 8]}
-        panOnScroll
-        selectionOnDrag={!mainToolbarActiveMenu?.startsWith("CREATION")}
-        panOnDrag={panOnDragMode}
-        selectionMode={SelectionMode.Full}
-        minZoom={0.2}
-        style={{ userSelect: "auto" }}
-        maxZoom={2.5}
-        fitView
-        fitViewOptions={{ minZoom: 1, maxZoom: 1, nodes }}
+    <Suspense fallback={<Loader/>}>
+      <ViewportContainer
+        $handleSize={handleSize}
+        $handleBorderSize={handleBorderSize}
       >
-        <>
-          {zoom < 1.5 && (
-            <Background
-              variant={"dots" as BackgroundVariant}
-              color={"#D6D3D1"}
-              gap={PX_UNIT_GAP * 4}
-              size={3}
-              id="back"
+        <PasteImage />
+        <ViewportSyncWithDb />
+        <MainToolbar />
+        <SheetContainer />
+        <NodeControlSidebar />
+
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          id="viewport-container-reactflow"
+          key={`viewport-${fileId}`}
+          nodeTypes={NODE_CUSTOM_COMPONENTS}
+          edgeTypes={EDGE_TYPE_COMPONENT as EdgeTypes}
+          onLoadStart={() => console.log("load start")}
+          onNodesChange={handleNodeChange}
+          onEdgesChange={onEdgesChange}
+          onNodeDragStart={(_e, node) => handleNodeDragStart(node)}
+          onNodeDrag={(_e, node) => handleNodeDragEvent(node)}
+          onNodeDragStop={clearHelpers}
+          onEdgeUpdate={() => {}}
+          onEdgeUpdateStart={(_e, edge, type) => {
+            setModeUpdateHandle({
+              edge,
+              type: type === "source" ? "target" : "source",
+            });
+          }}
+          onEdgeUpdateEnd={endModeUpdateHandle}
+          defaultEdgeOptions={DEFAULT_EDGE_OPTIONS}
+          connectionLineComponent={ConnectionEdgeCustom}
+          snapToGrid={true}
+          snapGrid={[8, 8]}
+          panOnScroll
+          selectionOnDrag={!mainToolbarActiveMenu?.startsWith("CREATION")}
+          panOnDrag={panOnDragMode}
+          selectionMode={SelectionMode.Full}
+          minZoom={0.2}
+          style={{ userSelect: "auto" }}
+          maxZoom={2.5}
+          fitView
+          fitViewOptions={{ minZoom: 1, maxZoom: 1, nodes }}
+        >
+          <>
+            {zoom > 1.5 && (
+              <Background
+                variant={"dots" as BackgroundVariant}
+                color={"var(--color-gray-300)"}
+                gap={PX_UNIT_GAP}
+                size={1}
+                id="top"
+              />
+            )}
+            <MiniMap
+              maskColor="rgba(226, 232, 240, 0.6)"
+              offsetScale={10}
+              pannable={true}
+              inversePan={true}
+              position="bottom-right"
+              style={{
+                bottom: "-25px",
+                right: "-25px",
+                transform: "scale(0.7)",
+                borderRadius: "8px",
+                boxShadow: "var(--shadow-md)",
+                overflow: "hidden",
+              }}
             />
-          )}
-          {zoom > 1.5 && (
-            <Background
-              variant={"dots" as BackgroundVariant}
-              color={"#D6D3D1"}
-              gap={PX_UNIT_GAP}
-              size={1}
-              id="top"
-            />
-          )}
-          <MiniMap />
-        </>
-      </ReactFlow>
-      <DeckContainer />
-    </ViewportContainer>
+          </>
+        </ReactFlow>
+        <DeckContainer />
+      </ViewportContainer>
+    </Suspense>
   );
 }
 
