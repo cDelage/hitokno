@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useState } from "react";
+import { ChangeEvent, MouseEvent, useCallback, useState } from "react";
 import { DataNode, Theme } from "../../types/Cartography.type";
 import useCartography from "./useCartography";
 import TextEditable from "../../ui/TextEditable";
@@ -16,6 +16,12 @@ const LabelNodeGroupStyled = styled.div<{ theme: Theme }>`
   box-shadow: var(--shadow-md);
   filter: brightness(0.98);
   font-size: 20px;
+  
+  ::selection {
+    background-color: ${(props) => {
+      return props.theme.selection;
+    }};
+  }
 `;
 
 function LabelNodeGroup({ data, id }: { data: DataNode; id: string }) {
@@ -29,7 +35,8 @@ function LabelNodeGroup({ data, id }: { data: DataNode; id: string }) {
     [setNodeData, id, data]
   );
 
-  const handleClick = useCallback(() => {
+  const handleClick = useCallback((e : MouseEvent) => {
+    e.stopPropagation();
     if (modeRename !== "EDIT") {
       setModeRename("EDIT");
     }

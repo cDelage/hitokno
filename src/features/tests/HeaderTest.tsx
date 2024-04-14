@@ -75,7 +75,7 @@ function HeaderTest() {
       </Row>
       <Row $style={AlignItemCenter}>
         <Button type="secondary" $icon={true} onClick={handleOpenSettings}>
-          <IoSettingsOutline size={20} /> Advanced settings
+          <IoSettingsOutline size={20} /> Test settings
         </Button>
         <Column $gap={4}>
           <Row $style={ResultCountStyle}>

@@ -18,7 +18,7 @@ function TestProgress() {
         <span>
           Card {currentCard}/{countCards}
         </span>
-        <span>{percentage}%</span>
+        <span>{percentage.toFixed(0)}%</span>
       </Row>
     </Column>
   );

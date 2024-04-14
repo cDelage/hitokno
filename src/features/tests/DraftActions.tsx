@@ -17,7 +17,7 @@ const ActionStyle: CSSProp = {
 
 function DraftActions() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { startTest, test } = useTestStore();
+  const { startTest, test,  tempFlashCards} = useTestStore();
   const {deleteTest} = useDeleteTest();
   const {closeTab} = useTabs();
   const navigate = useNavigate();
@@ -62,12 +62,12 @@ function DraftActions() {
 
   return (
     <Column $style={ActionStyle}>
-      <Button type="primary" $icon={true} onClick={startTest}>
-        <IoPlay size={20} /> Quick start test (space)
+      <Button type="primary" $icon={true} onClick={startTest} disabled={!tempFlashCards.length}>
+        <IoPlay size={20} /> Quick start test {tempFlashCards.length !== 0 ? `(space)` : `(Select a deck in settings to start)`}
       </Button>
       <Button type="secondary" $icon={true} onClick={handleOpenSettings}>
         <IoSettingsOutline size={20} />
-        Advanced settings
+        Test settings
       </Button>
       <Button type="secondary" $icon={true} onClick={handleDeleteTest}>
         <IoTrashOutline size={20} /> Delete test draft

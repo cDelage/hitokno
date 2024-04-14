@@ -33,8 +33,8 @@ const ContentEditableStyled = styled(
   }
 
   h1 {
-    font-size: 52px;
-    line-height: 48px;
+    font-size: 48px;
+    line-height: 52px;
     font-weight: 500;
     user-select: none;
   }

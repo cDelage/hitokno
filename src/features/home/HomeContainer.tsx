@@ -3,10 +3,17 @@ import Explorer from "./Explorer";
 import FilePreviewContainer from "./FilePreviewContainer";
 import { device } from "../../Medias";
 import { ButtonHeader } from "../../ui/ButtonHeader";
-import { IoTimeOutline } from "react-icons/io5";
+import { IoPlayOutline, IoTimeOutline } from "react-icons/io5";
 import TestHistoryHomeModal from "./TestHistoryHomeModal";
 import { useSearchParams } from "react-router-dom";
 import { useCallback } from "react";
+import Row from "../../ui/Row";
+import {
+  HeaderCenter,
+  HeaderLeft,
+  HeaderRight,
+} from "../../ui/UiConstants";
+import useCreateTest from "../tests/useCreateTest";
 
 const HomeStyled = styled.div`
   display: flex;
@@ -37,15 +44,11 @@ const HeaderHome = styled.div`
   box-shadow: var(--shadow-md);
   padding: 0px 8px;
   align-items: center;
-  justify-content: space-between;
-`;
-const SpanLeft = styled.div`
-  width: 116px;
 `;
 
 function HomeContainer(): JSX.Element {
   const [searchParams, setSearchParams] = useSearchParams();
-
+  const {createTest} = useCreateTest();
   const handleOpenTestHistory = useCallback(() => {
     if (searchParams.get("testHistory") === null) {
       setSearchParams({
@@ -61,14 +64,18 @@ function HomeContainer(): JSX.Element {
     <HomeStyled>
       <TestHistoryHomeModal />
       <HeaderHome>
-        <SpanLeft />
-        <span>Homepage</span>
-        <span>
+        <Row $style={HeaderLeft} />
+        <Row $style={HeaderCenter}>Homepage</Row>
+        <Row $style={HeaderRight}>
+          <ButtonHeader onClick={() => createTest([])}>
+            <IoPlayOutline size={16} />
+            Play new test
+          </ButtonHeader>
           <ButtonHeader onClick={handleOpenTestHistory}>
             <IoTimeOutline size={16} />
             Test history
           </ButtonHeader>
-        </span>
+        </Row>
       </HeaderHome>
       <ExplorerContainer>
         <Explorer />

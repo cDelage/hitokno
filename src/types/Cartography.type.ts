@@ -185,6 +185,11 @@ export type updateEdgePayload = {
   targetPosition?: Position;
 };
 
+export type NodeEdgeUndoPayload = {
+  nodes: Node<DataNode>
+  edges: Edge<DataEdge>
+}
+
 export type EdgeWeightType = "bold" | "medium" | "light";
 
 export type EdgeDashType = "none" | "light" | "medium" | "large"

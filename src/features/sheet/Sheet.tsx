@@ -28,11 +28,12 @@ const NodeLabel = styled.div`
   padding: 20px 24px 16px 24px;
 `;
 
-const RowStyled = styled.div`
+const SheetStyled = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
   position: relative;
+  
 `;
 
 const CloseButtonContainer = styled.div`
@@ -73,7 +74,7 @@ function Sheet() {
 
 
   return (
-    <RowStyled id="sheet-row">
+    <SheetStyled id="sheet-row">
       <CloseButtonContainer>
         <IconButton onClick={closeSheet}>
           <IoClose size={20} />
@@ -100,7 +101,7 @@ function Sheet() {
         <TablePlugin />
         <PluginReadEditSheetMode mode={mode}/>
       </SheetText>
-    </RowStyled>
+    </SheetStyled>
   );
 }
 

@@ -38,6 +38,7 @@ const NodeGroupBackground = styled.div<{ theme: Theme }>`
   background-color: ${(props) => props.theme.fill};
   opacity: 0.5;
   border-radius: 8px;
+
 `;
 
 const NodeGroup = memo(function NodeGroup({

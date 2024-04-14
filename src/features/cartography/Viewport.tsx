@@ -28,7 +28,10 @@ import DeckContainer from "../deck/DeckContainer";
 import ViewportSyncWithDb from "./ViewportSyncWithDb";
 import PasteImage from "./PasteImage";
 import NodeControlSidebar from "./NodeControlSidebar";
-import { CartographyMode, DataNode } from "../../types/Cartography.type";
+import {
+  CartographyMode,
+  DataNode,
+} from "../../types/Cartography.type";
 import Loader from "../../ui/Loader";
 
 const ViewportContainer = styled.div<{
@@ -194,10 +197,10 @@ function Viewport(): JSX.Element {
     [handleNodeDrag, mode]
   );
 
-  if(isFileLoading) return <Loader/>;
+  if (isFileLoading) return <Loader />;
 
   return (
-    <Suspense fallback={<Loader/>}>
+    <Suspense fallback={<Loader />}>
       <ViewportContainer
         $handleSize={handleSize}
         $handleBorderSize={handleBorderSize}
