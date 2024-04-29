@@ -6,6 +6,9 @@ export type FlashCard = {
   level: number;
   body: string;
   answer: string;
+  leitnerRank?: "TO TEST" | "BRONZE" | "SILVER" | "GOLD";
+  leitnerLevel?: number;
+  leitnerNextDate?: Date;
 };
 
 export type FlashCardProps = FlashCard & {

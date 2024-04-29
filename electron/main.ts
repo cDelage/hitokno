@@ -35,6 +35,7 @@ import { SearchCriterias } from "../src/types/SearchCriteria.type";
 import { createFileRoute, createURLRoute } from "electron-router-dom";
 import { SaveParams } from "../src/types/Save.type";
 import { importFile, saveFile } from "./services/manageFileService";
+import { initLeitnerBox } from "./services/apiLeitnerBox";
 
 // The built directory structure
 //
@@ -77,6 +78,8 @@ function createWindow() {
       ...createFileRoute(path.join(process.env.DIST, "index.html"), "main")
     );
   }
+
+  initLeitnerBox();
 
   ipcMain.on("maximize", () => {
     win?.maximize();
