@@ -3,10 +3,10 @@ import Explorer from "./Explorer";
 import FilePreviewContainer from "./FilePreviewContainer";
 import { device } from "../../Medias";
 import { ButtonHeader } from "../../ui/ButtonHeader";
-import { IoPlayOutline, IoTimeOutline } from "react-icons/io5";
+import { IoAlbumsOutline, IoPlayOutline, IoTimeOutline } from "react-icons/io5";
 import TestHistoryHomeModal from "./TestHistoryHomeModal";
 import { useSearchParams } from "react-router-dom";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import Row from "../../ui/Row";
 import {
   HeaderCenter,
@@ -14,6 +14,7 @@ import {
   HeaderRight,
 } from "../../ui/UiConstants";
 import useCreateTest from "../tests/useCreateTest";
+import LeitnerBox from "../leitnerBox/LeitnerBox";
 
 const HomeStyled = styled.div`
   display: flex;
@@ -60,18 +61,37 @@ function HomeContainer(): JSX.Element {
     }
   }, [setSearchParams, searchParams]);
 
+  const handleOpenLeitnerBox = useCallback(() => {
+    if (searchParams.get("leitnerBox") === null) {
+      setSearchParams({
+        leitnerBox: "true",
+      });
+    } else {
+      searchParams.delete("leitnerBox");
+      setSearchParams(searchParams);
+    }
+  }, [setSearchParams, searchParams]);
+
+  const testHistoryActive = useMemo(() => {return searchParams.get("testHistory") !== null},[searchParams])
+  const leitnerBoxActive = useMemo(() => {return searchParams.get("leitnerBox") !== null},[searchParams])
+
   return (
     <HomeStyled>
-      <TestHistoryHomeModal />
+      <TestHistoryHomeModal/>
+      <LeitnerBox/>
       <HeaderHome>
-        <Row $style={HeaderLeft} />
+        <Row $style={HeaderLeft}/>
         <Row $style={HeaderCenter}>Homepage</Row>
         <Row $style={HeaderRight}>
+          <ButtonHeader onClick={handleOpenLeitnerBox} $active={leitnerBoxActive}>
+            <IoAlbumsOutline size={16}/>
+            Leitner box
+          </ButtonHeader>
           <ButtonHeader onClick={() => createTest([])}>
             <IoPlayOutline size={16} />
             Play new test
           </ButtonHeader>
-          <ButtonHeader onClick={handleOpenTestHistory}>
+          <ButtonHeader onClick={handleOpenTestHistory} $active={testHistoryActive}>
             <IoTimeOutline size={16} />
             Test history
           </ButtonHeader>

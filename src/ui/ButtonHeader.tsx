@@ -3,6 +3,7 @@ import styled, { css } from "styled-components";
 export const ButtonHeader = styled.button<{
   $padding?: string;
   $active?: boolean;
+  $theme?: "primary";
 }>`
   background-color: transparent;
   border: none;
@@ -19,10 +20,20 @@ export const ButtonHeader = styled.button<{
     props.$active
       ? css`
           background-color: var(--color-primary-200);
+          &:hover {
+            background-color: var(--color-primary-300);
+          }
         `
       : css`
           &:hover {
             background-color: var(--color-gray-200);
           }
         `}
+
+  ${(props) =>
+    props.$theme === "primary" &&
+    css`
+      background-color: var(--color-primary-600);
+      color: white;
+    `}
 `;

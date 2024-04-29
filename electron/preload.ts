@@ -9,7 +9,6 @@ import {
 import { CreateTestProps, TestType } from "../src/types/Test.type";
 import { SearchCriterias } from "../src/types/SearchCriteria.type";
 import { SaveParams } from "../src/types/Save.type";
-import { removeMiniature } from "./services/apiRepository";
 
 const windowManagement = {
   maximize: () => ipcRenderer.send("maximize"),
