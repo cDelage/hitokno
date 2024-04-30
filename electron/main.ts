@@ -35,7 +35,12 @@ import { SearchCriterias } from "../src/types/SearchCriteria.type";
 import { createFileRoute, createURLRoute } from "electron-router-dom";
 import { SaveParams } from "../src/types/Save.type";
 import { importFile, saveFile } from "./services/manageFileService";
-import { initLeitnerBox } from "./services/apiLeitnerBox";
+import {
+  getLeitnerBox,
+  initLeitnerBox,
+  pushCardToLeitnerBox,
+} from "./services/apiLeitnerBox";
+import { FlashCardLeitnerBox } from "../src/types/Flashcard.type";
 
 // The built directory structure
 //
@@ -225,6 +230,14 @@ function createWindow() {
     "remove-miniature",
     async (_event: IpcMainInvokeEvent, fileId: string) =>
       await removeMiniature(fileId)
+  );
+
+  ipcMain.handle("get-leitnerbox", async () => await getLeitnerBox());
+
+  ipcMain.handle(
+    "push-card-leitnerbox",
+    async (_event: IpcMainInvokeEvent, card: FlashCardLeitnerBox) =>
+      await pushCardToLeitnerBox(card)
   );
 }
 

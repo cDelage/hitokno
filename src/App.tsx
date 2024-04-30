@@ -27,6 +27,8 @@ import Cartography from "./pages/Cartography";
 import Test from "./pages/Test";
 import FallbackComponent from "./ui/FallbackComponent";
 import { ErrorBoundary } from "react-error-boundary";
+import { LeitnerBoxType } from "./types/LeitnerBox.type";
+import { FlashCardLeitnerBox } from "./types/Flashcard.type";
 
 /**
  * When i add it into a file .d.ts, then typescript not recognize the interface.
@@ -68,6 +70,10 @@ declare global {
         criterias: SearchCriterias
       ) => Promise<SearchByCriteriaResult>;
     };
+    leitnerbox: {
+      getLeitnerBox: () => Promise<LeitnerBoxType[]>;
+      pushCardToLeitnerBox: (card: FlashCardLeitnerBox) => Promise<void>;
+    }
   }
 }
 

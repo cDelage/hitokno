@@ -9,6 +9,8 @@ import {
 import { CreateTestProps, TestType } from "../src/types/Test.type";
 import { SearchCriterias } from "../src/types/SearchCriteria.type";
 import { SaveParams } from "../src/types/Save.type";
+import { getLeitnerBox } from "./services/apiLeitnerBox";
+import { FlashCardLeitnerBox } from "../src/types/Flashcard.type";
 
 const windowManagement = {
   maximize: () => ipcRenderer.send("maximize"),
@@ -49,6 +51,9 @@ const repository = {
     await ipcRenderer.invoke("update-miniature", fileId),
   removeMiniature: async (fileId: string) =>
     await ipcRenderer.invoke("remove-miniature", fileId),
+  getLeitnerBox: async () => await ipcRenderer.invoke("get-leitnerbox"),
+  pushCardToLeitnerBox: async (card: FlashCardLeitnerBox) =>
+    await ipcRenderer.invoke("push-card-leitnerbox", card),
 };
 
 const tests = {

@@ -1,14 +1,14 @@
 export type FlashCardState = "DEFAULT" | "ANSWER-DISPLAYED" | "EDIT";
 
+export type LeitnerRank = "TO TEST" | "BRONZE" | "SILVER" | "GOLD";
 
 export type FlashCard = {
   cardId: string;
   level: number;
   body: string;
   answer: string;
-  leitnerRank?: "TO TEST" | "BRONZE" | "SILVER" | "GOLD";
-  leitnerLevel?: number;
-  leitnerNextDate?: Date;
+  leitnerRank?: LeitnerRank;
+  isIntoLeitnerBox? : boolean | undefined;
 };
 
 export type FlashCardProps = FlashCard & {
@@ -17,3 +17,8 @@ export type FlashCardProps = FlashCard & {
   selected: boolean;
 };
 
+export type FlashCardLeitnerBox = FlashCard & {
+  leitnerNextDate?: Date;
+  fileId: string;
+  deckLabel: string;
+};

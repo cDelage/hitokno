@@ -16,7 +16,7 @@ import {
   SheetDetail,
 } from "../../src/types/Cartography.type";
 import { Edge, Node } from "reactflow";
-import { FlashCard } from "../../src/types/Flashcard.type";
+import { FlashCard, LeitnerRank } from "../../src/types/Flashcard.type";
 import { BrowserWindow, dialog } from "electron";
 import fs from "fs";
 
@@ -144,7 +144,7 @@ export async function updateMiniature(win: BrowserWindow, fileId: string) {
   }
 }
 
-export async function removeMiniature(fileId: string){
+export async function removeMiniature(fileId: string) {
   const folder = await db.repository.findOne(
     {
       "files._id": fileId,
@@ -152,16 +152,16 @@ export async function removeMiniature(fileId: string){
     { files: 1, folderName: 1 }
   );
   const files = folder?.files as FileHitokno[];
-  const newFiles = files.map(file => {
-    if(file._id === fileId){
+  const newFiles = files.map((file) => {
+    if (file._id === fileId) {
       return {
         ...file,
-        miniature: undefined
-      }
-    }else {
-      return file
+        miniature: undefined,
+      };
+    } else {
+      return file;
     }
-  })
+  });
   const result = await db.repository.updateOne(
     { "files._id": fileId },
     { $set: { files: newFiles } }
@@ -439,4 +439,48 @@ export async function moveFile({ fileId, folderId }: MoveFile) {
   }
 
   return;
+}
+
+export async function setLeitnerRankToCard({
+  fileId,
+  cardId,
+  rank,
+  isIntoLeitnerBox
+}: {
+  fileId: string;
+  cardId: string;
+  rank: LeitnerRank;
+  isIntoLeitnerBox: boolean;
+}) {
+  const folder = (await db.repository.findOne({
+    "files._id": fileId,
+  })) as CompleteFolder;
+
+  const newFiles = folder.files.map((file) => {
+    if (file._id === fileId) {
+      return {
+        ...file,
+        deck: file.deck.map((card) => {
+          if (card.cardId === cardId) {
+            return {
+              ...card,
+              leitnerRank: rank,
+              isIntoLeitnerBox
+            };
+          } else {
+            return card;
+          }
+        }),
+      };
+    } else {
+      return file;
+    }
+  });
+
+  const newFolder: CompleteFolder = {
+    ...folder,
+    files: newFiles,
+  };
+
+  return await db.repository.updateOne({ "files._id": fileId }, newFolder);
 }
