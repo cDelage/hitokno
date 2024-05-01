@@ -9,7 +9,6 @@ import {
 import { CreateTestProps, TestType } from "../src/types/Test.type";
 import { SearchCriterias } from "../src/types/SearchCriteria.type";
 import { SaveParams } from "../src/types/Save.type";
-import { getLeitnerBox } from "./services/apiLeitnerBox";
 import { FlashCardLeitnerBox } from "../src/types/Flashcard.type";
 
 const windowManagement = {
@@ -51,10 +50,14 @@ const repository = {
     await ipcRenderer.invoke("update-miniature", fileId),
   removeMiniature: async (fileId: string) =>
     await ipcRenderer.invoke("remove-miniature", fileId),
+};
+
+const leitnerbox = {
   getLeitnerBox: async () => await ipcRenderer.invoke("get-leitnerbox"),
   pushCardToLeitnerBox: async (card: FlashCardLeitnerBox) =>
     await ipcRenderer.invoke("push-card-leitnerbox", card),
-};
+
+}
 
 const tests = {
   createTest: async (params: CreateTestProps) =>
@@ -75,6 +78,7 @@ contextBridge.exposeInMainWorld("ipcRenderer", withPrototype(ipcRenderer));
 contextBridge.exposeInMainWorld("windowManagement", windowManagement);
 contextBridge.exposeInMainWorld("repository", repository);
 contextBridge.exposeInMainWorld("tests", tests);
+contextBridge.exposeInMainWorld("leitnerbox", leitnerbox)
 
 // `exposeInMainWorld` can't detect attributes and methods of `prototype`, manually patching it.
 function withPrototype(obj: Record<string, any>) {

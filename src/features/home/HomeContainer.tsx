@@ -14,7 +14,7 @@ import {
   HeaderRight,
 } from "../../ui/UiConstants";
 import useCreateTest from "../tests/useCreateTest";
-import LeitnerBox from "../leitnerBox/LeitnerBox";
+import LeitnerBoxContainer from "../leitnerBox/LeitnerBox";
 
 const HomeStyled = styled.div`
   display: flex;
@@ -78,7 +78,7 @@ function HomeContainer(): JSX.Element {
   return (
     <HomeStyled>
       <TestHistoryHomeModal/>
-      <LeitnerBox/>
+      <LeitnerBoxContainer/>
       <HeaderHome>
         <Row $style={HeaderLeft}/>
         <Row $style={HeaderCenter}>Homepage</Row>

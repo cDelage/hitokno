@@ -4,6 +4,7 @@ import { ButtonType } from "../types/Buttons.type";
 type ButtonProps = {
     type : ButtonType;
     $icon? : boolean;
+    $fullWidth?: boolean;
 }
 
 const Button = styled.button<ButtonProps>`
@@ -71,6 +72,10 @@ const Button = styled.button<ButtonProps>`
         color: var(--text-button-disabled);
         cursor: not-allowed;
     }
+
+    ${(props) => props.$fullWidth && css`
+        width: 100%;
+    `}
 `
 
 

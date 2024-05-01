@@ -1,6 +1,6 @@
-export type FlashCardState = "DEFAULT" | "ANSWER-DISPLAYED" | "EDIT";
+import { LeitnerRank } from "./LeitnerBox.type";
 
-export type LeitnerRank = "TO TEST" | "BRONZE" | "SILVER" | "GOLD";
+export type FlashCardState = "DEFAULT" | "ANSWER-DISPLAYED" | "EDIT";
 
 export type FlashCard = {
   cardId: string;
@@ -8,7 +8,7 @@ export type FlashCard = {
   body: string;
   answer: string;
   leitnerRank?: LeitnerRank;
-  isIntoLeitnerBox? : boolean | undefined;
+  isIntoLeitnerBox?: boolean | undefined;
 };
 
 export type FlashCardProps = FlashCard & {
