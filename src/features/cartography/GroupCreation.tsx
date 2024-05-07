@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import useCartography from "./useCartography";
 import { NodeProps, useReactFlow } from "reactflow";
 import { DataNode, Theme } from "../../types/Cartography.type";
+import AddCursor from "../../ui/AddCursor";
 
 const NodeCreationStyled = styled.div<{ theme: Theme }>`
   height: 100%;
@@ -14,6 +15,13 @@ const NodeCreationStyled = styled.div<{ theme: Theme }>`
   background-color: ${(props) => props.theme.fill};
   opacity: 0.5;
   border-radius: 8px;
+`;
+
+const CursorAddBox = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translate(-50%, -50%);
 `;
 
 function GroupCreation({ xPos, yPos }: NodeProps<DataNode>) {
@@ -120,7 +128,13 @@ function GroupCreation({ xPos, yPos }: NodeProps<DataNode>) {
     <NodeCreationStyled
       id="group-creation-container"
       theme={theme}
-    ></NodeCreationStyled>
+    >
+      { !isClicked && 
+        <CursorAddBox>
+          <AddCursor />
+        </CursorAddBox>
+      }
+    </NodeCreationStyled>
   );
 }
 
