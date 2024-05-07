@@ -29,7 +29,7 @@ function PluginSwitchSheet({ body }: { body?: string }) {
     }
   }, [sheetId, setCurrentSheet, currentSheet, editor, body]);
 
-  return `${sheetId} & ${currentSheet}` ;
+  return null;
 }
 
 export default PluginSwitchSheet;
