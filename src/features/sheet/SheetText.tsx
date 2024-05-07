@@ -11,8 +11,10 @@ import { TRANSFORMERS } from "@lexical/markdown";
 import { ContentEditableStyled } from "./ContentEditableStyled";
 import styled from "styled-components";
 
-const SheetTextContainer = styled.span`
-  overflow-y: scroll;
+const SheetTextContainer = styled.div`
+  overflow-y: auto;
+  flex-grow:1;
+  display: flex;
 
   h1, h2, h3, h4, h5, h6, p {
     padding: 4px;
