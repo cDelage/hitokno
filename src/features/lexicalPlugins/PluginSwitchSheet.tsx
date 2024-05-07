@@ -1,5 +1,5 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $getSelection, $setSelection, EditorState } from "lexical";
+import { $getSelection, $isRangeSelection, $setSelection, EditorState } from "lexical";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -10,14 +10,18 @@ function PluginSwitchSheet({ body }: { body?: string }) {
   const [currentSheet, setCurrentSheet] = useState("");
 
   useEffect(() => {
-    if (sheetId && currentSheet !== sheetId && body && editor.isEditable()) {
+    if(sheetId && currentSheet !== sheetId){
       setCurrentSheet(sheetId);
+    }
+    if (sheetId && currentSheet && currentSheet !== sheetId && body && editor.isEditable()) {
       const newState: EditorState = editor.parseEditorState(body);
       if(!currentSheet){
         editor.update(() => {
           const selection = $getSelection();
           editor.setEditorState(newState);
-          $setSelection(selection);
+          if ($isRangeSelection(selection)) {
+            $setSelection(selection);
+          }
         });
       }else {
         editor.setEditorState(newState);
@@ -25,7 +29,7 @@ function PluginSwitchSheet({ body }: { body?: string }) {
     }
   }, [sheetId, setCurrentSheet, currentSheet, editor, body]);
 
-  return null;
+  return `${sheetId} & ${currentSheet}` ;
 }
 
 export default PluginSwitchSheet;
