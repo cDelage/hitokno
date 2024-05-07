@@ -4,11 +4,19 @@ import { useEffect, useState } from "react";
 import useCartography from "./useCartography";
 import { NodeProps, useReactFlow } from "reactflow";
 import { DataNode } from "../../types/Cartography.type";
+import AddCursor from "../../ui/AddCursor";
 
 const NodeCreationStyled = styled.div`
   height: 100%;
   width: 100%;
   position: relative;
+`;
+
+const CursorAddBox = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translate(-50%, -50%);
 `;
 
 function NodeCreation({ xPos, yPos }: NodeProps<DataNode>) {
@@ -61,7 +69,7 @@ function NodeCreation({ xPos, yPos }: NodeProps<DataNode>) {
       setIsClicked(true);
     }
 
-    function MouseUpCreateNewNode(event : MouseEvent){
+    function MouseUpCreateNewNode(event: MouseEvent) {
       document.removeEventListener("mousemove", MouseMoveResizeNodeCreation);
       const cursorPosition = screenToFlowPosition({
         x: event.clientX,
@@ -76,27 +84,41 @@ function NodeCreation({ xPos, yPos }: NodeProps<DataNode>) {
       const newX = scaleX ? xPos + width : xPos;
       const newY = scaleY ? yPos + height : yPos;
 
-      handleCreateNode(newX, newY, width, height)
+      handleCreateNode(newX, newY, width, height);
     }
 
     if (isClicked) {
-      document.removeEventListener("mousemove", MouseMoveReplaceInitialPosition);
+      document.removeEventListener(
+        "mousemove",
+        MouseMoveReplaceInitialPosition
+      );
       document.addEventListener("mousemove", MouseMoveResizeNodeCreation);
-      document.addEventListener("mouseup", MouseUpCreateNewNode)
+      document.addEventListener("mouseup", MouseUpCreateNewNode);
     } else {
       document.removeEventListener("mousemove", MouseMoveResizeNodeCreation);
       document.addEventListener("mousemove", MouseMoveReplaceInitialPosition);
     }
-    
+
     document.addEventListener("mousedown", MouseDownStartCreateNode);
-    
+
     return () => {
-      document.removeEventListener("mouseup", MouseUpCreateNewNode)
-      document.removeEventListener("mousemove", MouseMoveReplaceInitialPosition);
+      document.removeEventListener("mouseup", MouseUpCreateNewNode);
+      document.removeEventListener(
+        "mousemove",
+        MouseMoveReplaceInitialPosition
+      );
       document.removeEventListener("mousemove", MouseMoveResizeNodeCreation);
       document.removeEventListener("mousedown", MouseDownStartCreateNode);
     };
-  }, [findNodeById, updateNode, screenToFlowPosition, isClicked, xPos, yPos, handleCreateNode]);
+  }, [
+    findNodeById,
+    updateNode,
+    screenToFlowPosition,
+    isClicked,
+    xPos,
+    yPos,
+    handleCreateNode,
+  ]);
 
   return (
     <NodeCreationStyled id="node-creation-container">
@@ -106,6 +128,11 @@ function NodeCreation({ xPos, yPos }: NodeProps<DataNode>) {
         $shadow={shadow}
         border={border ? theme.stroke : "none"}
       />
+      { !isClicked && 
+        <CursorAddBox>
+          <AddCursor />
+        </CursorAddBox>
+      }
     </NodeCreationStyled>
   );
 }
