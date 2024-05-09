@@ -6,7 +6,7 @@ const EllipseStyled = styled.ellipse<ShapeProps>`
   filter: drop-shadow(${(props) => props.$shadow});
 `;
 
-function Ellipse({ fill, $shadow, border }: ShapeProps): JSX.Element {
+function Ellipse({ fill, $shadow, border: border }: ShapeProps): JSX.Element {
   return (
     <ShapeContainer
       width="100%"
