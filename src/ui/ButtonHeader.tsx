@@ -15,6 +15,7 @@ export const ButtonHeader = styled.button<{
   box-shadow: var(--shadow-md);
   cursor: pointer;
   align-items: center;
+  height: 100%;
 
   ${(props) =>
     props.$active

@@ -60,7 +60,7 @@ export function ButtonMenu({ children, tabs, onClick }: { children: ReactNode, t
       <RightButton>
         <Menu>
           <Menu.Toggle id="button-menu" isStyleNotApplied={true}>
-            <BiChevronDown />
+            <BiChevronDown size={12}/>
           </Menu.Toggle>
           <Menu.ListTabs>
             {tabs}

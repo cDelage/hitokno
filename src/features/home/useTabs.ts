@@ -10,6 +10,8 @@ type TabsStore = {
   toggleCartographyMode: (tabId: string) => void;
   getCartographyMode: (tabId: string) => CartographyMode;
   setTabs: (tabs : HeaderTab[]) => void;
+  toggleTabGrid: (tabId:string) => void;
+  getTabById : (tabId: string) => HeaderTab;
 };
 
 const useTabs = create(
@@ -25,7 +27,7 @@ const useTabs = create(
           //If not exist, create new tab
           set((state) => {
             return {
-              tabs: [...state.tabs, { tabId, mode, type }],
+              tabs: [...state.tabs, { tabId, mode, type, showGrid: false }],
             };
           });
         } else {
@@ -81,6 +83,25 @@ const useTabs = create(
       setTabs : (tabs) => {
           set({tabs})
       },
+      toggleTabGrid: (tabId: string) => {
+        set((state) => {
+          return {
+            tabs: state.tabs.map(tab => {
+              if(tab.tabId === tabId){
+                return {
+                  ...tab,
+                  showGrid: tab.showGrid !== undefined ? !tab.showGrid : true
+                }
+              }else {
+                return tab;
+              } 
+            })
+          } 
+        })
+      },
+      getTabById: (tabId:string) :HeaderTab => {
+        return get().tabs.find(tab => tab.tabId === tabId) as HeaderTab;
+      }
     }),
     { name: "tab-storage" }
   )

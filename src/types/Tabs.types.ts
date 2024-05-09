@@ -8,4 +8,5 @@ export type HeaderTab = {
     tabId: string;
     mode: TabsMode;
     type: TabsType;
+    showGrid: boolean;
 }

@@ -5,7 +5,7 @@ import { device } from "../../Medias";
 import { ButtonHeader } from "../../ui/ButtonHeader";
 import { IoAlbumsOutline, IoPlayOutline, IoTimeOutline } from "react-icons/io5";
 import TestHistoryHomeModal from "./TestHistoryHomeModal";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useParams } from "react-router-dom";
 import { useCallback, useMemo } from "react";
 import Row from "../../ui/Row";
 import {
@@ -22,6 +22,7 @@ const HomeStyled = styled.div`
   width: 100%;
   flex-grow: 1;
   position: relative;
+  overflow-y: auto;
 `;
 
 const ExplorerContainer = styled.div`
@@ -50,6 +51,7 @@ const HeaderHome = styled.div`
 function HomeContainer(): JSX.Element {
   const [searchParams, setSearchParams] = useSearchParams();
   const {createTest} = useCreateTest();
+  const {fileId} = useParams();
   const handleOpenTestHistory = useCallback(() => {
     if (searchParams.get("testHistory") === null) {
       setSearchParams({
@@ -76,7 +78,7 @@ function HomeContainer(): JSX.Element {
   const leitnerBoxActive = useMemo(() => {return searchParams.get("leitnerBox") !== null},[searchParams])
 
   return (
-    <HomeStyled>
+    <HomeStyled key={fileId}>
       <TestHistoryHomeModal/>
       <LeitnerBoxContainer/>
       <HeaderHome>
