@@ -161,6 +161,8 @@ const GlobalStyle = createGlobalStyle`
 
   background-color: var(--bg-main);
   color: var(--text-main-medium);
+
+  accent-color: var(--color-primary-600);
  }
 
  ::selection {

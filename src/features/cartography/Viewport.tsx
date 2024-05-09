@@ -28,10 +28,7 @@ import DeckContainer from "../deck/DeckContainer";
 import ViewportSyncWithDb from "./ViewportSyncWithDb";
 import PasteImage from "./PasteImage";
 import NodeControlSidebar from "./NodeControlSidebar";
-import {
-  CartographyMode,
-  DataNode,
-} from "../../types/Cartography.type";
+import { DataNode } from "../../types/Cartography.type";
 import Loader from "../../ui/Loader";
 
 const ViewportContainer = styled.div<{
@@ -86,12 +83,11 @@ function Viewport(): JSX.Element {
   const { fileId } = useParams();
   const { fileDetail, isFileLoading } = useFindFileById(fileId as string);
   const [searchParams] = useSearchParams();
-  const { getCartographyMode, tabs } = useTabs();
+  const { getTabById } = useTabs();
 
-  const mode = useMemo<CartographyMode>(
-    () => (tabs ? getCartographyMode(fileId as string) : "DEFAULT"),
-    [fileId, getCartographyMode, tabs]
-  );
+  const tab = getTabById(fileId as string);
+
+  const { mode, showGrid } = tab;
 
   const handleSize = useMemo(() => {
     return Math.round(12 / zoom);
@@ -247,7 +243,7 @@ function Viewport(): JSX.Element {
           fitViewOptions={{ minZoom: 1, maxZoom: 1, nodes }}
         >
           <>
-            {zoom > 1.5 && (
+            {!showGrid && zoom > 1.5 && (
               <Background
                 variant={"dots" as BackgroundVariant}
                 color={"var(--color-gray-300)"}
@@ -255,6 +251,26 @@ function Viewport(): JSX.Element {
                 size={1}
                 id="top"
               />
+            )}
+            {showGrid && (
+              <>
+                {
+                  zoom < 1 &&
+                <Background
+                  variant={"lines" as BackgroundVariant}
+                  gap={PX_UNIT_GAP * 4}
+                  id="back"
+                />
+                }
+                {
+                  zoom > 1 &&
+                <Background
+                  variant={"lines" as BackgroundVariant}
+                  gap={PX_UNIT_GAP}
+                  id="back"
+                />
+                }
+              </>
             )}
             <MiniMap
               maskColor="rgba(226, 232, 240, 0.6)"

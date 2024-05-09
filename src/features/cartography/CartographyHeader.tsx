@@ -5,17 +5,25 @@ import { useFindFileById } from "../home/useFindFileById";
 import { useTabs } from "../home/useTabs";
 import useCartography from "./useCartography";
 import useDeckStore from "../deck/useDeckStore";
-import { IoAdd, IoCheckmarkCircle, IoSave } from "react-icons/io5";
+import {
+  IoAdd,
+  IoCheckmarkCircle,
+  IoSave,
+  IoSettingsOutline,
+} from "react-icons/io5";
 import { ButtonMenu } from "../../ui/ButtonMenu";
 import Menu from "../../ui/Menu";
 import { useCallback, useEffect, useState } from "react";
 import { SaveMode } from "../../types/Save.type";
 import { useSaveFile } from "./useSaveFile";
 import { CSSTransition } from "react-transition-group";
+import Row from "../../ui/Row";
+import { HeaderCenter, HeaderLeft, HeaderRight } from "../../ui/UiConstants";
+import ButtonHeaderToggleMenu from "../../ui/ButtonHeaderToggleMenu";
+import { BiGrid } from "react-icons/bi";
 
 const CartographyHeaderStyled = styled.div`
   display: flex;
-  justify-content: space-between;
   background-color: var(--bg-white);
   align-items: center;
   height: 36px;
@@ -23,13 +31,6 @@ const CartographyHeaderStyled = styled.div`
   padding: 0px 8px;
   box-shadow: var(--shadow-md);
   z-index: 120;
-`;
-
-const CartographyBlock = styled.span`
-  display: flex;
-  height: 100%;
-  gap: 4px;
-  align-items: center;
 `;
 
 const ToggleContainer = styled.div`
@@ -46,9 +47,13 @@ const FileSaved = styled.div`
   gap: 4px;
 `;
 
+const InlineDiv = styled.div`
+  width: 100px;
+`;
+
 function CartographyHeader() {
   const { fileId } = useParams();
-  const { getCartographyMode, toggleCartographyMode } = useTabs();
+  const { toggleCartographyMode, toggleTabGrid, getTabById } = useTabs();
   const { fileDetail, isFileLoading } = useFindFileById(fileId as string);
   const {
     isSyncWithDB: cartographySync,
@@ -113,28 +118,53 @@ function CartographyHeader() {
     file: { fileName },
     folderName,
   } = fileDetail;
-  const cartographyMode = getCartographyMode(fileId);
-
+  const tab = getTabById(fileId);
+  const {mode, showGrid} = tab;
   return (
     <CartographyHeaderStyled>
-      <CartographyBlock>
+      <Row $style={HeaderLeft}>
         <ToggleContainer>
           <EditToggle
-            isChecked={cartographyMode === "EDIT"}
+            isChecked={mode === "EDIT"}
             handleChange={() => toggleCartographyMode(fileId)}
           />
         </ToggleContainer>
         Edit
-      </CartographyBlock>
-      <CartographyBlock>
+      </Row>
+      <Row $style={HeaderCenter}>
         {folderName} / {fileName}
         {cartographySync && deckSync ? (
           <IoCheckmarkCircle color="var(--color-positive-600)" size={16} />
         ) : (
           "*"
         )}
-      </CartographyBlock>
-      <CartographyBlock>
+      </Row>
+      <Row $style={HeaderRight}>
+        <ButtonHeaderToggleMenu
+          showRight={true}
+          tabs={
+            <Row
+              $gap={4}
+              $style={{
+                alignItems: "center",
+                cursor:"pointer",
+                padding:"4px"
+              }}
+
+              $hover={{
+                backgroundColor: "var(--bg-element-hover)"
+              }}
+
+              onClick={() => toggleTabGrid(fileId)}
+            >
+              <input type="checkbox" checked={showGrid}></input>
+              <BiGrid size={20} />
+              <InlineDiv>Show grid</InlineDiv>
+            </Row>
+          }
+        >
+          <IoSettingsOutline />
+        </ButtonHeaderToggleMenu>
         <ButtonMenu
           onClick={() => handleSaveFile("SAVE")}
           tabs={
@@ -176,7 +206,7 @@ function CartographyHeader() {
             </CSSTransition>
           </>
         </ButtonMenu>
-      </CartographyBlock>
+      </Row>
     </CartographyHeaderStyled>
   );
 }
