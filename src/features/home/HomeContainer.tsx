@@ -5,13 +5,8 @@ import { device } from "../../Medias";
 import { ButtonHeader } from "../../ui/ButtonHeader";
 import { IoAlbumsOutline, IoPlayOutline, IoTimeOutline } from "react-icons/io5";
 import TestHistoryHomeModal from "./TestHistoryHomeModal";
-<<<<<<< HEAD
-import { useSearchParams, useParams } from "react-router-dom";
-import { useCallback, useMemo } from "react";
-=======
 import { useSearchParams } from "react-router-dom";
-import { useCallback } from "react";
->>>>>>> main
+import { useCallback, useMemo } from "react";
 import Row from "../../ui/Row";
 import {
   HeaderCenter,
@@ -83,14 +78,9 @@ function HomeContainer(): JSX.Element {
   const leitnerBoxActive = useMemo(() => {return searchParams.get("leitnerBox") !== null},[searchParams])
 
   return (
-<<<<<<< HEAD
-    <HomeStyled key={fileId}>
+    <HomeStyled>
       <TestHistoryHomeModal/>
       <LeitnerBoxContainer/>
-=======
-    <HomeStyled>
-      <TestHistoryHomeModal />
->>>>>>> main
       <HeaderHome>
         <Row $style={HeaderLeft}/>
         <Row $style={HeaderCenter}>Homepage</Row>
