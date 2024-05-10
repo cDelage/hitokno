@@ -5,7 +5,7 @@ import { device } from "../../Medias";
 import { ButtonHeader } from "../../ui/ButtonHeader";
 import { IoPlayOutline, IoTimeOutline } from "react-icons/io5";
 import TestHistoryHomeModal from "./TestHistoryHomeModal";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { useCallback } from "react";
 import Row from "../../ui/Row";
 import {
@@ -50,7 +50,6 @@ const HeaderHome = styled.div`
 function HomeContainer(): JSX.Element {
   const [searchParams, setSearchParams] = useSearchParams();
   const {createTest} = useCreateTest();
-  const {fileId} = useParams();
   const handleOpenTestHistory = useCallback(() => {
     if (searchParams.get("testHistory") === null) {
       setSearchParams({
@@ -63,7 +62,7 @@ function HomeContainer(): JSX.Element {
   }, [setSearchParams, searchParams]);
 
   return (
-    <HomeStyled key={fileId}>
+    <HomeStyled>
       <TestHistoryHomeModal />
       <HeaderHome>
         <Row $style={HeaderLeft} />
