@@ -47,15 +47,15 @@ export const NODE_CUSTOM_COMPONENTS = {
 export const NODE_TO_SAVE = ["shape", "image", "groupNode"];
 
 export const DEFAULT_SHAPE: ShapeDescription = {
-  shape: "rect" as Shape,
+  shape: "rect-rounded" as Shape,
   border: false,
-  shadow: "none" as Shadow,
+  shadow: "var(--shadow-shape-md)" as Shadow,
   theme: {
-    id: "bleu-light",
-    fill: "#BAE6FD",
+    id: "yellow-light",
+    fill: "#FEF08A",
     color: "#1C1917",
-    stroke: "#075985",
-    selection:"#38BDF8"
+    stroke: "#854d0e",
+    selection:"#FACC15"
   },
 };
 
@@ -103,9 +103,12 @@ export const EDGE_LABEL_SHADOWS_MENU: ShadowMenu[] = [
 export const ShapeMenu: Shape[] = [
   "rect",
   "rect-rounded",
+  "diamond",
   "ellipse",
   "triangle",
   "cylinder",
+  "user",
+  "file"
 ];
 
 export const ShapeEdge : Shape[] = [

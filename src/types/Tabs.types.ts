@@ -9,4 +9,5 @@ export type HeaderTab = {
     mode: TabsMode;
     type: TabsType;
     showGrid: boolean;
+    showSheetLink: boolean;
 }

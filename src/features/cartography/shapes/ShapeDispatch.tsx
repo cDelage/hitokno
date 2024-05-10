@@ -1,9 +1,12 @@
 import { ShapeProps } from "../../../types/Cartography.type";
 import Cylinder from "./Cylinder";
+import Diamond from "./Diamond";
 import Ellipse from "./Ellipse";
+import FileShape from "./FileShape";
 import Rect from "./Rect";
 import RectRadius from "./RectRadius";
 import Triangle from "./Triangle";
+import UserShape from "./UserShape";
 
 function ShapeDispatch({
   shape,
@@ -21,6 +24,12 @@ function ShapeDispatch({
     return <Cylinder fill={fill} $shadow={$shadow} border={border} />;
   if (shape === "rect-rounded")
     return <RectRadius fill={fill} $shadow={$shadow} border={border} />;
+  if (shape === "file")
+    return <FileShape fill={fill} $shadow={$shadow} border={border} />;
+  if (shape === "diamond")
+    return <Diamond fill={fill} $shadow={$shadow} border={border} />;
+  if (shape === "user")
+    return <UserShape fill={fill} $shadow={$shadow} border={border} />;
   return undefined;
 }
 

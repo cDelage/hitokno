@@ -38,7 +38,10 @@ export type Shape =
   | "rect-rounded"
   | "ellipse"
   | "triangle"
-  | "cylinder";
+  | "cylinder"
+  | "file"
+  | "user"
+  | "diamond";
 
 export type Shadow =
   | "none"

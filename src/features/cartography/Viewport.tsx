@@ -255,7 +255,7 @@ function Viewport(): JSX.Element {
             {showGrid && (
               <>
                 {
-                  zoom < 1 &&
+                  zoom <= 1 &&
                 <Background
                   variant={"lines" as BackgroundVariant}
                   gap={PX_UNIT_GAP * 4}

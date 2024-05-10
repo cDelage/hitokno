@@ -17,10 +17,10 @@ import { useCallback, useEffect, useState } from "react";
 import { SaveMode } from "../../types/Save.type";
 import { useSaveFile } from "./useSaveFile";
 import { CSSTransition } from "react-transition-group";
-import Row from "../../ui/Row";
+import Row, { Column } from "../../ui/Row";
 import { HeaderCenter, HeaderLeft, HeaderRight } from "../../ui/UiConstants";
 import ButtonHeaderToggleMenu from "../../ui/ButtonHeaderToggleMenu";
-import { BiGrid } from "react-icons/bi";
+import { BiDetail, BiGrid } from "react-icons/bi";
 
 const CartographyHeaderStyled = styled.div`
   display: flex;
@@ -48,12 +48,21 @@ const FileSaved = styled.div`
 `;
 
 const InlineDiv = styled.div`
-  width: 100px;
+  width: 120px;
 `;
+
+const SheetIconContainer = styled.div`
+  padding: 0px 4px;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  background-color: var(--color-gray-800);
+  opacity: 0.8;
+  color: white;
+`
 
 function CartographyHeader() {
   const { fileId } = useParams();
-  const { toggleCartographyMode, toggleTabGrid, getTabById } = useTabs();
+  const { toggleCartographyMode, toggleTabGrid, getTabById, toggleShowSheet } = useTabs();
   const { fileDetail, isFileLoading } = useFindFileById(fileId as string);
   const {
     isSyncWithDB: cartographySync,
@@ -119,7 +128,7 @@ function CartographyHeader() {
     folderName,
   } = fileDetail;
   const tab = getTabById(fileId);
-  const {mode, showGrid} = tab;
+  const { mode, showGrid, showSheetLink } = tab;
   return (
     <CartographyHeaderStyled>
       <Row $style={HeaderLeft}>
@@ -143,24 +152,42 @@ function CartographyHeader() {
         <ButtonHeaderToggleMenu
           showRight={true}
           tabs={
-            <Row
-              $gap={4}
-              $style={{
-                alignItems: "center",
-                cursor:"pointer",
-                padding:"4px"
-              }}
-
-              $hover={{
-                backgroundColor: "var(--bg-element-hover)"
-              }}
-
-              onClick={() => toggleTabGrid(fileId)}
-            >
-              <input type="checkbox" checked={showGrid}></input>
-              <BiGrid size={20} />
-              <InlineDiv>Show grid</InlineDiv>
-            </Row>
+            <Column>
+              <Row
+                $gap={4}
+                $style={{
+                  alignItems: "center",
+                  cursor: "pointer",
+                  padding: "4px",
+                }}
+                $hover={{
+                  backgroundColor: "var(--bg-element-hover)",
+                }}
+                onClick={() => toggleTabGrid(fileId)}
+              >
+                <input type="checkbox" checked={showGrid}></input>
+                <BiGrid size={20} />
+                <InlineDiv>Show grid</InlineDiv>
+              </Row>
+              <Row
+                $gap={4}
+                $style={{
+                  alignItems: "center",
+                  cursor: "pointer",
+                  padding: "4px",
+                }}
+                $hover={{
+                  backgroundColor: "var(--bg-element-hover)",
+                }}
+                onClick={() => toggleShowSheet(fileId)}
+              >
+                <input type="checkbox" checked={showSheetLink}></input>
+                <SheetIconContainer>
+                <BiDetail size="12" />
+                </SheetIconContainer>
+                <InlineDiv>Show sheet link</InlineDiv>
+              </Row>
+            </Column>
           }
         >
           <IoSettingsOutline />

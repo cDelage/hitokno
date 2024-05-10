@@ -5,30 +5,32 @@ import ErrorIcon from "./icons/ErrorIcon";
 import { ButtonHeader } from "./ButtonHeader";
 import { useNavigate } from "react-router-dom";
 
-const ColumnStyle : CSSProp = {
+const ColumnStyle: CSSProp = {
   width: "100%",
-  height:"100%",
-  gap:"20px",
+  height: "100%",
+  gap: "20px",
   justifyContent: "center",
-  alignItems:"center"
-}
+  alignItems: "center",
+};
 
 const Title = styled.h1`
   color: var(--text-main-active);
-`
+`;
 
 function FallbackComponent() {
   const navigate = useNavigate();
   const goBackHome = useCallback(() => {
-    navigate("/")
-    window.location.reload()
-  },[navigate])
+    navigate("/");
+    window.location.reload();
+  }, [navigate]);
 
   return (
     <Column $style={ColumnStyle}>
       <Title>Something wrent wrong</Title>
-      <ErrorIcon/>
-      <ButtonHeader onClick={goBackHome}>Go back to home</ButtonHeader>
+      <ErrorIcon />
+      <div>
+        <ButtonHeader onClick={goBackHome}>Go back to home</ButtonHeader>
+      </div>
     </Column>
   );
 }
