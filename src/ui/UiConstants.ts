@@ -15,5 +15,6 @@ export const HeaderCenter : CSSProp = {
 export const HeaderRight : CSSProp = {
     flex:1,
     justifyContent: "right",
-    gap:"8px"
+    gap:"8px",
+
 }

@@ -2,17 +2,13 @@ import styled from "styled-components";
 import Explorer from "./Explorer";
 import FilePreviewContainer from "./FilePreviewContainer";
 import { device } from "../../Medias";
-import { ButtonHeader } from "../../ui/ButtonHeader";
+import { ButtonHeader, ButtonHeaderText } from "../../ui/ButtonHeader";
 import { IoAlbumsOutline, IoPlayOutline, IoTimeOutline } from "react-icons/io5";
 import TestHistoryHomeModal from "./TestHistoryHomeModal";
 import { useSearchParams } from "react-router-dom";
 import { useCallback, useMemo } from "react";
 import Row from "../../ui/Row";
-import {
-  HeaderCenter,
-  HeaderLeft,
-  HeaderRight,
-} from "../../ui/UiConstants";
+import { HeaderCenter, HeaderLeft, HeaderRight } from "../../ui/UiConstants";
 import useCreateTest from "../tests/useCreateTest";
 import LeitnerBoxContainer from "../leitnerBox/LeitnerBox";
 
@@ -24,7 +20,6 @@ const HomeStyled = styled.div`
   position: relative;
   overflow-y: auto;
 `;
-
 
 const ExplorerContainer = styled.div`
   box-sizing: border-box;
@@ -51,7 +46,7 @@ const HeaderHome = styled.div`
 
 function HomeContainer(): JSX.Element {
   const [searchParams, setSearchParams] = useSearchParams();
-  const {createTest} = useCreateTest();
+  const { createTest } = useCreateTest();
   const handleOpenTestHistory = useCallback(() => {
     if (searchParams.get("testHistory") === null) {
       setSearchParams({
@@ -74,28 +69,40 @@ function HomeContainer(): JSX.Element {
     }
   }, [setSearchParams, searchParams]);
 
-  const testHistoryActive = useMemo(() => {return searchParams.get("testHistory") !== null},[searchParams])
-  const leitnerBoxActive = useMemo(() => {return searchParams.get("leitnerBox") !== null},[searchParams])
+  const testHistoryActive = useMemo(() => {
+    return searchParams.get("testHistory") !== null;
+  }, [searchParams]);
+  const leitnerBoxActive = useMemo(() => {
+    return searchParams.get("leitnerBox") !== null;
+  }, [searchParams]);
 
   return (
     <HomeStyled>
-      <TestHistoryHomeModal/>
-      <LeitnerBoxContainer/>
+      <TestHistoryHomeModal />
+      <LeitnerBoxContainer />
       <HeaderHome>
-        <Row $style={HeaderLeft}/>
+        <Row $style={HeaderLeft}>
+          <ButtonHeader
+            onClick={handleOpenLeitnerBox}
+            $active={leitnerBoxActive}
+          >
+            <IoAlbumsOutline size={16} />
+            <ButtonHeaderText>Leitner box</ButtonHeaderText>
+          </ButtonHeader>
+        </Row>
         <Row $style={HeaderCenter}>Homepage</Row>
         <Row $style={HeaderRight}>
-          <ButtonHeader onClick={handleOpenLeitnerBox} $active={leitnerBoxActive}>
-            <IoAlbumsOutline size={16}/>
-            Leitner box
-          </ButtonHeader>
           <ButtonHeader onClick={() => createTest([])}>
             <IoPlayOutline size={16} />
-            Play new test
+
+            <ButtonHeaderText>Play new test</ButtonHeaderText>
           </ButtonHeader>
-          <ButtonHeader onClick={handleOpenTestHistory} $active={testHistoryActive}>
+          <ButtonHeader
+            onClick={handleOpenTestHistory}
+            $active={testHistoryActive}
+          >
             <IoTimeOutline size={16} />
-            Test history
+            <ButtonHeaderText>Test history</ButtonHeaderText>
           </ButtonHeader>
         </Row>
       </HeaderHome>

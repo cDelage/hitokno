@@ -38,3 +38,9 @@ export const ButtonHeader = styled.button<{
       color: white;
     `}
 `;
+
+export const ButtonHeaderText = styled.span`
+  white-space: nowrap;
+  overflow: hidden; 
+  text-overflow: ellipsis; 
+`;
