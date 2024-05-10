@@ -18,6 +18,8 @@ import HelperLines from "./HelperLines";
 import IdenticalWidthSignifiant from "./IdenticalWidthSignifiant";
 import IdenticalHeightSignifiant from "./IdenticalHeightSignifiant";
 import HandlesUpdateEdge from "./HandlesUpdateEdge";
+import { useTabs } from "../home/useTabs";
+import { useParams } from "react-router-dom";
 
 const NodeShapeStyled = styled.div`
   height: 100%;
@@ -57,10 +59,15 @@ const NodeShape = memo(function ({
   const [isHover, setIsHover] = useState(false);
   const updateNodeInternals = useUpdateNodeInternals();
   const [size, setSize] = useState(() => getNodeSize(id));
-
+  const { getTabById } = useTabs();
+  const { fileId } = useParams();
+  const { showSheetLink } = getTabById(fileId as string);
   const handleSetHover = useCallback(
     (isHover: boolean) => {
-      if (mainToolbarActiveMenu === "CREATION-EDGE" || mainToolbarActiveMenu === "CREATION-EDGE-UPDATE") {
+      if (
+        mainToolbarActiveMenu === "CREATION-EDGE" ||
+        mainToolbarActiveMenu === "CREATION-EDGE-UPDATE"
+      ) {
         setIsHover(isHover);
       } else {
         if (isHover) {
@@ -98,7 +105,7 @@ const NodeShape = memo(function ({
       onMouseEnter={() => handleSetHover(true)}
       onMouseLeave={() => handleSetHover(false)}
     >
-      {sheet?.sheetId && (
+      {(sheet?.sheetId && showSheetLink) && (
         <SheetSignifiantButton
           nodeSheetId={sheet.sheetId}
           nodeId={id}
@@ -128,12 +135,10 @@ const NodeShape = memo(function ({
         {mainToolbarActiveMenu === "CREATION-EDGE" && isHover && (
           <HandlesCreateEdge isHoverNode={isHover} nodeId={id} />
         )}
-        {
-          mainToolbarActiveMenu === "CREATION-EDGE-UPDATE" && isHover && (
-            <HandlesUpdateEdge id={id}/>
-          )
-        }
-        {(!mainToolbarActiveMenu?.startsWith("CREATION") && selected) && (
+        {mainToolbarActiveMenu === "CREATION-EDGE-UPDATE" && isHover && (
+          <HandlesUpdateEdge id={id} />
+        )}
+        {!mainToolbarActiveMenu?.startsWith("CREATION") && selected && (
           <Resizer
             selected={selected}
             id={id}

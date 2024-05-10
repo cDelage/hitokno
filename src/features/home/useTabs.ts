@@ -9,9 +9,10 @@ type TabsStore = {
   closeTab: (tabId: string) => void;
   toggleCartographyMode: (tabId: string) => void;
   getCartographyMode: (tabId: string) => CartographyMode;
-  setTabs: (tabs : HeaderTab[]) => void;
-  toggleTabGrid: (tabId:string) => void;
-  getTabById : (tabId: string) => HeaderTab;
+  setTabs: (tabs: HeaderTab[]) => void;
+  toggleTabGrid: (tabId: string) => void;
+  getTabById: (tabId: string) => HeaderTab;
+  toggleShowSheet: (tabId: string) => void;
 };
 
 const useTabs = create(
@@ -27,7 +28,10 @@ const useTabs = create(
           //If not exist, create new tab
           set((state) => {
             return {
-              tabs: [...state.tabs, { tabId, mode, type, showGrid: false }],
+              tabs: [
+                ...state.tabs,
+                { tabId, mode, type, showGrid: true, showSheetLink: true },
+              ],
             };
           });
         } else {
@@ -80,28 +84,44 @@ const useTabs = create(
         )?.mode;
         return tabMode ? tabMode : "DEFAULT";
       },
-      setTabs : (tabs) => {
-          set({tabs})
+      setTabs: (tabs) => {
+        set({ tabs });
       },
       toggleTabGrid: (tabId: string) => {
         set((state) => {
           return {
-            tabs: state.tabs.map(tab => {
-              if(tab.tabId === tabId){
+            tabs: state.tabs.map((tab) => {
+              if (tab.tabId === tabId) {
                 return {
                   ...tab,
-                  showGrid: tab.showGrid !== undefined ? !tab.showGrid : true
-                }
-              }else {
+                  showGrid: tab.showGrid !== undefined ? !tab.showGrid : true,
+                };
+              } else {
                 return tab;
-              } 
-            })
-          } 
-        })
+              }
+            }),
+          };
+        });
       },
-      getTabById: (tabId:string) :HeaderTab => {
-        return get().tabs.find(tab => tab.tabId === tabId) as HeaderTab;
-      }
+      getTabById: (tabId: string): HeaderTab => {
+        return get().tabs.find((tab) => tab.tabId === tabId) as HeaderTab;
+      },
+      toggleShowSheet: (tabId: string) => {
+        set((state) => {
+          return {
+            tabs: state.tabs.map((tab) => {
+              if (tab.tabId === tabId) {
+                return {
+                  ...tab,
+                  showSheetLink: !tab.showSheetLink,
+                };
+              } else {
+                return tab;
+              }
+            }),
+          };
+        });
+      },
     }),
     { name: "tab-storage" }
   )

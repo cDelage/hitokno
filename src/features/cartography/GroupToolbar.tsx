@@ -16,6 +16,8 @@ import { useReactFlow, useViewport } from "reactflow";
 import { useSearchParams } from "react-router-dom";
 import styled from "styled-components";
 import SheetIcon from "../../ui/icons/SheetIcon";
+import { BiTrash } from "react-icons/bi";
+import { IoClose } from "react-icons/io5";
 
 const IconContainerLarge = styled.div`
   height: 28px;
@@ -23,6 +25,11 @@ const IconContainerLarge = styled.div`
   overflow: visible;
   display: flex;
   align-items: center;
+`;
+
+const OptionContainer = styled.span<{ color?: string }>`
+  display: flex;
+  gap: 4px;
 `;
 
 function GroupToolbar({
@@ -40,7 +47,7 @@ function GroupToolbar({
 }) {
   const { shapeDescription, sheet } = data;
   const { theme } = shapeDescription as ShapeDescription;
-  const { setNodeData, getNodeCenterCoordinate } = useCartography();
+  const { setNodeData, getNodeCenterCoordinate, deleteNode } = useCartography();
   const { zoom, x, y } = useViewport();
   const { setCenter, flowToScreenPosition } = useReactFlow();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -138,6 +145,12 @@ function GroupToolbar({
           </ToolbarSmallIcon>
           <HiChevronUp size={12} />
         </MenuToolbar.Action>
+          {/* Trash */}
+          <MenuToolbar.Action toggle="delete-node">
+            <ToolbarSmallIcon>
+              <BiTrash size={"100%"} />
+            </ToolbarSmallIcon>
+          </MenuToolbar.Action>
         {/* Open sheet */}
         <MenuToolbar.Action onClick={sheetCallback}>
           <IconContainerLarge>
@@ -172,6 +185,23 @@ function GroupToolbar({
             </MenuToolbar.Action>
           ))}
         </MenuToolbar.ActionLine>
+      </MenuToolbar.SubMenu>
+      <MenuToolbar.SubMenu name="delete-node">
+        <MenuToolbar.ActionColumn>
+          <MenuToolbar.Action
+            $theme="danger"
+            onClick={() => deleteNode(nodeId)}
+          >
+            <OptionContainer>
+              <BiTrash size={20} /> Delete
+            </OptionContainer>
+          </MenuToolbar.Action>
+          <MenuToolbar.Action>
+            <OptionContainer>
+              <IoClose size={20} /> Cancel
+            </OptionContainer>
+          </MenuToolbar.Action>
+        </MenuToolbar.ActionColumn>
       </MenuToolbar.SubMenu>
     </MenuToolbar>
   );

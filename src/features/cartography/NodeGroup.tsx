@@ -12,6 +12,8 @@ import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import HandlesCreateEdge from "./HandlesCreateEdge";
 import { Handle, Node, useUpdateNodeInternals } from "reactflow";
 import HandlesUpdateEdge from "./HandlesUpdateEdge";
+import { useTabs } from "../home/useTabs";
+import { useParams } from "react-router-dom";
 
 const NodeGroupStyled = styled.div`
   height: 100%;
@@ -66,7 +68,9 @@ const NodeGroup = memo(function NodeGroup({
     handlesActive,
   } = useCartography();
   const [size, setSize] = useState(() => getNodeSize(id));
-
+  const { getTabById } = useTabs();
+  const { fileId } = useParams();
+  const { showSheetLink } = getTabById(fileId as string);
   const updateNodeInternals = useUpdateNodeInternals();
 
   const selectedNodes = useMemo<Node<DataNode>[]>(() => {
@@ -123,7 +127,7 @@ const NodeGroup = memo(function NodeGroup({
           width={size.width}
         />
       )}
-      {sheet && (
+      {(sheet && showSheetLink) && (
         <SheetSignifiantButton
           nodeId={id}
           nodeSheetId={sheet.sheetId}
