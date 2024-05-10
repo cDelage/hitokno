@@ -743,6 +743,10 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
     const selectedNodes = get().nodes.filter((node) => node.selected);
     selectedNodes.forEach((node) => {
       const { width, height } = get().getNodeSize(node.id);
+      const countShape = get().nodes.filter(
+        (node) =>
+          node.data?.shapeDescription?.shape === get().shapeCreationDesc.shape
+      ).length;
       const newNode: Node<DataNode> = {
         id: uuidv4(),
         position: {
@@ -756,7 +760,11 @@ const useCartography = create<UseCartographyStore>((set, get) => ({
         data: {
           mode: "DEFAULT",
           handles: [],
-          label: node.data.label + " copy",
+          label: `${
+            node.data.shapeDescription
+              ? node.data.shapeDescription.shape.toUpperCase()
+              : "UNKNOWN SHAPE"
+          } ${countShape}`,
           shapeDescription: node.data.shapeDescription,
           editorState: node.data.editorState,
         },

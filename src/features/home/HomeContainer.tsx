@@ -24,6 +24,7 @@ const HomeStyled = styled.div`
   overflow-y: auto;
 `;
 
+
 const ExplorerContainer = styled.div`
   box-sizing: border-box;
   flex-grow: 1;
