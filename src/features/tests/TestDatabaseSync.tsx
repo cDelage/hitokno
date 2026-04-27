@@ -45,6 +45,8 @@ function TestDatabaseSync() {
   }, [
     test?.status,
     test?.decks,
+    test?.sortMode,
+    test?.deckOrderedRandomCardOrder,
     repository,
     getCardListFromRepository,
     setTempFlashCards,

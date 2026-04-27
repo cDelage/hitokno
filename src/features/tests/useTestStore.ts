@@ -109,7 +109,7 @@ const useTestStore = create<TestStore>((set, get) => ({
               fileAndDeck?.deck
             );
             if (test.deckOrderedRandomCardOrder) {
-              fileCards = shuffleArray<FlashCardTestProps>(cards);
+              fileCards = shuffleArray<FlashCardTestProps>(fileCards);
             }
             cards.push(...fileCards);
           }
